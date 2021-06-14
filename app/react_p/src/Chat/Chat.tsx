@@ -3,18 +3,20 @@ import socketIOClient from "socket.io-client";
 import ChatInput from "./ChatInput";
 import ChatLog from "./ChatLog";
 import Loading from "./Loading";
-
-//const socket = socketIOClient("localhost:5000");
+import UserList from "./UserList";
+import "./styles/Chat.css"
 
 interface chatObj{
-	roomName: string,
-	userName: string
+	roomName: any,
+	userName: any,
+	icon: any
 }
 
-const Chat = ({ roomName, userName }: chatObj) => {
+const Chat = ({ roomName, userName, icon }: chatObj) => {
   const myInfo = {
-    roomName: roomName ? roomName : localStorage.getItem("roomName"),
-    userName: userName ? userName : localStorage.getItem("userName"),
+    roomName: roomName ? roomName : sessionStorage.getItem("roomName"),
+    userName: userName ? userName : sessionStorage.getItem("userName"),
+	icon: icon ? icon : sessionStorage.getItem("icon"),
   };
 
   const [currentSocket, setCurrentSocket] = useState(socketIOClient());
@@ -29,12 +31,25 @@ const Chat = ({ roomName, userName }: chatObj) => {
     });
   }
 
+
   return (
     <div>
       {currentSocket ? (
         <>
-          <ChatLog socket={currentSocket}></ChatLog>
-          <ChatInput userName={userName} socket={currentSocket}></ChatInput>
+		  <div id="Chat-container">
+		  	<span className="Chat-box ChatLog">
+          		<div className="ChatLog-top">
+					<ChatLog userName={userName} socket={currentSocket}></ChatLog>
+				</div>
+				<div className="ChatInput">
+          			<ChatInput userName={userName} socket={currentSocket}></ChatInput>
+		  		</div>
+		  	</span>
+		  	<span className="Chat-box UserList">
+		  		<UserList socket={currentSocket}></UserList>
+		  	</span>
+		  </div>
+
         </>
       ) : (
         <Loading></Loading>

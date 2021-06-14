@@ -1,19 +1,16 @@
 import React, { useRef, useState } from "react";
 import socketIOClient from "socket.io-client";
-import "./ChatInput.css";
+import "./styles/ChatInput.css";
+import 'bootstrap/dist/css/bootstrap.min.css'
+import {Button} from "react-bootstrap";
 
-interface chatObj {
-	userName:any,
-	socket:any
-}
-
-const ChatInput = ({ userName, socket }: chatObj) => {
+const ChatInput = ({ userName, socket }: any) => {
   const [chatMessage, setChatMessage] = useState("");
 
   const handleSubmit = (e:any) => {
     e.preventDefault();
     socket.emit("onSend", {
-      userName: userName ? userName : localStorage.getItem("userName"),
+      userName: userName ? userName : sessionStorage.getItem("userName"),
       msg: chatMessage,
       timeStamp: new Date().toLocaleTimeString(),
     });
@@ -25,14 +22,14 @@ const ChatInput = ({ userName, socket }: chatObj) => {
   };
 
   return (
-    <div className="ChatInput-container">
+    <div>
       <form className="ChatInput-form" onSubmit={handleSubmit}>
-        <input
+        <input type="text" className="form-control"
           placeholder="메시지를 입력하세요."
           value={chatMessage}
           onChange={onChatMessageChange}
         ></input>
-        <button>전송</button>
+        <Button type="button" className="btn btn-warning btn-sm">전송</Button>
       </form>
     </div>
   );

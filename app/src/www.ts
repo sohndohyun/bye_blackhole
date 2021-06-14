@@ -1,36 +1,56 @@
 import app from "./app";
 import {createServer} from "http";
+const socketIO = require("socket.io");
+const cors = require("cors");
+const chat_user = require('./DB/chat_user.ts');
+const chat_room = require('./DB/chat_room.ts');
 
 const port: number = Number(process.env.PORT) || 3000;
 const server = createServer(app);
-
-
-const socketIO = require("socket.io");
 //const {timelog} = require("console");
 const io = socketIO(server);
-const cors = require("cors");
+
 app.use(cors());
+chat_user.init();
+chat_room.init();
 
+app.get('/RoomList/insert', (req, res) => {
+	chat_room.insert(req.body.roomInfo)
+})
 
-interface join_obj {
-	room:string,
-	user:string
+app.get('/RoomList/select', (req, res) => {
+	res.send(chat_room.select())
+})
+
+interface chatObj{
+	roomName: any,
+	userName: any,
+	icon: any
 }
 
 io.on("connection", (socket: any) => {
-	socket.on("join", ({room, user}:join_obj) => {
-		socket.join(room);
-		io.to(room).emit("onConnect", '${user} 님이 입장했습니다.');
-		socket.on("onSend", (messageItem: any) => {
-			io.to(room).emit("onReceive", messageItem);
+	socket.on("join", async (chat:chatObj) => {
+		chat_user.insert(chat.roomName, chat.userName, chat.icon)
+		socket.join(chat.roomName);
+		io.to(chat.roomName).emit("onConnect", `${chat.userName} 님이 입장했습니다.`);
+		const rtn = await chat_user.select()
+		io.to(chat.roomName).emit("UserList", rtn)
+
+		socket.on("onSend", (messageItem: {userName:string, msg:string, timeStamp:string}) => {
+				io.to(chat.roomName).emit("onReceive", messageItem);
 		});
-		socket.on("disconnect", () => {
-			socket.leave(room);
-			io.to(room).emit("onDisconnect", '${user} 님이 퇴장하셨습니다.');
+
+		socket.on("disconnect", async () => {
+			chat_user.delete(chat.userName);
+
+			const rtn = await chat_user.select()
+			io.to(chat.roomName).emit("UserList", rtn)
+
+			socket.leave(chat.roomName);
+			io.to(chat.roomName).emit("onDisconnect", `${chat.userName} 님이 퇴장하셨습니다.`);
 		})
 	});
 });
-
 
 
 

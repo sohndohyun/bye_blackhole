@@ -1,20 +1,26 @@
 import React, { useEffect, useState } from "react";
+import "./styles/ChatLog.css";
 
-const ChatLog = ({ socket }: any) => {
+
+const ChatLog = ({ userName, socket }: any) => {
   const [msgList, setMsgList] = useState<any[]>([]);
 
   useEffect(() => {
-	console.log('컴포넌트가 화면에 나타남');
 	// messsgeItem : {msg: String, name: String, timeStamp: String}
-    socket.on("onReceive", (messageItem: never) => {
-      setMsgList((msgList) => [...msgList, messageItem]);
+    socket.on("onReceive", (messageItem: {userName:string, msg:string, timeStamp:string}) => {
+		userName = userName ? userName : sessionStorage.getItem("userName")
+	  if (userName === messageItem.userName)
+		setMsgList((msgList) => [...msgList, {myMsg: messageItem.msg, timeStamp: messageItem.timeStamp} as never]);
+	  else
+		setMsgList((msgList) => [...msgList, messageItem]);
       console.log(messageItem);
+	  console.log(userName)
     });
-    socket.on("onConnect", (systemMessage: any) => {
-      setMsgList((msgList) => [...msgList, { msg: systemMessage } as never]);
+    socket.on("onConnect", (systemMessage: string) => {
+      setMsgList((msgList) => [...msgList, { sysMsg: systemMessage } as never]);
     });
     socket.on("onDisconnect", (systemMessage: any) => {
-      setMsgList((msgList) => [...msgList, { msg: systemMessage } as never]);
+      setMsgList((msgList) => [...msgList, { sysMsg: systemMessage } as never]);
     });
     return () => {
       socket.disconnect();
@@ -25,9 +31,22 @@ const ChatLog = ({ socket }: any) => {
     <div>
       {msgList.map((msg, idx) => (
         <div key={idx}>
-          <div>{msg.userName}</div>
-          <div>{msg.timeStamp}</div>
-          <div>{msg.msg}</div>
+		  	{msg.userName &&
+          		<div className="msg-userName">{msg.userName}</div>
+			}
+			{msg.msg &&
+				<div className="msgLeft">
+          			<span className="msg-msg">{msg.msg}</span>
+					<span className="msg-timeStamp">({msg.timeStamp})</span>
+				</div>
+			}
+			{msg.myMsg &&
+				<div className="msgRight">
+					<span className="msg-timeStamp">({msg.timeStamp})</span>
+          			<span className="msg-msg">{msg.myMsg}</span>
+				</div>
+			}
+		  <div className="sysMsg" >{msg.sysMsg}</div>
         </div>
       ))}
     </div>

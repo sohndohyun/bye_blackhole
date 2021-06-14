@@ -31,6 +31,7 @@ services:
     env_file: .env
     volumes:
       - db_volume:/var/lib/postgresql/data
+      - ./app/react_p/src/images:/images
 
   pgadmin:
     image: dpage/pgadmin4

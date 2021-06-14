@@ -1,10 +1,11 @@
-import logo from './logo.svg';
+//import logo from './logo.svg';
 import React, {useState} from "react";
-import './App.css';
+//import './App.css';
 //import Hello, {Wrapper, Counter, InputSample} from './Hello';
 import Chat from "./Chat/Chat";
 import Home from "./Chat/Home";
-import "./Chat/global.css";
+import RoomList from "./Chat/RoomList"
+import "./Chat/styles/global.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 
@@ -49,6 +50,7 @@ function App()
 function App() {
 	const [userName, setUserName] = useState();
 	const [roomName, setRoomName] = useState();
+	const [icon, setIcon] = useState();
 
 	return (
 	  <div className="App">
@@ -57,16 +59,30 @@ function App() {
 			<Route path="/" exact>
 			  <Home
 				userName={userName}
-				roomName={roomName}
 				setUserName={setUserName}
+				icon={icon}
+				setIcon={setIcon}
+				/>
+			</Route>
+			<Route path="/RoomList" exact>
+			  <RoomList
+				userName={userName}
+				roomName={roomName}
 				setRoomName={setRoomName}
 			  />
 			</Route>
 			<Route
-			  path="/chat"
+			  path="/Chat"
 			  exact
-			  render={() => <Chat userName={userName} roomName={roomName} />}
+			  render={() => <Chat userName={userName} roomName={roomName} icon={icon}/>}
 			></Route>
+			<Route
+          		render={({location}) => (
+            		<div>
+              			Not Found {location.pathname}
+            		</div>
+          		)}
+        	/>
 		  </Switch>
 		</Router>
 	  </div>
