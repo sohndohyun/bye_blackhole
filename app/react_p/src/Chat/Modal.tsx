@@ -3,7 +3,7 @@ import "./styles/Modal.css";
 
 const Modal = ( props: any ) => {
     // 열기, 닫기, 모달 헤더 텍스트를 부모로부터 받아옴
-    const { open, close, header } = props;
+    const { open, close, header, makeRoom } = props;
 
     return (
         // 모달이 열릴때 openModal 클래스가 생성된다.
@@ -18,7 +18,7 @@ const Modal = ( props: any ) => {
                         {props.children}
                     </main>
                     <footer>
-						<a className="btn btn-primary" href="/Chat"><b>방 만들기</b></a>
+						<a className="btn btn-primary" href="/Chat" onClick={makeRoom}><b>방 만들기</b></a>
                     </footer>
                 </section>
             ) : null }

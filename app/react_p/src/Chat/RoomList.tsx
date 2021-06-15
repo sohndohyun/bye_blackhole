@@ -25,12 +25,12 @@ const RoomList = ({ userName, roomName, setRoomName}: HomeObj) => {
 
   sessionStorage.setItem("roomName", roomName);
 
-  //const [roomInfo, setRoomInfo] = useState<{id:string, password:string, owner_id:string}>();
+  const [roomInfo, setRoomInfo] = useState<{id:string, password:string, owner_id:string}>();
 
   async function makeRoom(){
 	  userName = userName ? userName : sessionStorage.getItem("userName")
 	  const roomInfo = {id:roomName, password:"", owner_id:userName}
-
+	  console.log("insert!!!!!!!!!")
 	  const res = await axios.post('/RoomList/insert', {roomInfo});
 	  //setRoomInfo(res.data.roomInfo)
   }
@@ -39,10 +39,9 @@ const RoomList = ({ userName, roomName, setRoomName}: HomeObj) => {
     <div className="RoomList-container">
 		<div className="makeRoom-box">
 			<a className="btn btn-primary btn-sm makeRoom" onClick={openModal}><b>방 만들기</b></a>
-			<Modal open={modalOpen} close={closeModal} header="방 만들기">
+			<Modal open={modalOpen} close={closeModal} header="방 만들기" makeRoom={makeRoom}>
 				<label ><b>방 제목</b></label>
 				<input onChange={handleRoomNameChange}></input>
-				{makeRoom}
 			</Modal>
 		</div>
 

@@ -14,7 +14,9 @@ app.use(cors());
 chat_user.init();
 chat_room.init();
 
-app.get('/RoomList/insert', (req, res) => {
+app.post('/RoomList/insert', (req, res) => {
+	console.log("insert!!!!!!!!!")
+	console.log(req.body.roomInfo)
 	chat_room.insert(req.body.roomInfo)
 })
 

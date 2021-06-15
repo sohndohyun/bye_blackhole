@@ -64,12 +64,13 @@ function App() {
 				setIcon={setIcon}
 				/>
 			</Route>
-			<Route path="/RoomList" exact>
-			  <RoomList
+			<Route path="/RoomList" exact render={() => <RoomList
 				userName={userName}
 				roomName={roomName}
 				setRoomName={setRoomName}
-			  />
+			  />}>
+			</Route>
+			<Route path="/RoomList/insert">
 			</Route>
 			<Route
 			  path="/Chat"
