@@ -5,6 +5,7 @@ import React, {useState} from "react";
 import Chat from "./Chat/Chat";
 import Home from "./Chat/Home";
 import RoomList from "./Chat/RoomList"
+import Waiting from "./Chat/Waiting"
 import "./Chat/styles/global.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
@@ -31,7 +32,8 @@ function App() {
 				setRoomName={setRoomName}
 			  />}>
 			</Route>
-			<Route path="/RoomList/insert">
+			<Route path="/Waiting" exact>
+				<Waiting/>
 			</Route>
 			<Route
 			  path="/Chat"
