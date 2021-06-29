@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback, VFC} from "react";
 import "./styles/RoomList.scss";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MakeRoomModal from './MakeRoomModal';
@@ -13,22 +13,22 @@ interface HomeObj{
 	setRoomName:(value:any)=>void,
 }
 
-const RoomList = ({ userName, roomName, setRoomName}: HomeObj) => {
-  const handleRoomNameChange = (e:any) => {
+const RoomList : VFC<HomeObj>  = ({ userName, roomName, setRoomName}) => {
+  const handleRoomNameChange = useCallback((e:any) => {
     setRoomName(e.target.value);
 	checkedRoomInfo(e.target.value)
-  };
+  }, []);
 
   //password
   const [pw, setPw] = useState("");
-  const handPwChange = (e:any) => {
+  const handPwChange = useCallback((e:any) => {
     setPw(e.target.value);
-  };
+  }, []);
 
   const [bChecked, setChecked] = useState(false);
-  const checkHandler = (e:any) => {
+  const checkHandler = useCallback( (e:any) => {
     setChecked(!bChecked);
-  };
+  },[bChecked]);
 
 
   //makeRoomModal

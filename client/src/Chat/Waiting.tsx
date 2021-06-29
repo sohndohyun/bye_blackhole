@@ -3,7 +3,6 @@ import {useEffect, useState} from "react";
 import "./styles/Waiting.scss"
 import plusbtn from "../images/plusbutton.png"
 import lock_icon from '../images/private.png'
-import wall from '../images/wall.png'
 import speed from '../images/speed.png'
 import userIcon from '../images/gamer_boy.png'
 
@@ -12,16 +11,17 @@ const Waiting = () => {
 
 	const [gameList, setGameList] = useState<{player1:string, player2:string, mode:string}[]>();
 	useEffect(() => {
-		//const res = await axios.get('')
-		//setGameList(res.data)
-		setGameList([{player1:"jinkimasdfasdfasdfasdf", player2:"jachoi", mode:"speed"}, {player1:"dshon", player2:"taekkim", mode:"wall"}, {player1:"jinkim", player2:"jachoi", mode:"wall"}, {player1:"dshon", player2:"taekkim", mode:"normal"}])
+		//axios.get('')
+		//.then((res) => setGameList(res.data))
+		//.catch((err)=> console.log(err))
+		setGameList([{player1:"inkimas", player2:"jachoi", mode:"speed"}, {player1:"dshon", player2:"taekkim", mode:"speed"}, {player1:"jinkim", player2:"jachoi", mode:"speed"}, {player1:"dshon", player2:"taekkim", mode:"normal"}])
 	})
 
 	const [chatList, setChatList] = useState<{id:string, password:string, owner_id:string, num:number}[]>();
 	useEffect(() => {
 		//const res = await axios.get('')
 		//setChatList(res.data)
-		setChatList([{id:"chat_r1", password:"", owner_id:"oid1", num:5}, {id:"chat_r2_hello_world", password:"1234", owner_id:"oid1", num:1}])
+		setChatList([{id:"chat_r1", password:"", owner_id:"oid1", num:5}, {id:"chat_r2", password:"1234", owner_id:"oid1", num:1}])
 	})
 
 	const [friendsList, setFriendsList] = useState<{id:string, icon:string ,state:string}[]>();
@@ -42,7 +42,7 @@ const Waiting = () => {
 	useEffect(() => {
 		//const res = await axios.get('')
 		//setMyChatList(res.data)
-		setMyChatList([{id:"chat_r1", num:5}, {id:"chat_r2_hello_world_12345", num:1},{id:"chat_r1", num:5}])
+		setMyChatList([{id:"chat_r1", num:5}, {id:"chat_r2", num:1},{id:"chat_r1", num:5}])
 	})
 
 
@@ -58,7 +58,7 @@ const Waiting = () => {
 					<button type="button" className="roomList">
 						<span className="roomList-left">
 							<div className="roomList-icon">
-							{gameRoom.mode === "speed" ? <img src={speed} width="30" height="30"/> : null}{gameRoom.mode === "wall" ? <img src={wall} width="30" height="30"/> : null}{gameRoom.mode === "normal" ? 'N' : null}
+							{gameRoom.mode === "speed" ? <img src={speed} width="30" height="30"/> : null}{gameRoom.mode === "normal" ? 'N' : null}
 							</div>
 						</span>
 						<span className="roomList-right">
