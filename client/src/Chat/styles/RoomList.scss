@@ -1,0 +1,129 @@
+@import url("https://fonts.googleapis.com/css?family=Dax:400,900");
+$font: "Dax", sans-serif;
+$sky: rgb(196, 225, 230);
+$green: #007e90;
+
+.middle {
+  width: 70%;
+  max-width: 50rem;
+  text-align: left;
+  display: inline-block;
+  /*
+  h1 {
+    font-family: $font;
+    color: $sky;
+  }
+  */
+  input[type="radio"] {
+    display: none;
+    &:checked {
+      + .box {
+        background-color: $green;
+		color: white;
+
+        div {
+          color: $sky;
+          transform: translateY(30px);
+          &:before {
+            transform: translateY(0px);
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+  .box {
+    width: 180px;
+    height: 100px;
+    background-color: $sky;
+    transition: all 250ms ease;
+    will-change: transition;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    font-family: $font;
+    font-weight: 1px;
+	margin:0.5rem;
+	border-radius: 0.5rem 0.5rem 0.5rem 0.5rem;
+    &:active {
+      transform: translateY(10px);
+    }
+
+
+    div {
+      position: absolute;
+      transform: translate(0, 20px);
+      left: 0;
+      right: 0;
+      transition: all 300ms ease;
+      font-size: 1.5em;
+      user-select: none;
+      color: $green;
+      &:before {
+        font-size: 1.2em;
+        font-family: FontAwesome;
+        display: block;
+        transform: translateY(-80px);
+        opacity: 0;
+        transition: all 300ms ease-in-out;
+        font-weight: normal;
+        color: white;
+      }
+    }
+
+	.lock-image{
+		float: left;
+		margin-left: 0.5rem;
+		margin-top:0.2rem;
+	}
+
+	.room-num{
+		float: right;
+		margin-right: 0.5rem;
+		margin-top:0.3rem;
+	}
+  }
+  .room {
+    div {
+      &:before {
+        content: "\f121";
+      }
+    }
+  }
+
+
+}
+
+
+
+.RoomList-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	align-content: center;
+}
+
+.makeRoom-box{
+	width:100%
+}
+
+.makeRoom {
+	margin-left: 80%;
+	margin-bottom: 0.5rem;
+}
+
+.Join-button {
+	margin-top: 1rem;
+}
+
+.checkbox-pw {
+	margin-top: 0.5rem;
+}
+
+.tryAgain {
+	margin-top: 0.5rem;
+	color: red;
+}

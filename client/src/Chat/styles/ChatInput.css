@@ -1,0 +1,8 @@
+.ChatInput-form {
+	display: flex;
+}
+
+.ChatInput-form input {
+	flex: 1;
+	height: 2rem;
+}

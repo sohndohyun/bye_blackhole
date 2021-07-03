@@ -1,0 +1,38 @@
+version: '3'
+services:
+  server:
+    container_name: server
+    build:
+      context: .
+    volumes:
+      - .:/app
+    ports:
+      - 8080:8080
+    env_file:
+      - .env
+    depends_on:
+      - db_postgres
+
+  db_postgres:
+    container_name: db_postgres
+    image: postgres:12
+    env_file: .env
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+      - ./client/src/images:/images
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    ports:
+      - "8088:8088"
+    depends_on:
+      - 'db_postgres'
+    env_file: .env
+    volumes:
+      - pgadmin_volume:/var/lib/pgadmin
+      - ./servers.json:/pgadmin4/servers.json
+
+volumes:
+  db_volume:
+  pgadmin_volume:
