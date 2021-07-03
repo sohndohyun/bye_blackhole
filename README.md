@@ -83,3 +83,52 @@ on.update (p1_pos, p1_dir, p2_pos, p2_dir, ball_pos, ball_dir, p1_score, p2_scor
 client->server  
 on.up(true | false)  
 on.down(true | fase)  
+
+
+.  
+.  
+.  
+
+
+# DB design  
+### PLAYER  
+id  
+token  
+nickname  
+win num  
+loss num  
+isOwner  
+state   : online, offline, searching, gaming  
+
+
+### FRIEND_INFO  
+id  
+friend_id  
+
+
+### CHAT_ROOM  
+id  
+password  
+owner_id  
+
+
+### ADMIN_INFO
+room_id  만약 0이면 사이트의 관리자, 0이상이면 채팅방관리자  
+admin_id  
+
+
+### CHAT_MEMBER  
+room_id  
+member_id  
+state  
+
+
+### CHAT_BLOCK_INFO  
+room_id 만약 0이면 글로벌블락, 이상이면 채팅방블락  
+player_id    
+target_id  
+
+
+### MESSAGES  
+room_id  
+message  
