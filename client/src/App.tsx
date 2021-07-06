@@ -1,11 +1,10 @@
 //import logo from './logo.svg';
 import React, {useState} from "react";
-//import './App.css';
-//import Hello, {Wrapper, Counter, InputSample} from './Hello';
+import './App.scss';
 import Chat from "./Chat/Chat";
 import Home from "./Chat/Home";
 import RoomList from "./Chat/RoomList"
-import Waiting from "./Chat/Waiting"
+import Lobby from "./Lobby/Lobby"
 import "./Chat/styles/global.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
@@ -32,8 +31,8 @@ function App() {
 				setRoomName={setRoomName}
 			  />}>
 			</Route>
-			<Route path="/Waiting" exact>
-				<Waiting/>
+			<Route path="/Lobby" exact>
+				<Lobby/>
 			</Route>
 			<Route
 			  path="/Chat"

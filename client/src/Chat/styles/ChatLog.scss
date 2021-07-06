@@ -1,0 +1,67 @@
+
+.msgLeft{
+	text-align: left;
+	margin-top: 5px;
+	margin-bottom: 0.5rem;
+	display: flex;
+	
+	.msg-userName{
+		margin-left: 4px;
+	}
+
+	.msg-left{
+		color: white;
+		max-width: 350px;
+		word-break: break-all;
+
+		font-size: 1rem;
+		border-radius: 10px;
+		padding: 2px;
+		padding-left:5px;
+		padding-right:5px;
+		margin-right: 0.2rem;
+		margin-left: 2px;
+		background-color: rgb(59, 136, 207);
+	}
+
+	.msg-icon{
+		margin-left: 0.5rem;
+		position: relative;
+		margin-bottom: auto;
+
+		padding:1px;
+		border-radius: 50%;
+		border: 2px dotted rgba(0, 0, 0, 0.432);
+	}
+
+}
+
+.msgRight{
+	margin-bottom: 0.5rem;
+	display: flex;
+	flex-direction: row-reverse;
+	
+	.msg-right{
+		max-width: 350px;
+		word-break: break-all;
+		
+		color: white;
+		border-radius: 10px;
+		padding: 2px;
+		padding-left:5px;
+		padding-right:5px;
+		margin-left: 0.5rem;
+		margin-right: 0.2rem;
+		background-color: rgb(41, 67, 122);
+	}
+}
+
+.msg-timeStamp{
+	font-size: 0.5rem;
+	margin-top:auto;
+}
+
+.sysMsg{
+	text-align: center;
+	margin:1rem;
+}

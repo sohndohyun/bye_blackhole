@@ -36,7 +36,7 @@ const Home = ({ userName, setUserName, icon, setIcon }: HomeObj) => {
 	  </div>
 
 	  <div className="Join-button">
-	  	<a className="btn btn-dark" href="/RoomList"><b>로그인</b></a>
+	  	<a className="btn btn-dark" href="/Lobby"><b>로그인</b></a>
 	  </div>
     </div>
   );
