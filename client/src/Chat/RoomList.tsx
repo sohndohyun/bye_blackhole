@@ -5,7 +5,7 @@ import MakeRoomModal from './MakeRoomModal';
 import PwRoomModal from './PwRoomModal';
 import NoEntryModal from './NoEntryModal'
 import axios from 'axios';
-import lock_icon from '../images/private.png'
+import lock_icon from '../Images/private.png'
 
 interface HomeObj{
 	userName:any,

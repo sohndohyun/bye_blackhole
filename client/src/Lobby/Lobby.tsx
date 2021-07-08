@@ -1,9 +1,9 @@
 import axios from "axios";
 import {useEffect, useState, useCallback} from "react";
 import "./styles/Lobby.scss"
-import plusbtn from "../images/plusbutton.png"
-import lock_icon from '../images/private.png'
-import speed from '../images/speed.png'
+import plusbtn from "../Images/plusbutton.png"
+import lock_icon from '../Images/private.png'
+import speed from '../Images/speed.png'
 import RightList from './RightList'
 import GameListModal from './GameListModal'
 import ChatListModal from './ChatListModal'

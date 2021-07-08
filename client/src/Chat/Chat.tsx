@@ -5,7 +5,7 @@ import Loading from "./Loading";
 import UserList from "./UserList";
 import RightList from "../Lobby/RightList";
 import "./styles/Chat.scss"
-import setting from '../images/setting.png'
+import setting from '../Images/setting.png'
 import ChatOwnerModal from "./ChatOwnerModal";
 
 const socketIOClient = require('socket.io-client')

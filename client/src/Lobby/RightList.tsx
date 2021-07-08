@@ -1,8 +1,8 @@
 import axios from "axios";
 import {useEffect, useState} from "react";
 import "./styles/RightList.scss"
-import images from '../images/Images'
-import userIcon from '../images/gamer_boy.png'
+import {findImg} from '../Images/Images'
+import userIcon from '../Images/gamer_boy.png'
 import UserInfoModal from "./UserInfoModal";
 
 const RightList = () => {
@@ -65,7 +65,7 @@ const RightList = () => {
 		<div className="title"># friends</div>
 		{friendsList?.map(user=>
 			<button type="button" className="user-btn" onClick={() => openUserInfoModal(user.id)}>
-				<img src={images(user.icon)}  width="20" height="20" className="user-icon"/>
+				<img src={findImg(user.icon)}  width="20" height="20" className="user-icon"/>
 				{user.state === "online" ? <span className="userState online">·</span> : null}
 				{user.state === "offline" ? <span className="userState offline">·</span> : null}
 				{user.state === "gaming" ? <span className="userState gaming">·</span> : null}
@@ -76,7 +76,7 @@ const RightList = () => {
 		<div className="title"># others</div>
 		{othersList?.map(user=>
 			<button type="button" className="user-btn" onClick={() => openUserInfoModal(user.id)}>
-				<img src={images(user.icon)}  width="20" height="20" className="user-icon"/>
+				<img src={findImg(user.icon)}  width="20" height="20" className="user-icon"/>
 				{user.state === "online" ? <span className="userState online">·</span> : null}
 				{user.state === "offline" ? <span className="userState offline">·</span> : null}
 				{user.state === "gaming" ? <span className="userState gaming">·</span> : null}

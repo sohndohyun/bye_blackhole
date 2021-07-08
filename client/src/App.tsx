@@ -2,7 +2,7 @@
 import React, {useState} from "react";
 import './App.scss';
 import Chat from "./Chat/Chat";
-import Home from "./Chat/Home";
+import Home from "./Home/Home";
 import RoomList from "./Chat/RoomList"
 import Lobby from "./Lobby/Lobby"
 import "./Chat/styles/global.css";

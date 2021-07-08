@@ -1,7 +1,7 @@
 import React from "react";
 import "./styles/Home.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import images from './Images';
+import {allImages} from '../Images/Images';
 
 interface HomeObj{
 	userName:any,
@@ -27,7 +27,7 @@ const Home = ({ userName, setUserName, icon, setIcon }: HomeObj) => {
       <input onChange={handleUserNameChange}></input>
 
 	  <div className="icon-container">
-		{images.map(({value, src}) =>
+		{allImages.map(({value, src}) =>
 			<span className="icon">
 			<input type="radio" name="icon" value={value} onChange={handleIconChange} className="icon-input"/>
 			<img src={src} width="50" height="50" className="icon-img"></img>

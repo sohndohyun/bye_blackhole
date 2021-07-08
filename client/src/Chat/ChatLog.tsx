@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./styles/ChatLog.scss";
-import images from '../images/Images'
+import {findImg} from '../Images/Images'
 
 
 const ChatLog = ({ userName, socket }: any) => {
@@ -34,7 +34,7 @@ const ChatLog = ({ userName, socket }: any) => {
 		<div key={idx}>
 			{msg.msg &&
 				<div className="msgLeft">
-					<span><img src={images(msg.icon)}  width="30" height="30" className="msg-icon"/></span>
+					<span><img src={findImg(msg.icon)}  width="30" height="30" className="msg-icon"/></span>
 					<span>
 						{msg.userName && <div className="msg-userName">{msg.userName}</div>}
 						<div className="msg-left">{msg.msg}</div>

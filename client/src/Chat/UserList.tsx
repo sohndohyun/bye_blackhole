@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./styles/UserList.scss"
-import images from '../images/Images'
-import crown from '../images/crown.png'
+import {findImg} from '../Images/Images'
+import crown from '../Images/crown.png'
 import UserListModal from './UserListModal'
 import axios from "axios";
 
@@ -73,7 +73,7 @@ const UserList = ({ socket }: any) => {
 			<div className="userList-box">
 				<button className="userList-btn" onClick={() => myInfo.status === 'administrator' && 'jinkim' !== user.id && user.status === 'none' ? openUserListModal(user.id): null}>
 					<span className="iconBox">
-						<span><img src={images(user.icon)} width="30" height="30" className="icon"/></span>
+						<span><img src={findImg(user.icon)} width="30" height="30" className="icon"/></span>
 						<span>{user.status !== 'none' ?
 							<img src={crown} width="20" height="20" className={user.status === 'owner' ? 'crown owner' : 'crown administrator'}/>
 							: null
