@@ -21,10 +21,10 @@ export const findImg = (icon_name:string) => {
 }
 
 export const allImages = [
-	{value: 'gamer_keyboard.png', src: gamer_keyboard},
-	{value: 'gamer_woman.png', src: gamer_woman},
-	{value: 'gamer_boy.png', src: gamer_boy},
-	{value: 'gamer_girl.png', src: gamer_girl},
-	{value: 'man_icon.png', src: man_icon},
-	{value: 'woman_icon.png', src: woman_icon},
+	{value: 'gamer_keyboard', src: gamer_keyboard},
+	{value: 'gamer_woman', src: gamer_woman},
+	{value: 'gamer_boy', src: gamer_boy},
+	{value: 'gamer_girl', src: gamer_girl},
+	{value: 'man_icon', src: man_icon},
+	{value: 'woman_icon', src: woman_icon},
 ]

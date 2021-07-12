@@ -2,8 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppGateway } from './app.gateway';
 import { AppController } from './app.controller'
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RoomModule } from '../roomList/roomList.module';
-import { chat_room } from '../roomList/roomList.entity';
+import { LobbyModule } from '../lobby/lobby.module';
+import { AdminModule } from '../admin/admin.module';
+import { ft_user } from '../Entity/User.entity';
+import { chat_room } from '../Entity/ChatRoom.entity';
+import { game_room } from '../Entity/GameRoom.entity';
 
 @Module({
 	imports: [TypeOrmModule.forRoot({
@@ -13,10 +16,10 @@ import { chat_room } from '../roomList/roomList.entity';
 		username: 'postgres',
 		password: 'password',
 		database: 'transcendence',
-		entities: [chat_room],
+		entities: [ft_user, chat_room, game_room],
 		synchronize: true,
 	  }),
-	  RoomModule],
+	  LobbyModule, AdminModule],
 	controllers: [AppController],
 	providers: [AppGateway]
 })

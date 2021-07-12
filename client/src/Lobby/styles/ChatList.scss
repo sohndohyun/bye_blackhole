@@ -1,0 +1,49 @@
+.chatList{
+	margin:0.5rem;
+	border: none;
+	border-radius: 20px 20px 20px 20px;
+	background-color: rgb(41, 59, 92);
+	width: 250px;
+	height: 90px;
+	display: inline-flex;
+	&:active {
+		transform: translateY(10px);
+	}
+	color: white;
+
+	.chatList-left{
+		
+
+		.chatList-num{
+			border-radius:30%;
+			border: 5px solid white;
+			width:70px;
+			height:70px;
+			background-color: rgb(0, 119, 255);
+			margin-top: 8px;
+			vertical-align: middle;
+			line-height: 60px;
+			font-size: 35px;
+		}
+	}
+	
+	.lock{
+		margin-top: 27px;
+		margin-left: 5px;
+		text-align: left;
+	}
+	
+	.roomName{
+		text-align: left;
+		margin-top: 27px;
+		margin-left: 5px;
+		font-size: 20px;
+		font-weight: bold;
+		
+		display: inline-block;
+		width: 150px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}

@@ -2,7 +2,6 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import "./styles/RightList.scss"
 import {findImg} from '../Images/Images'
-import userIcon from '../Images/gamer_boy.png'
 import UserInfoModal from "./UserInfoModal";
 
 const RightList = () => {
@@ -13,7 +12,15 @@ const RightList = () => {
 
 	const [myChatList, setMyChatList] = useState<{id:string, num:number}[]>([{id:"chat_r1asdfasdfasdf", num:5}, {id:"chat_r2", num:1},{id:"chat_r1", num:5}]);
 
+	const [MyID, setMyID] = useState('')
+	const [MyIcon, setMyIcon] = useState('')
+
 	useEffect(() => {
+		const id = sessionStorage.getItem('nickname')
+		const icon = sessionStorage.getItem('icon')
+		if (id) setMyID(id)
+		if (icon) setMyIcon(icon)
+
 		async function get() {
 			//const res = await axios.get('')
 			//setFriendsList(res.data)
@@ -56,9 +63,9 @@ const RightList = () => {
 	return(
 	<span>
 	<div className="top">
-		jinkim
-		<button type="button" className="myIcon" onClick={() => openUserInfoModal('jinkim')}>
-			<img src={userIcon} width="30" height="30"></img>
+		<span className="MyID">{MyID}</span>
+		<button type="button" className="myIcon" onClick={() => openUserInfoModal(MyID)}>
+			<img src={findImg(MyIcon)} width="30" height="30"></img>
 		</button>
 	</div>
 	<div className="bottom">
@@ -86,15 +93,18 @@ const RightList = () => {
 		<div className="title"># my chats</div>
 		{myChatList?.map(chat=>
 			<div className="chat">
-			<button type="button" className="chat-btn" onClick={() => document.location.href = '/Chat/' + chat.id}>
-				<span className="chatNum">{chat.num}</span>
-				<span>&nbsp;{chat.id}</span>
-			</button>
+				<button type="button" className="chat-btn" onClick={() => {
+						document.location.href = '/Chat/';
+						sessionStorage.setItem('roomName', chat.id);
+					}}>
+					<span className="chatNum">{chat.num}</span>
+					<span>&nbsp;{chat.id}</span>
+				</button>
 				<button type="button" className="chatLeave">X</button>
 			</div>
 		)}
 
-		<UserInfoModal open={UserInfoModalState} close={closeUserInfoModal} myID='jinkim' targetID={ModalID} WinLoseNum={WinLoseNum} MatchHistory={MatchHistory} />
+		<UserInfoModal open={UserInfoModalState} close={closeUserInfoModal} myID={MyID} targetID={ModalID} WinLoseNum={WinLoseNum} MatchHistory={MatchHistory} />
 	</div>
 	</span>
 	)

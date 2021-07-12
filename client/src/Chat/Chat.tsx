@@ -7,27 +7,40 @@ import RightList from "../Lobby/RightList";
 import "./styles/Chat.scss"
 import setting from '../Images/setting.png'
 import ChatOwnerModal from "./ChatOwnerModal";
-
+import axios from "axios";
+import useSwr from 'swr';
 const socketIOClient = require('socket.io-client')
 
-interface chatObj{
-	roomName: any,
-	userName: any,
-	icon: any
-}
-
-const Chat = ({ roomName, userName, icon }: chatObj) => {
-	const myInfo = {
-		roomName: roomName ? roomName : sessionStorage.getItem("roomName"),
-		userName: userName ? userName : sessionStorage.getItem("userName"),
-		icon: icon ? icon : sessionStorage.getItem("icon"),
-	};
-
+const Chat = () => {
+	
 	const [currentSocket, setCurrentSocket] = useState(socketIOClient());
+	const [MyID, setMyID] = useState('')
+	const [MyIcon, setMyIcon] = useState('')
+	const [roomName, setRoomName] = useState('')
+
+	const fetcher = async (url:string) => {
+		const res = await axios.get(url)
+		return res.data;
+	}
+	const {data, error} = useSwr<{room_id:string, room_num:string, room_owner: string}>('/Chat/' + roomName, fetcher)
 
 	useEffect(() => {
 		setCurrentSocket(socketIOClient("http://localhost:8080"));
-	}, []);
+		
+		const id = sessionStorage.getItem('nickname')
+		const icon = sessionStorage.getItem('icon')
+		const room = sessionStorage.getItem('roomName')
+		if (id) setMyID(id)
+		if (icon) setMyIcon(icon)
+		if (room) setRoomName(room)
+		
+	});
+	
+	const myInfo = {
+		roomName: roomName,
+		userName: MyID,
+		icon: MyIcon,
+	};
 
 	if (currentSocket) {
 		currentSocket.on("connect", () => {
@@ -35,7 +48,7 @@ const Chat = ({ roomName, userName, icon }: chatObj) => {
 		});
 	}
 
-	const [RoomInfo, setRoomInfo] = useState<{id:string, num:number, owner_id:string, pwd:string}>({id:'room1', num:7, owner_id:'jinkim', pwd:'asdf'})
+	
 
 	//chat owner modal
 	const [ChatOwnerModalState, setChatOwnerModalState] = useState(false);
@@ -53,23 +66,23 @@ const Chat = ({ roomName, userName, icon }: chatObj) => {
 		<span className="App-Left">
 			<div id="chat-container">
 			<div className="chat-top">
-				<span className="RoomInfo-num">{RoomInfo.num}</span>
-				<span>{RoomInfo.id}</span>
-				{'jinkim' === RoomInfo.owner_id ? 
+				<span className="RoomInfo-num">{data?.room_num}</span>
+				<span>{data?.room_id}</span>
+				{MyID === data?.room_owner ? 
 					<button className="setting-btn" onClick={openChatOwnerModal}>
 						<img src={setting} width="30" height="30"></img>
 					</button>
 					: null
 				}
 			</div>
-			<ChatOwnerModal open={ChatOwnerModalState} close={closeChatOwnerModal} chatRoomID={RoomInfo.id}pwd={RoomInfo.pwd}></ChatOwnerModal>
+			<ChatOwnerModal open={ChatOwnerModalState} close={closeChatOwnerModal} chatRoomID={data?.room_id}></ChatOwnerModal>
 			<div className="chat-bottom">
 				<span className="left-chatLog">
 					<div className="chatLog-top">
-						<ChatLog userName={userName} socket={currentSocket}></ChatLog>
+						<ChatLog socket={currentSocket}/>
 					</div>
 					<div className="chatLog-bottom">
-						<ChatInput userName={userName} socket={currentSocket}></ChatInput>
+						<ChatInput socket={currentSocket}/>
 					</div>
 				</span>
 				<span className="right-chatUser">

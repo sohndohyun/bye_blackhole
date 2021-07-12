@@ -38,7 +38,7 @@ const UserInfoModal = ( props: Iprops ) => {
 					</div>
 					<div className="bottom">
 					{myID === targetID ? 
-						<a className="btn button" onClick={()=> document.location.href = '/Admin/' + targetID}><b>Admin</b></a> :
+						<a className="btn button" onClick={()=> document.location.href = '/Admin/'}><b>Admin</b></a> :
 						<div>
 						<span className="onoffbtn">
 							<input type="checkbox" id="switch1" name="switch1" className="input__on-off"/>

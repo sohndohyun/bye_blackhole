@@ -5,12 +5,16 @@ import {join} from "path";
 
 @Controller('/')
 export class AppController {
-	@Get('RoomList')
+	@Get('Admin')
 	public async RoomList(@Req() req: Request, @Res() res: Response) {
 		await res.sendFile(join(__dirname + "/../../../client/build/index.html"));
 	}
 	@Get('Chat')
 	public async Chat(@Req() req: Request, @Res() res: Response) {
+		await res.sendFile(join(__dirname + "/../../../client/build/index.html"));
+	}
+	@Get('Lobby')
+	public async Lobby(@Req() req: Request, @Res() res: Response) {
 		await res.sendFile(join(__dirname + "/../../../client/build/index.html"));
 	}
 }

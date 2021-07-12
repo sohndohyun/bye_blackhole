@@ -3,14 +3,14 @@ import React, {useState, useCallback} from 'react';
 import "../Lobby/styles/Modal.scss";
 
 const ChatOwnerModal = ( props: any ) => {
-	const { open, close, chatRoomID, pwd} = props;
+	const { open, close, chatRoomID} = props;
 
 	async function changePWD(){
 		//await axios.post('chat/' + chatRoomID + '/admin/')
 		close();
 	}
 
-	const [RoomPWD, setRoomPWD] = useState(pwd);
+	const [RoomPWD, setRoomPWD] = useState('');
 	const handelRoomPWD = useCallback((e:any) => {
 		setRoomPWD(e.target.value)
 	}, []);

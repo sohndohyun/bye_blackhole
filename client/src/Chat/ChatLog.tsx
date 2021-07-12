@@ -1,27 +1,39 @@
 import React, { useEffect, useState } from "react";
 import "./styles/ChatLog.scss";
 import {findImg} from '../Images/Images'
+import axios from "axios";
 
-
-const ChatLog = ({ userName, socket }: any) => {
+const ChatLog = ({socket}: any) => {
 	const [msgList, setMsgList] = useState<any[]>([{userName:'jinkim', icon:'gamer_boy', msg:'hello', timeStamp:'2021-01-01 00:00'}, {myMsg:'mymsgworlddddddddddddddddddddddddddddddddddddddasdfasdfasdfasdf', timeStamp:'2021-01-01 00:00'}, {sysMsg:'sysMsg님이 입장했습니다'},{userName:'2222', icon:'gamer_girl',msg:'worlddddddddddddddddddddddddddddddddddddddasdfasdfasdfasdf', timeStamp:'2021-01-01 00:00'}, {myMsg:'mymsg', timeStamp:'2021-01-01 00:00'},{myMsg:'mymsgworlddddddddddddddddddddddddddddddddddddddasdfasdfasdfasdf', timeStamp:'2021-01-01 00:00'}, {userName:'2222', icon:'gamer_girl',msg:'worlddddddddddddddddddddddddddddddddddddddasdfasdfasdfasdf', timeStamp:'2021-01-01 00:00'}, {userName:'2222', icon:'gamer_girl',msg:'worlddddddddddddddddddddddddddddddddddddddasdfasdfasdfasdf', timeStamp:'2021-01-01 00:00'}, {userName:'2222', icon:'gamer_girl',msg:'worlddddddddddddddddddddddddddddddddddddddasdfasdfasdfasdf', timeStamp:'2021-01-01 00:00'}, {userName:'2222', icon:'gamer_girl',msg:'worlddddddddddddddddddddddddddddddddddddddasdfasdfasdfasdf', timeStamp:'2021-01-01 00:00'}, {userName:'2222', icon:'gamer_girl',msg:'worlddddddddddddddddddddddddddddddddddddddasdfasdfasdfasdf', timeStamp:'2021-01-01 00:00'}, {userName:'2222', icon:'gamer_girl',msg:'worlddddddddddddddddddddddddddddddddddddddasdfasdfasdfasdf', timeStamp:'2021-01-01 00:00'}, {userName:'2222', icon:'gamer_girl',msg:'worlddddddddddddddddddddddddddddddddddddddasdfasdfasdfasdf', timeStamp:'2021-01-01 00:00'}, {userName:'2222', icon:'gamer_girl',msg:'worlddddddddddddddddddddddddddddddddddddddasdfasdfasdfasdf', timeStamp:'2021-01-01 00:00'}]);
 
+	const [MyID, setMyID] = useState('')
+	const [roomName, setRoomName] = useState('')
+	
 	useEffect(() => {
-		// messsgeItem : {msg: String, name: String, timeStamp: String}
-		socket.on("onReceive", (messageItem: {userName:string, msg:string, timeStamp:string}) => {
-			userName = userName ? userName : sessionStorage.getItem("userName")
-			if (userName === messageItem.userName)
+		const id = sessionStorage.getItem('nickname')
+		const room = sessionStorage.getItem('roomName')
+		if (id) setMyID(id)
+		if (room) setRoomName(room)
+
+
+		socket.on("onReceive", async(messageItem: {userName:string, msg:string, timeStamp:string}) => {
+			if (MyID === messageItem.userName)
 				setMsgList((msgList) => [...msgList, {myMsg: messageItem.msg, timeStamp: messageItem.timeStamp} as never]);
 			else
 				setMsgList((msgList) => [...msgList, messageItem]);
-			console.log(messageItem);
-			console.log(userName)
+
+			await axios.post('/chat/' + roomName, {id:messageItem.userName, timeStamp:messageItem.timeStamp, content:messageItem.msg})
+			
 		});
-		socket.on("onConnect", (systemMessage: string) => {
+		socket.on("onConnect", async (systemMessage: string) => {
 			setMsgList((msgList) => [...msgList, { sysMsg: systemMessage } as never]);
+			
+			await axios.post('/chat/' + roomName, {sysMsg: systemMessage})
 		});
-		socket.on("onDisconnect", (systemMessage: any) => {
+		socket.on("onDisconnect", async(systemMessage: any) => {
 			setMsgList((msgList) => [...msgList, { sysMsg: systemMessage } as never]);
+
+			await axios.post('/chat/' + roomName, {sysMsg: systemMessage})
 		});
 		return () => {
 			socket.disconnect();
