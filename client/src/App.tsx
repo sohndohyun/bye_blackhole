@@ -2,7 +2,7 @@
 import React, {useState} from "react";
 import './App.scss';
 import Chat from "./Chat/Chat";
-import Admin from "./Home/Admin";
+import Admin from "./Admin/Admin";
 //import RoomList from "./Chat/RoomList"
 import Lobby from "./Lobby/Lobby"
 import Login from './Login/Login'
