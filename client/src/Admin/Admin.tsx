@@ -35,9 +35,6 @@ const Admin = () => {
 	};
 
 	async function saveAdmin(isSignUp: boolean){
-		if (Nickname) sessionStorage.setItem("nickname", Nickname);
-		if (Icon) sessionStorage.setItem("icon", Icon);
-
 		const body = {
 			//intra_id 수정하기
 			intra_id: IntraID,
@@ -48,6 +45,8 @@ const Admin = () => {
 		}
 		axios.put('/admin/' + IntraID, body)
 		.then((Response) => {
+			if (Nickname) sessionStorage.setItem("nickname", Nickname);
+			if (Icon) sessionStorage.setItem("icon", Icon);
 			document.location.href="/lobby"
 		})
 		.catch((Error) => {
@@ -65,7 +64,7 @@ const Admin = () => {
 			</div>
 		}
 		<input onChange={handleNicknameChange} placeholder="Nickname" maxLength={10}/>
-		{ IsUnique ? null:<div className="error">이미 사용중인 닉네임입니다.</div>}
+		{ IsUnique ? null:<div className="nickname-error">이미 사용중인 닉네임입니다.</div>}
 
 		<div className="icon-box">
 		{allImages.map(({value, src}) =>

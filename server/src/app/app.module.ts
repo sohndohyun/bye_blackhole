@@ -7,6 +7,8 @@ import { AdminModule } from '../admin/admin.module';
 import { ft_user } from '../Entity/User.entity';
 import { chat_room } from '../Entity/ChatRoom.entity';
 import { game_room } from '../Entity/GameRoom.entity';
+import { match_history } from '../Entity/MatchHistory.entity';
+import { ProfileModule } from 'src/profile/profile.module';
 
 @Module({
 	imports: [TypeOrmModule.forRoot({
@@ -16,10 +18,10 @@ import { game_room } from '../Entity/GameRoom.entity';
 		username: 'postgres',
 		password: 'password',
 		database: 'transcendence',
-		entities: [ft_user, chat_room, game_room],
+		entities: [ft_user, chat_room, game_room, match_history],
 		synchronize: true,
 	  }),
-	  LobbyModule, AdminModule],
+	  LobbyModule, AdminModule, ProfileModule],
 	controllers: [AppController],
 	providers: [AppGateway]
 })

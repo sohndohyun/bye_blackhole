@@ -2,7 +2,7 @@ import axios from "axios";
 import {useEffect, useState, useCallback} from "react";
 import "./styles/Lobby.scss"
 import plusbtn from "../Images/plusbutton.png"
-import RightList from './RightList'
+import SideBar from '../SideBar/SideBar'
 import GameListModal from './GameListModal'
 import ChatListModal from './ChatListModal'
 import ChatList from './ChatList'
@@ -59,7 +59,7 @@ const Lobby = () => {
 			</div>
 		</span>
 		<span className="App-Right">
-			<RightList />
+			<SideBar />
 		</span>
 	</div>
 	)

@@ -3,7 +3,7 @@ import ChatInput from "./ChatInput";
 import ChatLog from "./ChatLog";
 import Loading from "./Loading";
 import UserList from "./UserList";
-import RightList from "../Lobby/RightList";
+import SideBar from "../SideBar/SideBar";
 import "./styles/Chat.scss"
 import setting from '../Images/setting.png'
 import ChatOwnerModal from "./ChatOwnerModal";
@@ -92,7 +92,7 @@ const Chat = () => {
 			</div>
 		</span>
 		<span className="App-Right">
-				<RightList />
+				<SideBar />
 		</span>
 		</>
 		) : (

@@ -1,5 +1,4 @@
 import { Controller, Get, Param, Delete, Post, Body, Patch, Put, HttpException, HttpStatus} from '@nestjs/common';
-import {chat_room} from '../Entity/ChatRoom.entity'
 import {LobbyService} from './lobby.service'
 
 @Controller('lobby')
@@ -30,5 +29,28 @@ export class LobbyController {
 		if (!rtn)
 			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST)
 		return 'matching successfully'
+	}
+
+
+	@Get('userList/:id')
+	async getUserList(@Param('id') id:string): Promise<{id:string, icon:string, state:string, isFriend:boolean}[]>{
+		return await this.lobbyService.getUserList(id);
+	}
+
+	@Get('myChatList/:id')
+	async getMyChatList(@Param('id') id:string): Promise<{title:string, num: number}[]>{
+		return await this.lobbyService.getMyChatList(id);
+	}
+
+
+	@Post('enter/:chatRoomID')
+	async enterChatRoom(@Param('chatRoomID') chatRoomID:string, @Body() {id, password})
+	{
+		console.log('pwd!!!!!')
+		const rtn = await this.lobbyService.enterChatRoom(chatRoomID, id, password)
+		if (rtn)
+			return 'Enter successfully'
+		else
+			throw new HttpException('unauthorization', HttpStatus.UNAUTHORIZED)
 	}
 }

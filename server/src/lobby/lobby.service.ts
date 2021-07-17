@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm/index';
 import {chat_room} from '../Entity/ChatRoom.entity'
 import {game_room} from '../Entity/GameRoom.entity'
+import {ft_user} from '../Entity/User.entity'
 
 @Injectable()
 export class LobbyService {
 	constructor(
 		@InjectRepository(chat_room) private readonly ChatRoomRepository: Repository<chat_room>,
-		@InjectRepository(game_room) private readonly GameRoomRepository: Repository<game_room>
+		@InjectRepository(game_room) private readonly GameRoomRepository: Repository<game_room>,
+		@InjectRepository(ft_user) private readonly UserRepository: Repository<ft_user>
 	){}
 
 	async getChatList(): Promise<{title:string, num:number, security:string}[]> {
@@ -34,8 +36,12 @@ export class LobbyService {
 	}
 
 	async createChatRoom(title, password, security, owner_id): Promise<chat_room> {
-		var rtn = await this.ChatRoomRepository.findOne(title)
+		var rtn = await this.ChatRoomRepository.findOne({title:title})
 		if (!rtn){
+			const info = await this.UserRepository.findOne({nickname:owner_id})
+			info.chat_room_list.push(title)
+			await this.UserRepository.save(info)
+
 			return await this.ChatRoomRepository.save({
 				title: title, 
 				password: password,
@@ -57,5 +63,66 @@ export class LobbyService {
 			speed: speed,
 			ladder: ladder
 		})
+	}
+
+
+	async getUserList(id:string): Promise<{id:string, icon:string, state:string, isFriend:boolean}[]>{
+		const info = await this.UserRepository.findOne({nickname:id})
+		const isfrnd = (targetID) => {
+			for(let i = 0; i < info.friend_list.length; i++)
+			{
+				if (info.friend_list[i] === targetID)
+					return true
+			}
+			return false
+		}
+
+		const data = await this.UserRepository.find();
+		var user:{id:string, icon:string, state:string, isFriend:boolean}[] = []
+		data.map(d => {
+			var isF = isfrnd(d.nickname)
+			if (d.nickname !== id)
+				user.push({id:d.nickname, icon:d.icon, state:d.state, isFriend:isF})
+		})
+		return user
+	}
+
+	async getMyChatList(id:string): Promise<{title:string, num: number}[]>{
+		const info = await this.UserRepository.findOne({nickname:id})
+		const isMyChat = (chatTitle) => {
+			for(let i = 0; i < info.chat_room_list.length; i++)
+			{
+				if (info.chat_room_list[i] === chatTitle)
+					return true
+			}
+			return false;
+		}
+
+		const data = await this.ChatRoomRepository.find()
+		var chat:{title:string, num: number}[] = []
+		data.map(d => {
+			var is_my_chat = isMyChat(d.title)
+			if (is_my_chat)
+				chat.push({title:d.title, num:d.chat_member.length})
+		})
+		return chat
+	}
+
+	async enterChatRoom(chatRoomID:string, id:string, password:string){
+		const chat_info = await this.ChatRoomRepository.findOne({title:chatRoomID})
+		console.log(chat_info)
+		if (chat_info.security === 'protected' && chat_info.password === password)
+		{
+			const user_info = await this.UserRepository.findOne({nickname:id})
+			const found = user_info.chat_room_list.find(title => title === chatRoomID)
+			if (found !== chatRoomID)
+			{
+				user_info.chat_room_list.push(chatRoomID)
+				await this.UserRepository.save(user_info)
+			}
+			return true
+		}
+		else
+			return false
 	}
 }

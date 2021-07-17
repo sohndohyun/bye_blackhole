@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from 'react';
-import "../Lobby/styles/UserInfoModal.scss";
+import "../SideBar/styles/UserInfoModal.scss";
 
 const UserListModal = ( props: any ) => {
 	const { open, close, targetID} = props;

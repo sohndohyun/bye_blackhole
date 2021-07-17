@@ -16,7 +16,6 @@ const ChatListModal = ( props: any ) => {
 	}, []);
 	const handelRoomPWD = useCallback((e:any) => {
 		setRoomPWD(e.target.value)
-		console.log(RoomPWD)
 	}, []);
 
 	const ProtectedRoomCheckHandler = useCallback( (e:any) => {
