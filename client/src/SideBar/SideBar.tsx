@@ -18,11 +18,14 @@ const SideBar = () => {
 	})
 	
 	const fetcher = async (url:string) => {
-		const res = await axios.get(url)
-		return res.data;
+		if (MyID)
+		{
+			const res = await axios.get(url)
+			return res.data;
+		}
 	}
 
-	const {data, error} = useSwr<{id:string, icon:string, state:string, isFriend:boolean}[]>('/Lobby/userList/' + MyID, fetcher)
+	const {data, error, mutate} = useSwr<{id:string, icon:string, state:string, isFriend:boolean}[]>('/Lobby/userList?id=' + MyID, fetcher)
 
 
 	//UserInfoModal
@@ -34,6 +37,7 @@ const SideBar = () => {
 	}
 	const closeUserInfoModal = () => {
 		setUserInfoModalState(false);
+		mutate()
 	}
 
 	return(

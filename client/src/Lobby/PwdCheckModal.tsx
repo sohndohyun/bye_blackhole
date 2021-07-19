@@ -3,16 +3,10 @@ import axios from "axios";
 import "./styles/Modal.scss";
 
 const PwdCheckModal = ( props: any ) => {
-	const { open, close, chatRoomID} = props;
+	const { open, close, chatRoomID, MyID} = props;
 
-	const [MyID, setMyID] = useState('')
 	const [PWD, setPWD] = useState("");
 	const [WorngPWD, setWrongPWD] = useState(false)
-
-	useEffect(() => {
-		const id = sessionStorage.getItem('nickname')
-		if (id) setMyID(id)
-	})
 
 	const handelPWD = useCallback((e:any) => {
 		setPWD(e.target.value)

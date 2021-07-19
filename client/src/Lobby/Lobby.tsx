@@ -55,7 +55,7 @@ const Lobby = () => {
 				</div>
 				<ChatListModal open={ChatListModalState} close={closeChatListModal} MyID={MyID}/>
 				<hr/>
-				<ChatList/>
+				<ChatList MyID={MyID}/>
 			</div>
 		</span>
 		<span className="App-Right">

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Delete, Post, Body, Patch, Put, HttpException, HttpStatus} from '@nestjs/common';
+import { Controller, Get, Param, Delete, Post, Body, Patch, Put, HttpException, HttpStatus, Query} from '@nestjs/common';
 import {LobbyService} from './lobby.service'
 
 @Controller('lobby')
@@ -32,13 +32,13 @@ export class LobbyController {
 	}
 
 
-	@Get('userList/:id')
-	async getUserList(@Param('id') id:string): Promise<{id:string, icon:string, state:string, isFriend:boolean}[]>{
+	@Get('userList')
+	async getUserList(@Query('id') id:string): Promise<{id:string, icon:string, state:string, isFriend:boolean}[]>{
 		return await this.lobbyService.getUserList(id);
 	}
 
-	@Get('myChatList/:id')
-	async getMyChatList(@Param('id') id:string): Promise<{title:string, num: number}[]>{
+	@Get('myChatList')
+	async getMyChatList(@Query('id') id:string): Promise<{title:string, num: number}[]>{
 		return await this.lobbyService.getMyChatList(id);
 	}
 
@@ -46,11 +46,15 @@ export class LobbyController {
 	@Post('enter/:chatRoomID')
 	async enterChatRoom(@Param('chatRoomID') chatRoomID:string, @Body() {id, password})
 	{
-		console.log('pwd!!!!!')
 		const rtn = await this.lobbyService.enterChatRoom(chatRoomID, id, password)
 		if (rtn)
 			return 'Enter successfully'
 		else
 			throw new HttpException('unauthorization', HttpStatus.UNAUTHORIZED)
+	}
+
+	@Delete('')
+	async deleteMyChat(@Query('title') title:string, @Query('id') id:string){
+		return await this.lobbyService.deleteMyChat(title, id)
 	}
 }

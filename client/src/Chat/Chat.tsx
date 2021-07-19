@@ -22,7 +22,7 @@ const Chat = () => {
 		const res = await axios.get(url)
 		return res.data;
 	}
-	const {data, error} = useSwr<{room_id:string, room_num:string, room_owner: string}>('/Chat/' + roomName, fetcher)
+	const {data, error} = useSwr<{num:string, myPermission: string, security: string}>('/Chat?title=' + roomName + '&id=' + MyID, fetcher)
 
 	useEffect(() => {
 		setCurrentSocket(socketIOClient("http://localhost:8080"));
@@ -33,7 +33,6 @@ const Chat = () => {
 		if (id) setMyID(id)
 		if (icon) setMyIcon(icon)
 		if (room) setRoomName(room)
-		
 	});
 	
 	const myInfo = {
@@ -66,16 +65,16 @@ const Chat = () => {
 		<span className="App-Left">
 			<div id="chat-container">
 			<div className="chat-top">
-				<span className="RoomInfo-num">{data?.room_num}</span>
-				<span>{data?.room_id}</span>
-				{MyID === data?.room_owner ? 
+				<span className="RoomInfo-num">{data?.num}</span>
+				<span>{roomName}</span>
+				{data?.myPermission === 'owner' ? 
 					<button className="setting-btn" onClick={openChatOwnerModal}>
 						<img src={setting} width="30" height="30"></img>
 					</button>
 					: null
 				}
 			</div>
-			<ChatOwnerModal open={ChatOwnerModalState} close={closeChatOwnerModal} chatRoomID={data?.room_id}></ChatOwnerModal>
+			<ChatOwnerModal open={ChatOwnerModalState} close={closeChatOwnerModal} chatRoomID={roomName}></ChatOwnerModal>
 			<div className="chat-bottom">
 				<span className="left-chatLog">
 					<div className="chatLog-top">

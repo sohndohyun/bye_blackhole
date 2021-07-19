@@ -36,4 +36,24 @@ export class ProfileService {
 			return ({history:history, win:win, lose:lose, friend:isF, block:isB})
 		}
 	}
+
+	async IsFriend(myID:string, otherID:string, isFriend:boolean){
+		var my_info = await this.UserRepository.findOne({nickname:myID})
+		const idx = my_info.friend_list.indexOf(otherID)
+		if(isFriend && idx <= -1)
+			my_info.friend_list.push(otherID)
+		else if (!isFriend && idx > -1)
+			my_info.friend_list.splice(idx, 1)
+		return await this.UserRepository.save(my_info)
+	}
+
+	async IsBlock(myID:string, otherID:string, isBlock:boolean){
+		var my_info = await this.UserRepository.findOne({nickname:myID})
+		const idx = my_info.block_list.indexOf(otherID)
+		if(isBlock && idx <= -1)
+			my_info.block_list.push(otherID)
+		else if (!isBlock && idx > -1)
+			my_info.block_list.splice(idx, 1)
+		return await this.UserRepository.save(my_info)
+	}
 }

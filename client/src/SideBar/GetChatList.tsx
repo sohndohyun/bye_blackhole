@@ -6,11 +6,20 @@ const GetChatList = (props: any) => {
 	const {myID} = props
 
 	const fetcher = async (url:string) => {
-		const res = await axios.get(url)
-		return res.data;
+		if (myID)
+		{
+			const res = await axios.get(url)
+			return res.data;
+		}
 	}
 
-	const {data, error} = useSwr<{title:string, num: number}[]>('/Lobby/myChatList/' + myID, fetcher)
+	const {data, error, mutate} = useSwr<{title:string, num: number}[]>('/Lobby/myChatList?id=' + myID, fetcher)
+
+	const LeaveChat = async(title:string) => {
+		await axios.delete('Lobby?title=' + title + '&id=' + myID)
+		mutate()
+	}
+
 	return (
 	<>
 		<div className="title"># my chats</div>
@@ -23,7 +32,7 @@ const GetChatList = (props: any) => {
 					<span className="chatNum">{chat.num}</span>
 					<span>&nbsp;{chat.title}</span>
 				</button>
-				<button type="button" className="chatLeave">X</button>
+				<button type="button" className="chatLeave" onClick={() => LeaveChat(chat.title)}>X</button>
 			</div>
 		)}
 	</>

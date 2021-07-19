@@ -6,7 +6,9 @@ import unlock from '../Images/unlock.png'
 import "./styles/ChatList.scss"
 import PwdCheckModal from "./PwdCheckModal";
 
-const ChatList = () => {
+const ChatList = (props: any) => {
+	const {MyID} = props
+
 	const fetcher = async (url:string) => {
 		const res = await axios.get(url)
 		return res.data;
@@ -25,6 +27,12 @@ const ChatList = () => {
 		setPwdCheckModalState(false);
 	}
 
+	async function enterPublicRoom(title:string) {
+		await axios.post('/Lobby/enter/' + title, {id:MyID, password:''})
+		document.location.href = '/chat'
+		sessionStorage.setItem('roomName', title)
+	}
+
 	return (
 	<>
 	{data?.map(chatRoom=>
@@ -32,8 +40,7 @@ const ChatList = () => {
 			if (chatRoom.security === 'protected')
 				openPwdCheckModal(chatRoom.title)
 			else
-				document.location.href = '/chat'
-				sessionStorage.setItem('roomName', chatRoom.title)
+				enterPublicRoom(chatRoom.title)
 		}}>
 			<span className="chatList-left">
 				<div className="chatList-num">{chatRoom.num}</div>
@@ -47,7 +54,7 @@ const ChatList = () => {
 
 		</button>
 	)}
-	<PwdCheckModal open={PwdCheckModalState} close={closePwdCheckModal} chatRoomID={ClickedRoomTitle}></PwdCheckModal>
+	<PwdCheckModal open={PwdCheckModalState} close={closePwdCheckModal} chatRoomID={ClickedRoomTitle} MyID={MyID} />
 	</>
 	)
 }

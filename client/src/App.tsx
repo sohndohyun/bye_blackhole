@@ -3,7 +3,6 @@ import React, {useState} from "react";
 import './App.scss';
 import Chat from "./Chat/Chat";
 import Admin from "./Admin/Admin";
-//import RoomList from "./Chat/RoomList"
 import Lobby from "./Lobby/Lobby"
 import Login from './Login/Login'
 import "./Chat/styles/global.css";
@@ -28,18 +27,6 @@ function App() {
 			<Route path="/Chat" exact render={() =>
 				<Chat/>
 			}/>
-			{/*
-			<Route path="/RoomList" exact render={() => <RoomList
-				Nickname={Nickname}
-				roomName={roomName}
-				setRoomName={setRoomName}
-			  />}>
-			
-			<Route
-			  path="/Chat"
-			  exact
-			  render={() => <Chat Nickname={Nickname} roomName={roomName} icon={icon}/>}
-			></Route>*/}
 			<Route
 				render={({location}) => (
 					  <div>
