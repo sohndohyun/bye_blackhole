@@ -18,7 +18,7 @@ const UserInfoModal = ( props: any) => {
 		}
 	}
 
-	const {data, error} = useSwr<{history:{win:boolean, p2:string}[] ,friend:boolean, block:boolean, win:number, lose:number} | {history:{win:boolean, p2:string}[], win:number, lose:number}>('profile?myID=' + myID + '&otherID=' + targetID, fetcher)
+	const {data, error} = useSwr<{history:{win:boolean, id:string}[] ,friend:boolean, block:boolean, win:number, lose:number} | {history:{win:boolean, id:string}[], win:number, lose:number}>('profile?myID=' + myID + '&otherID=' + targetID, fetcher)
 
 	const FriendHandler = useCallback( async() => {
 		await axios.put('profile/friend', {myID:myID, otherID:targetID, isFriend:!IsFriend})
@@ -26,7 +26,7 @@ const UserInfoModal = ( props: any) => {
 	},[IsFriend]);
 	
 	const BlockHandler = useCallback( async() => {
-		await axios.put('profile/block', {myID:myID, otherID:targetID, isFriend:!IsBlock})
+		await axios.put('profile/block', {myID:myID, otherID:targetID, isBlock:!IsBlock})
 		setIsBlock(!IsBlock);
 	},[IsBlock]);
 
@@ -36,7 +36,7 @@ const UserInfoModal = ( props: any) => {
 			var chatRoomName = 'DM_' + myID + '_' + targetID
 		else
 			var chatRoomName = 'DM_' + targetID + '_' + myID
-		await axios.put('/Lobby/chatCreate/' + chatRoomName, {password:'', owner_id:myID, security:'private'})
+		await axios.post('/Lobby/chatCreate', {title: chatRoomName, password:'', owner_id:myID, security:'private'})
 		document.location.href = '/chat'
 		sessionStorage.setItem('roomName', chatRoomName)
 	}
@@ -58,7 +58,7 @@ const UserInfoModal = ( props: any) => {
 						<div className="main">
 							{data?.history?.map(match=>
 							<div className={match.win ? 'matchHistory win-backColor' : 'matchHistory lose-backColor'}>
-								<span className='match-left'>{match.p2}</span>
+								<span className='match-left'>{match.id}</span>
 								<span className={match.win ? 'match-right win-color' : 'match-right lose-color'}>{match.win ? 'Win' : 'Lose'}</span>
 							</div>
 							)}

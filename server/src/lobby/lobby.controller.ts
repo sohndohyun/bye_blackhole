@@ -15,8 +15,8 @@ export class LobbyController {
 		return await this.lobbyService.getGameList();
 	}
 
-	@Put('/chatCreate/:chatRoomTitle')
-	async createChatRoom(@Param('chatRoomTitle') title:string, @Body() {password, security, owner_id}): Promise<string> {
+	@Post('chatCreate')
+	async createChatRoom(@Body() {title, password, security, owner_id}): Promise<string> {
 		var rtn = await this.lobbyService.createChatRoom(title, password, security, owner_id)
 		if (!rtn)
 			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST)
@@ -24,8 +24,8 @@ export class LobbyController {
 	}
 
 	@Post('/gameCreate')
-	async createGameRoom(@Body() {nickname, speed, ladder}): Promise<string> {
-		var rtn = await this.lobbyService.createGameRoom(nickname, speed, ladder)
+	async createGameRoom(@Body() {id, speed, ladder}): Promise<string> {
+		var rtn = await this.lobbyService.createGameRoom(id, speed, ladder)
 		if (!rtn)
 			throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST)
 		return 'matching successfully'
@@ -43,10 +43,10 @@ export class LobbyController {
 	}
 
 
-	@Post('enter/:chatRoomID')
-	async enterChatRoom(@Param('chatRoomID') chatRoomID:string, @Body() {id, password})
+	@Post('enter')
+	async enterChatRoom(@Body() {title, id, password})
 	{
-		const rtn = await this.lobbyService.enterChatRoom(chatRoomID, id, password)
+		const rtn = await this.lobbyService.enterChatRoom(title, id, password)
 		if (rtn)
 			return 'Enter successfully'
 		else

@@ -6,9 +6,15 @@ import {AdminService} from './admin.service'
 export class AdminController {
 	constructor(private readonly adminService: AdminService) {}
 
-	@Put(':intra_id')
-	async signUp(@Param('intra_id') intra_id: string, @Body() {nickname, icon, state}): Promise<string>{
-		await this.adminService.saveUser(intra_id, nickname, icon, state)
+	@Post('')
+	async signUp(@Body() {intra_id, icon, nickname}): Promise<string>{
+		await this.adminService.saveUser(intra_id, nickname, icon)
 		return 'signUp successfully'
+	}
+
+	@Patch('')
+	async signIn(@Body() {intra_id, icon, nickname}): Promise<string>{
+		await this.adminService.saveUser(intra_id, nickname, icon)
+		return 'signIn successfully'
 	}
 }

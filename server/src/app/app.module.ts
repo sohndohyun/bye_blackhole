@@ -9,6 +9,7 @@ import { chat_room } from '../Entity/ChatRoom.entity';
 import { game_room } from '../Entity/GameRoom.entity';
 import { match_history } from '../Entity/MatchHistory.entity';
 import { ProfileModule } from 'src/profile/profile.module';
+import { ChatModule } from 'src/chat/chat.module';
 
 @Module({
 	imports: [TypeOrmModule.forRoot({
@@ -21,7 +22,7 @@ import { ProfileModule } from 'src/profile/profile.module';
 		entities: [ft_user, chat_room, game_room, match_history],
 		synchronize: true,
 	  }),
-	  LobbyModule, AdminModule, ProfileModule],
+	  LobbyModule, AdminModule, ProfileModule, ChatModule],
 	controllers: [AppController],
 	providers: [AppGateway]
 })

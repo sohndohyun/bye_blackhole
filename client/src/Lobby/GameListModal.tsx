@@ -15,7 +15,7 @@ const GameListModal = ( props: any ) => {
 	}, [])
 
 	function makeNewGame(){
-		axios.put('/Lobby/GameCreate', {nickname:MyID, speed:IsSpeed, ladder:false})
+		axios.post('/Lobby/GameCreate', {id:MyID, speed:IsSpeed, ladder:false})
 		.then((res) => {
 			document.location.href = '/Game'
 		})

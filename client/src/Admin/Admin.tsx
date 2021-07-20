@@ -36,22 +36,34 @@ const Admin = () => {
 
 	async function saveAdmin(isSignUp: boolean){
 		const body = {
-			//intra_id 수정하기
 			intra_id: IntraID,
-			nickname: Nickname ? Nickname : OldNickname,
-			state: 'on',
 			icon: Icon ? Icon : OldIcon,
-			//...
+			nickname: Nickname ? Nickname : OldNickname,
 		}
-		axios.put('/admin/' + IntraID, body)
-		.then((Response) => {
-			if (Nickname) sessionStorage.setItem("nickname", Nickname);
-			if (Icon) sessionStorage.setItem("icon", Icon);
-			document.location.href="/lobby"
-		})
-		.catch((Error) => {
-			setIsUnique(false)
-		})
+		if (!SignUp)
+		{
+			axios.patch('/admin', body)
+			.then((Response) => {
+				if (Nickname) sessionStorage.setItem("nickname", Nickname);
+				if (Icon) sessionStorage.setItem("icon", Icon);
+				document.location.href="/lobby"
+			})
+			.catch((Error) => {
+				setIsUnique(false)
+			})
+		}
+		else
+		{
+			axios.post('/admin', body)
+			.then((Response) => {
+				if (Nickname) sessionStorage.setItem("nickname", Nickname);
+				if (Icon) sessionStorage.setItem("icon", Icon);
+				document.location.href="/lobby"
+			})
+			.catch((Error) => {
+				setIsUnique(false)
+			})
+		}
 	}
 
 	return (

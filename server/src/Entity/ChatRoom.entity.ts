@@ -10,11 +10,14 @@ export class chat_room {
 	@Column()
 	password: string;
 
-	@Column("simple-array")
-	messages: {nickname:string, msg:string, data:Date}[];
+	@Column({type:'jsonb', array: false, default: [], nullable:true})
+	messages: Array<{nickname:string, msg:string, date:Date}>;
 
-	@Column("simple-array")
-	chat_member: {nickname:string, permission:string}[];
+	@Column({type:'jsonb', array: false, default: [], nullable:true})
+	chat_member: Array<{nickname:string, permission:string}>;
+
+	@Column({type:'jsonb', array: false, default: [], nullable:true})
+	chat_banned: Array<{nickname:string, date:Date}>;
 
 	@Column()
 	security: string;

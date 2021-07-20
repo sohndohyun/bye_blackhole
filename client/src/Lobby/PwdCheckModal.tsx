@@ -13,7 +13,7 @@ const PwdCheckModal = ( props: any ) => {
 	}, []);
 
 	async function confirmPWD(){
-		axios.post('/Lobby/enter/' + chatRoomID, {id:MyID, password:PWD})
+		axios.post('/Lobby/enter', {title:chatRoomID, id:MyID, password:PWD})
 		.then((res) => {
 			document.location.href = '/Chat';
 			sessionStorage.setItem('roomName', chatRoomID)

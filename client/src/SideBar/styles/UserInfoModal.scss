@@ -97,6 +97,11 @@
 				margin-left: 5px;
 				width: 63px;
 			}
+
+			.kick-button{
+				margin-left: 5px;
+				width: 55px;
+			}
 		}
 	}
 }
@@ -219,4 +224,10 @@
 	border-radius: 5px;
 	border: 2px solid rgba(151, 205, 241, 0.767);
 	font-size: 15px;
+}
+
+.targetID{
+	margin-top: 10px;
+	font-size: 20px;
+	font-weight: 600;
 }

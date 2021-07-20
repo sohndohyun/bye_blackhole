@@ -51,6 +51,7 @@ const SideBar = () => {
 		<div className="bottom">
 			<div className="title"># friends</div>
 			{data?.map(user=> user.isFriend ?
+				<div>
 				<button type="button" className="user-btn" onClick={() => openUserInfoModal(user.id)}>
 					<img src={findImg(user.icon)}  width="20" height="20" className="user-icon"/>
 					{user.state === "on" ? <span className="userState online">·</span> : null}
@@ -58,10 +59,12 @@ const SideBar = () => {
 					{user.state === "gaming" ? <span className="userState gaming">·</span> : null}
 					{user.id}
 				</button>
+				</div>
 				: null
 			)}
 			<div className="title"># others</div>
 			{data?.map(user => user.isFriend ? null :
+				<div>
 				<button type="button" className="user-btn" onClick={() => openUserInfoModal(user.id)}>
 					<img src={findImg(user.icon)}  width="20" height="20" className="user-icon"/>
 					{user.state === "on" ? <span className="userState online">·</span> : null}
@@ -69,6 +72,7 @@ const SideBar = () => {
 					{user.state === "gaming" ? <span className="userState gaming">·</span> : null}
 					{user.id}
 				</button>
+				</div>
 			)}
 			
 			<GetChatList myID={MyID}/>

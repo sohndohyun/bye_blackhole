@@ -12,7 +12,7 @@ export class ProfileService {
 	){}
 
 	async getProfile(myID, otherID){
-		const history = [{win:true, p2:'jinkim'}, {win:true, p2:'taekkim'}, {win:false, p2:'jachoi'}, {win:false, p2:'dsohn'}]
+		const history = [{win:true, id:'jinkim'}, {win:true, id:'taekkim'}, {win:false, id:'jachoi'}, {win:false, id:'dsohn'}]
 		const win = 2
 		const lose = 2
 		if (myID === otherID)
@@ -32,7 +32,6 @@ export class ProfileService {
 				if (block === otherID)
 					isB = true
 			})
-
 			return ({history:history, win:win, lose:lose, friend:isF, block:isB})
 		}
 	}

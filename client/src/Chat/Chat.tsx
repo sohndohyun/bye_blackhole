@@ -6,39 +6,69 @@ import UserList from "./UserList";
 import SideBar from "../SideBar/SideBar";
 import "./styles/Chat.scss"
 import setting from '../Images/setting.png'
-import ChatOwnerModal from "./ChatOwnerModal";
+import ChatSettingModal from "./ChatSettingModal";
 import axios from "axios";
 import useSwr from 'swr';
 const socketIOClient = require('socket.io-client')
 
 const Chat = () => {
 	
-	const [currentSocket, setCurrentSocket] = useState(socketIOClient());
+	interface Iuser{
+		id:string,
+		permission:string,
+		icon:string
+	}
+	const currentSocket = socketIOClient('http://localhost:8080')
 	const [MyID, setMyID] = useState('')
-	const [MyIcon, setMyIcon] = useState('')
 	const [roomName, setRoomName] = useState('')
+	const [MyPermission, setMyPermission] = useState('')
 
 	const fetcher = async (url:string) => {
-		const res = await axios.get(url)
-		return res.data;
+		if (roomName)
+		{
+			const res = await axios.get(url)
+			res.data.users = userSorting(res.data.users)
+			return res.data;
+		}
 	}
-	const {data, error} = useSwr<{num:string, myPermission: string, security: string}>('/Chat?title=' + roomName + '&id=' + MyID, fetcher)
+	const {data, error, mutate} = useSwr<{num:string, security: string, users:Iuser[]}>('/Chat/info?title=' + roomName, fetcher)
+
+	function userSorting(userList:Iuser[])
+	{
+		var rtn: Iuser[] = []
+		var admin: Iuser[] = []
+		var user: Iuser[] = []
+
+		for(let i = 0; i < userList.length; i++)
+		{
+			if (userList[i].id === MyID)
+				setMyPermission(userList[i].permission)
+			
+			if (userList[i].permission === 'owner')
+				rtn.push(userList[i])
+			else if (userList[i].permission === 'admin')
+				admin.push(userList[i])
+			else
+				user.push(userList[i])
+		}
+		
+		admin.forEach(ele => rtn.push(ele))
+		user.forEach(ele => rtn.push(ele))
+		return rtn
+	}
 
 	useEffect(() => {
-		setCurrentSocket(socketIOClient("http://localhost:8080"));
+		//setCurrentSocket(socketIOClient());
 		
 		const id = sessionStorage.getItem('nickname')
-		const icon = sessionStorage.getItem('icon')
 		const room = sessionStorage.getItem('roomName')
 		if (id) setMyID(id)
-		if (icon) setMyIcon(icon)
 		if (room) setRoomName(room)
 	});
 	
 	const myInfo = {
 		roomName: roomName,
 		userName: MyID,
-		icon: MyIcon,
 	};
 
 	if (currentSocket) {
@@ -50,12 +80,12 @@ const Chat = () => {
 	
 
 	//chat owner modal
-	const [ChatOwnerModalState, setChatOwnerModalState] = useState(false);
-	const openChatOwnerModal = () => {
-		setChatOwnerModalState(true);
+	const [ChatSettingModalState, setChatSettingModalState] = useState(false);
+	const openChatSettingModal = () => {
+		setChatSettingModalState(true);
 	}
-	const closeChatOwnerModal = () => {
-		setChatOwnerModalState(false);
+	const closeChatSettingModal = () => {
+		setChatSettingModalState(false);
 	}
 
 	return (
@@ -67,25 +97,25 @@ const Chat = () => {
 			<div className="chat-top">
 				<span className="RoomInfo-num">{data?.num}</span>
 				<span>{roomName}</span>
-				{data?.myPermission === 'owner' ? 
-					<button className="setting-btn" onClick={openChatOwnerModal}>
+				{MyPermission !== 'user' ? 
+					<button className="setting-btn" onClick={openChatSettingModal}>
 						<img src={setting} width="30" height="30"></img>
 					</button>
 					: null
 				}
 			</div>
-			<ChatOwnerModal open={ChatOwnerModalState} close={closeChatOwnerModal} chatRoomID={roomName}></ChatOwnerModal>
+			<ChatSettingModal open={ChatSettingModalState} close={closeChatSettingModal} chatRoomID={roomName} MyPermission={MyPermission}></ChatSettingModal>
 			<div className="chat-bottom">
 				<span className="left-chatLog">
 					<div className="chatLog-top">
-						<ChatLog socket={currentSocket}/>
+						<ChatLog socket={currentSocket} MyID={MyID} roomName={roomName}/>
 					</div>
 					<div className="chatLog-bottom">
 						<ChatInput socket={currentSocket}/>
 					</div>
 				</span>
 				<span className="right-chatUser">
-					<UserList socket={currentSocket}></UserList>
+					<UserList socket={currentSocket} users={data?.users} MyPermission={MyPermission} getRoomInfoMutate={mutate} roomName={roomName}></UserList>
 				</span>
 			</div>
 			</div>

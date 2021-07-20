@@ -28,7 +28,7 @@ const ChatList = (props: any) => {
 	}
 
 	async function enterPublicRoom(title:string) {
-		await axios.post('/Lobby/enter/' + title, {id:MyID, password:''})
+		await axios.post('/Lobby/enter', {title:title, id:MyID, password:''})
 		document.location.href = '/chat'
 		sessionStorage.setItem('roomName', title)
 	}

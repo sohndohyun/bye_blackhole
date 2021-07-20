@@ -37,30 +37,44 @@ export class LobbyService {
 	}
 
 	async createChatRoom(title, password, security, owner_id): Promise<chat_room> {
-		var rtn = await this.ChatRoomRepository.findOne({title:title})
-		if (!rtn){
+		const chat_info = await this.ChatRoomRepository.findOne({title:title})
+		if (!chat_info){
 			const info = await this.UserRepository.findOne({nickname:owner_id})
 			info.chat_room_list.push(title)
-			await this.UserRepository.save(info)
-
+			
+			var chat_mem = [{nickname: owner_id, permission: 'owner'}]
+			
 			if (security === 'private')
 			{
 				const userID = title.split('_')
 				if (userID[1] === owner_id)
-					var otherID = userID[2]
+				var otherID = userID[2]
 				else
-					var otherID = userID[1]
-				const other_info = await this.UserRepository.findOne({nickname:otherID})
-				other_info.chat_room_list.push(title)
+				var otherID = userID[1]
+				var other_info = await this.UserRepository.findOne({nickname:otherID})
+				
+				//block됐는지 확인
+				const isblock = other_info.block_list.find(block => block === owner_id)
+				console.log(isblock)
+				if (isblock)
+					return null
+				else
+					other_info.chat_room_list.push(title)
+				
+				chat_mem = [
+					{nickname: owner_id, permission: 'user'}, 
+					{nickname: otherID, permission: 'user'}
+				]
+				
 				await this.UserRepository.save(other_info)
 			}
-
+			
+			await this.UserRepository.save(info)
 			return await this.ChatRoomRepository.save({
 				title: title, 
 				password: password,
 				security: security,
-				chat_member: [{nickname: owner_id, permission: 'owner'}], 
-				messages: []
+				chat_member: chat_mem
 			})
 		}
 		else return null
@@ -121,27 +135,30 @@ export class LobbyService {
 		return chat
 	}
 
-	async enterChatRoom(chatRoomID:string, id:string, password:string){
-		var chat_info = await this.ChatRoomRepository.findOne({title:chatRoomID})
+	async enterChatRoom(title:string, id:string, password:string){
+		var chat_info = await this.ChatRoomRepository.findOne({title:title})
 		if ((chat_info.security === 'protected' && chat_info.password === password) || 
 			(chat_info.security === 'public'))
 		{
+			//ban된 멤버인지 확인
+			const banned_idx = chat_info.chat_banned.findIndex(chat => chat.nickname === id)
+			if (banned_idx > -1) return false
+
 			const user_info = await this.UserRepository.findOne({nickname:id})
-			const found_title = user_info.chat_room_list.find(title => title === chatRoomID)
-			if (found_title !== chatRoomID)
+			const found_title = user_info.chat_room_list.find(title => title === title)
+			if (found_title !== title)
 			{
-				user_info.chat_room_list.push(chatRoomID)
+				user_info.chat_room_list.push(title)
 				await this.UserRepository.save(user_info)
 			}
 
 			const found_user = chat_info.chat_member.find(user => user.nickname === id)
-			if (!found_user)
+			if (found_user === undefined)
 			{
 				chat_info.chat_member.push({nickname:id, permission:'user'})
 				await this.ChatRoomRepository.save(chat_info)
 			}
 			
-
 			return true
 		}
 		else
@@ -156,11 +173,33 @@ export class LobbyService {
 		await this.UserRepository.save(userInfo)
 
 		var chat_info = await this.ChatRoomRepository.findOne({title:title})
-		const found_user = chat_info.chat_member.find(user => user.nickname === id)
-		//permission owner인 경우, 다른 사람에게 onwer 넘겨주기(admin중 한명?)
-
+		const found_user = chat_info.chat_member.find((user) => user.nickname === id)
 		idx = chat_info.chat_member.indexOf(found_user)
+
+		if (chat_info.chat_member.length <= 1)
+			return await this.ChatRoomRepository.delete({title:title})
+
+		//permission owner인 경우, 다른 사람에게 onwer 넘겨주기(admin중 한명?)
+		if (chat_info.chat_member[idx].permission == 'owner')
+		{
+			for(let i = 0; i < chat_info.chat_member.length; i++)
+			{
+				if (chat_info.chat_member[i].permission === 'admin')
+				{
+					var new_owner_idx = i
+					break;
+				}
+				else if (chat_info.chat_member[i].permission !== 'owner')
+				{
+					var new_owner_idx = i
+					break;
+				}
+			}
+			chat_info.chat_member[new_owner_idx].permission = "owner"
+		}
+
 		if (idx > -1) chat_info.chat_member.splice(idx, 1)
+		
 		return await this.ChatRoomRepository.save(chat_info)
 	}
 }

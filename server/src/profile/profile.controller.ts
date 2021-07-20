@@ -6,7 +6,7 @@ export class ProfileController {
 	constructor(private readonly profileService: ProfileService) {}
 
 	@Get('')
-	async getProfile(@Query('myID') myID:string, @Query('otherID') otherID:string): Promise<{history:{win:boolean, p2:string}[], friend:boolean, block:boolean, win:number, lose:number} | {history:{win:boolean, p2:string}[], win:number, lose:number}> {
+	async getProfile(@Query('myID') myID:string, @Query('otherID') otherID:string): Promise<{history:{win:boolean, id:string}[], friend:boolean, block:boolean, win:number, lose:number} | {history:{win:boolean, id:string}[], win:number, lose:number}> {
 		return await this.profileService.getProfile(myID, otherID);
 	}
 
@@ -17,8 +17,8 @@ export class ProfileController {
 	}
 
 	@Put('/block')
-	async IsBlock(@Body() {myID, otherID, isFriend})
+	async IsBlock(@Body() {myID, otherID, isBlock})
 	{
-		return await this.profileService.IsBlock(myID, otherID, isFriend)
+		return await this.profileService.IsBlock(myID, otherID, isBlock)
 	}
 }

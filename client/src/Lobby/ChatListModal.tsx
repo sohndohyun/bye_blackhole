@@ -29,7 +29,7 @@ const ChatListModal = ( props: any ) => {
 			var security = 'public'
 		else
 			var security = 'protected'
-		axios.put('/Lobby/chatCreate/' + NewRoomName, {password:RoomPWD, owner_id:MyID, security:security})
+		axios.post('/Lobby/chatCreate', {title:NewRoomName, password:RoomPWD, owner_id:MyID, security:security})
 		.then((res) => {
 			document.location.href = '/chat'
 			sessionStorage.setItem('roomName', NewRoomName)
@@ -58,7 +58,7 @@ const ChatListModal = ( props: any ) => {
 						{IsUniqueName ? null : <label className="error">이미 존재하는 방입니다.</label>}
 						{IsProtectedRoom ?
 							<div className="checkbox-pwd">
-							<b>&nbsp;&nbsp;&nbsp;&nbsp;password:&nbsp;</b>
+							<b>password:&nbsp;</b>
 							<input type="password" onChange={handelRoomPWD}></input>
 							</div>
 							: null

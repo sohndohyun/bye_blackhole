@@ -8,12 +8,12 @@ export class AdminService {
 	constructor(@InjectRepository(ft_user) private readonly UserRepository: Repository<ft_user>)
 	{}
 
-	async saveUser(intra_id, nickname, icon, state): Promise<ft_user> {
+	async saveUser(intra_id, nickname, icon): Promise<ft_user> {
 		return await this.UserRepository.save({
 			intra_id: intra_id,
 			nickname: nickname,
 			icon: icon,
-			state: state
+			state: 'on'
 		});
 	}
 }

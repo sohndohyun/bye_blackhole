@@ -9,14 +9,38 @@ const GetChatList = (props: any) => {
 		if (myID)
 		{
 			const res = await axios.get(url)
+
+			//kick or ban
+			if (window.location.pathname === '/chat')
+			{
+				const currentRoom = sessionStorage.getItem('roomName')
+				var leave = true
+				
+				for(let i = 0; i < res.data.length; i++)
+				{
+					if (res.data[i].title === currentRoom)
+						leave = false
+				}
+
+				if (leave)
+				{
+					window.location.href = '/lobby'
+					sessionStorage.removeItem('roomName')
+				}
+			}
 			return res.data;
 		}
 	}
 
 	const {data, error, mutate} = useSwr<{title:string, num: number}[]>('/Lobby/myChatList?id=' + myID, fetcher)
 
-	const LeaveChat = async(title:string) => {
+	const DelChat = async(title:string) => {
 		await axios.delete('Lobby?title=' + title + '&id=' + myID)
+		if (window.location.pathname === '/chat' && sessionStorage.getItem('roomName') === title)
+		{
+			window.location.href = '/lobby'
+			sessionStorage.removeItem('roomName')
+		}
 		mutate()
 	}
 
@@ -32,7 +56,7 @@ const GetChatList = (props: any) => {
 					<span className="chatNum">{chat.num}</span>
 					<span>&nbsp;{chat.title}</span>
 				</button>
-				<button type="button" className="chatLeave" onClick={() => LeaveChat(chat.title)}>X</button>
+				<button type="button" className="chatLeave" onClick={() => DelChat(chat.title)}>X</button>
 			</div>
 		)}
 	</>

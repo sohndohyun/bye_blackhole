@@ -6,18 +6,22 @@ import {Button} from "react-bootstrap";
 const ChatInput = ({socket}: any) => {
 	const [chatMessage, setChatMessage] = useState("");
 	const [MyID, setMyID] = useState('')
+	const [roomName, setRoomName] = useState('')
 
 	useEffect(() => {
 		const id = sessionStorage.getItem('nickname')
+		const room = sessionStorage.getItem('roomName')
 		if (id) setMyID(id)
+		if (room) setRoomName(room)
 	})
 
 	const handleSubmit = (e:any) => {
 		e.preventDefault();
 		socket.emit("onSend", {
-			userName: MyID,
+			title: roomName,
+			nickname: MyID,
 			msg: chatMessage,
-			timeStamp: new Date().toLocaleTimeString(),
+			date: new Date().toLocaleTimeString(),
 		});
 		setChatMessage("");
 	};
@@ -34,7 +38,7 @@ const ChatInput = ({socket}: any) => {
           value={chatMessage}
           onChange={onChatMessageChange}
         ></input>
-        <Button type="button" className="btn btn-sm">send</Button>
+        <Button type="button" className="btn btn-sm" onClick={handleSubmit}>send</Button>
       </form>
     </div>
   );
