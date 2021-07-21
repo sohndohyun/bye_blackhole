@@ -2,14 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm/index';
 import {chat_room} from '../Entity/ChatRoom.entity'
-import {ft_user} from '../Entity/User.entity'
-
+import { UsersEntity } from '../users/entities/users.entity'
 
 @Injectable()
 export class ChatService {
 	constructor(
 		@InjectRepository(chat_room) private readonly ChatRoomRepository: Repository<chat_room>,
-		@InjectRepository(ft_user) private readonly UserRepository: Repository<ft_user>
+		@InjectRepository(UsersEntity) private readonly UserRepository: Repository<UsersEntity>
 	){}
 
 	async getChatRoomInfo(title:string){
@@ -76,9 +75,9 @@ export class ChatService {
 		var chat_info = await this.ChatRoomRepository.findOne({title:title})
 		var user_info = await this.UserRepository.findOne({nickname:id})
 		const user_idx = chat_info.chat_member.findIndex(user => user.nickname === id)
-		const chat_idx = user_info.chat_room_list.findIndex(chat => chat === title)
+		const chat_idx = user_info.chat_room.findIndex(chat => chat === title)
 		if (user_idx > -1) chat_info.chat_member.splice(user_idx, 1)
-		if (chat_idx > -1) user_info.chat_room_list.splice(chat_idx, 1)
+		if (chat_idx > -1) user_info.chat_room.splice(chat_idx, 1)
 		await this.ChatRoomRepository.save(chat_info)
 		return await this.UserRepository.save(user_info)
 	}

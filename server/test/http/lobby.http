@@ -1,0 +1,27 @@
+POST http://localhost:8080/lobby HTTP/1.1
+Content-Type: application/json
+
+{
+	"intra_id": "notjinkim",
+	"nickname": "jinkimnick",
+	"auth_token" : "sayi@@mail",
+	"icon" : "sayi is sayi",
+	"friend_list": ["taekkim", "jinkim"]
+}
+
+# PATCH http://localhost:8080/lobby HTTP/1.1
+# Content-Type: application/json
+
+# {
+# 	"intra_id": "taekim",
+# 	"nickname": "taekimnick",
+# 	"auth_token" : "sayi@@mail",
+# 	"icon" : "sayi is sayi",
+# 	"friend_list": ["taekkim"]
+# }
+
+# DELETE http://localhost:8080/lobby/clear HTTP/1.1
+
+# GET http://localhost:8080/lobby/all HTTP/1.1
+# GET http://localhost:8080/lobby/userList?id=sayinick HTTP/1.1
+

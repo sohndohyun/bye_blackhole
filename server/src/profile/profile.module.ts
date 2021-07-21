@@ -1,13 +1,17 @@
 import { Module } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
 import { ProfileController } from './profile.controller';
-import { ProfileService } from './profile.service';
-import {ft_user} from '../Entity/User.entity'
-import {match_history} from '../Entity/MatchHistory.entity'
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersRepository } from '../users/users.repository';
+import { ProfileService } from './profile.service';
+import { MatchHistoryService } from 'src/match_history/match_history.service';
+import { MatchHistoryRepository } from 'src/match_history/match_history.repository';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([ft_user, match_history])],
-	controllers: [ProfileController],
-	providers: [ProfileService]
+  imports: [
+    TypeOrmModule.forFeature([UsersRepository, MatchHistoryRepository]),
+  ],
+  controllers: [ProfileController],
+  providers: [UsersService, MatchHistoryService, ProfileService],
 })
 export class ProfileModule {}
