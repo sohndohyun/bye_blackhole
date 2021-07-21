@@ -1,0 +1,64 @@
+.userList-container{
+	padding-top:1rem;
+	padding-left:0.5rem;
+
+	.userList-box{
+		display: flex;
+
+		.userList-btn{
+			background-color: rgba(255, 255, 255, 0);
+			display: flex;
+			border: none;
+			color: white;
+	
+			
+			.iconBox{
+				display: flex;
+				width: 50px;
+	
+				.icon{
+					background-color: white;
+					border-radius: 50%;
+					margin: 3px;
+				}
+	
+				.crown{
+					margin-top:15px;
+					border-radius: 50%;
+					margin-left: -10px;
+					border: 1px solid black;
+				}
+				.owner{
+					background-color: yellow;
+				}
+				.admin{
+					background-color: rgb(199, 200, 201);
+				}
+			}
+	
+		
+			.id{
+				margin: 3px;
+				padding-top:3px;
+			}
+		}
+
+		.owner-plusBtn{
+			background-color: rgba(255, 255, 255, 0);
+			border: none;
+			color: white;
+			font-size: 20px;
+			margin-top: 3px;
+			margin-left: -5px;
+		}
+		.owner-xBtn{
+			background-color: rgba(255, 255, 255, 0);
+			border: none;
+			color: red;
+			font-size: 20px;
+			margin-top: 3px;
+			margin-left: -5px;
+		}
+	}
+	
+}

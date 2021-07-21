@@ -1,0 +1,233 @@
+.Modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 99;
+	background-color: rgba(0, 0, 0, 0.6);
+
+	section {
+		width: 90%;
+		max-width: 450px;
+		margin:0 auto;
+		border-radius: .3rem;
+		background-color: #fff;
+		animation: Modal-show .3s;
+		overflow: hidden;
+
+		.head {
+			position: relative;
+			padding-bottom: 10px;
+
+			button {
+				position: absolute;
+				top: 5px;
+				right: 5px;
+				width: 30px;
+				font-size: 21px;
+				font-weight: 700;
+				text-align: center;
+				color: #999;
+				background-color: transparent;
+			}
+		}
+
+		.content {
+			text-align: center;
+			padding: 16px;
+			color: black;
+
+			.header {
+				font-weight: 600;
+			
+				.name{
+					font-size: 20px;
+				}
+				.num{
+					font-size: 15px;
+				}
+			}
+
+			.win-color{
+				color: rgb(17, 79, 150);
+			}
+			.lose-color{
+				color: red;
+			}
+
+			.main{
+				.matchHistory{
+					font-size: large;
+					margin-left: 20%;
+					margin-right: 20%;
+					margin-top:5px;
+					padding: 2px;
+					padding-left: 1rem;
+					border-radius: 8px 8px 8px 8px;
+					display: flex;
+					flex-direction: row;
+					
+					.match-left{
+						flex: 1 0;
+						font-size: medium;
+						font-weight: bold;
+						color: rgb(255, 255, 255);
+						text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+					}
+					.match-right{
+						flex: 1 0;
+						font-weight: bold;
+					}
+				}
+				.win-backColor{
+					background-color: rgba(17, 79, 150, 0.493);
+				}
+				.lose-backColor{
+					background-color: rgba(255, 0, 0, 0.274);
+				}
+			}
+		}
+
+		.bottom{
+			text-align: center;
+
+			.dm-button{
+				margin-left: 5px;
+				width: 63px;
+			}
+
+			.kick-button{
+				margin-left: 5px;
+				width: 55px;
+			}
+		}
+	}
+}
+.Modal button {
+	outline: none;
+	cursor: pointer;
+	border: 0;
+}
+
+.Modal.openModal {
+	display: flex;
+	align-items: center;
+	animation: Modal-bg-show .3s;
+}
+
+@keyframes Modal-show {
+	from {
+	opacity: 0;
+	margin-top: -50px;
+	}
+	to {
+	opacity: 1;
+	margin-top: 0;
+	}
+}
+@keyframes Modal-bg-show {
+	from {
+	opacity: 0;
+	}
+	to {
+	opacity: 1;
+	}
+}
+
+.onoffbtn{
+	input[type="checkbox"] {
+		display: none;
+	}
+
+	.label__on-off {
+		overflow: hidden;
+		position: relative;
+		display: inline-block;
+		width: 90px;
+		height: 26px;
+		-webkit-border-radius: 13px;
+		-moz-border-radius: 13px;
+		border-radius: 13px;
+		background-color: rgba(247, 56, 56, 0.719);
+		color: #fff;
+		font-weight: bold;
+		cursor: pointer;
+		-webkit-transition: all .3s;
+		-moz-transition: all .3s;
+		-ms-transition: all .3s;
+		-o-transition: all .3s;
+		transition: all .3s;
+		margin-left: 2rem;
+		margin-right: 2rem;
+	}
+	
+	.label__on-off > * {
+		vertical-align: sub;
+		-webkit-transition: all .3s;
+		-moz-transition: all .3s;
+		-ms-transition: all .3s;
+		-o-transition: all .3s;
+		transition: all .3s;
+		font-size: 14px;
+	}
+	
+	.label__on-off .marble {
+		position: absolute;
+		top: 1px;
+		left: 1px;
+		display: block;
+		width: 24px;
+		height: 24px;
+		background-color: #fff;
+		-webkit-border-radius: 50%;
+		-moz-border-radius: 50%;
+		border-radius: 50%;
+		-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .3);
+		-moz-box-shadow: 0 0 10px rgba(0, 0, 0, .3);
+		box-shadow: 0 0 10px rgba(0, 0, 0, .3);
+	}
+	
+	.label__on-off .on {
+		display: none;
+		padding-right: 20px;
+	}
+	
+	.label__on-off .off {
+		padding-left: 20px;
+	}
+	
+	.input__on-off:checked + .label__on-off {
+		background-color: rgba(17, 79, 150, 0.493);
+	}
+	
+	.input__on-off:checked + .label__on-off .on {
+		display: inline-block;
+	}
+	
+	.input__on-off:checked + .label__on-off .off {
+		display: none;
+	}
+	
+	.input__on-off:checked + .label__on-off .marble {
+		left: 65px;
+	}
+}
+
+.button {
+	padding: 4px 10px;
+	margin-bottom: 15px;
+	margin-top: 0.5rem;
+	color: rgb(53, 86, 155);
+	background-color: rgba(46, 125, 179, 0.315);
+	border-radius: 5px;
+	border: 2px solid rgba(151, 205, 241, 0.767);
+	font-size: 15px;
+}
+
+.targetID{
+	margin-top: 10px;
+	font-size: 20px;
+	font-weight: 600;
+}

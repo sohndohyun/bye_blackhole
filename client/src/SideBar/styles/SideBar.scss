@@ -1,0 +1,67 @@
+.top{
+	height: 3rem;
+	background-color: rgb(17, 79, 150);
+	border-bottom: 1px solid skyblue;
+	text-align: right;
+	overflow: hidden;
+	
+	.MyID{
+		font-size: 28px;
+		display: inline-block;
+		width: 150px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.myIcon{
+		border-radius:50%;
+		width:2.8rem;
+		height:2.8rem;
+		background-color: white;
+		margin-bottom:2.5rem;
+		margin-left:3px;
+		vertical-align: middle;
+		line-height: 1px;
+	}
+}
+
+.bottom{
+	margin-left: 3px;
+
+	.title{
+		font-size: 1.5rem;
+		margin-top: 10px;
+	}
+	.user-btn{
+		margin-left: 5px;
+		border: none;
+		background-color: rgb(41, 59, 92);
+		color: white;
+	
+		.user-icon{
+			border-radius:50%;
+			width:2rem;
+			height:2rem;
+			background-color: white;
+			margin-bottom:0.3rem;
+			vertical-align: middle;
+			line-height: 1px;
+		}
+	
+		.userState{
+			font-size:	3rem;
+			line-height: 1px;
+			vertical-align: middle;
+		}
+		.online{
+			color: rgb(22, 255, 41);
+		}
+		.offline{
+			color: rgb(180,180,180);
+		}
+		.gaming{
+			color: rgb(0, 200, 255);
+		}
+	}
+}

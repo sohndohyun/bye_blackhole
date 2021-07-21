@@ -1,34 +1,66 @@
-import React, { useEffect, useState } from "react";
-import "./styles/UserList.css"
-//import img from '../images/gamer_boy.png'
+import React, { useCallback, useEffect, useState } from "react";
+import "./styles/UserList.scss"
+import {findImg} from '../Images/Images'
+import crown from '../Images/crown.png'
+import UserListModal from './UserListModal'
+import axios from "axios";
+import { mutate } from "swr";
 
-const UserList = ({ socket }: any) => {
-	const [userList, setUserList] = useState<{id: string, room: string, icon:any}[]>();
+interface IUserList{
+	socket:any,
+	users: {id:string, permission:string, icon:string}[] | undefined,
+	MyPermission: string,
+	getRoomInfoMutate: any,
+	roomName:string
+}
 
-	useEffect(() => {
-	  socket.on("UserList", (newUser:{id: string, room: string, icon:any}[]) => {
+const UserList = ({ users, MyPermission, getRoomInfoMutate, roomName } : IUserList) => {
+	//UserListModal
+	const [chatUser, setChatUser] = useState('')
+	const [UserListModalState, setUserListModalState] = useState(false);
+	const openUserListModal = (id:string) => {
+		setUserListModalState(true);
+		setChatUser(id);
+	}
+	const closeUserListModal = () => {
+		setUserListModalState(false);
+	}
 
-		setUserList(newUser);
-	  });
-
-	  return () => {
-		socket.disconnect();
-	  };
-	}, [socket]);
+	//owner button
+	async function plusBtn(id:string){
+		const rtn = await axios.get('chat/admin?title=' + roomName + '&id=' + id)
+		getRoomInfoMutate()
+	}
+	async function minusBtn(id:string){
+		const rtn = await axios.delete('chat/admin?title=' + roomName + '&id=' + id)
+		getRoomInfoMutate()
+	}
 
 	return (
-		<div>
-			{userList?.map(user=>
-			<div id="userList">
-				<span className="userIcon">
-					<img src={`data:image/jpeg;base64,${(user.icon).toString()}`} height="50" width="50" className="icon"/>
-				</span>
-				<span className="userInfo">
-					<div className="id">{user.id}</div>
-					<div className="room">{user.room}</div>
-				</span>
+		<div className="userList-container">
+			{users?.map(user=>
+			<div className="userList-box">
+				<button className="userList-btn" onClick={() => MyPermission !== 'user' && user.permission === 'user' ? openUserListModal(user.id): null}>
+					<span className="iconBox">
+						<span><img src={findImg(user.icon)} width="30" height="30" className="icon"/></span>
+						<span>{user.permission !== 'user' ?
+							<img src={crown} width="20" height="20" className={user.permission === 'owner' ? 'crown owner' : 'crown admin'}/>
+							: null
+						}</span>
+					</span>
+					<span className='id'>{user.id}</span>
+				</button>
+				<span>{MyPermission === 'owner' && user.permission === 'user' ?
+					<button className="owner-plusBtn" onClick={() => plusBtn(user.id)}>+</button>
+					: null
+				}</span>
+				<span>{MyPermission === 'owner' && user.permission === 'admin' ?
+					<button className="owner-xBtn" onClick={() => minusBtn(user.id)}>x</button>
+					: null
+				}</span>
 			</div>
 			)}
+			<UserListModal open={UserListModalState} close={closeUserListModal} targetID={chatUser} roomName={roomName} getRoomInfoMutate={getRoomInfoMutate}></UserListModal>
 		</div>
 
 	);

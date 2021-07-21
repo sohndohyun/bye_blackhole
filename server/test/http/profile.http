@@ -1,0 +1,121 @@
+# GET http://localhost:8080/profile?myID=taekimnick&otherID=taekimnick HTTP/1.1
+
+PUT http://localhost:8080/profile/friend HTTP/1.1
+Content-Type: application/json
+
+{
+	"myID":"jinkimnick",
+	"otherID":"taekimnick"
+}
+
+PUT http://localhost:8080/profile/block HTTP/1.1
+Content-Type: application/json
+
+{
+	"myID":"jinkimnick",
+	"otherID":"sayinick"
+}
+
+# GET http://localhost:8080/profile HTTP/1.1
+# GET http://localhost:8080/profile/all HTTP/1.1
+
+# DELETE http://localhost:8080/profile/clear HTTP/1.1
+{
+  config: '',
+  request: { ClientRequest: '', socket: '', connection: '' },
+  response: {
+    status: 401,
+    statusText: 'Unauthorized',
+    headers: {
+      server: 'nginx',
+      date: 'Tue, 20 Jul 2021 13:21:56 GMT',
+      'content-type': 'application/json; charset=utf-8',
+      'transfer-encoding': 'chunked',
+      connection: 'close',
+      status: '401 Unauthorized',
+      'cache-control': 'no-store',
+      pragma: 'no-cache',
+      'www-authenticate': 'Bearer realm="42 API", error="invalid_request", error_description="The request is missing a required parameter, includes an unsupported parameter value, or is otherwise malformed."',
+      'x-request-id': 'fe54f601-f290-4bfd-8b1e-a8f536375a3a',
+      'x-runtime': '0.009130',
+      vary: 'Origin,Accept-Encoding',
+      'x-rack-cors': 'preflight-hit; no-origin'
+    },
+    config: {
+      url: 'https://api.intra.42.fr/oauth/token',
+      method: 'post',
+      data: [FormData],
+      headers: [Object],
+      transformRequest: [Array],
+      transformResponse: [Array],
+      timeout: 0,
+      adapter: [Function: httpAdapter],
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+      maxContentLength: -1,
+      maxBodyLength: -1,
+      validateStatus: [Function: validateStatus]
+    },
+    request: ClientRequest {
+      _events: [Object: null prototype],
+      _eventsCount: 7,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      _last: true,
+      chunkedEncoding: true,
+      shouldKeepAlive: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: true,
+      sendDate: false,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      _contentLength: null,
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      socket: [TLSSocket],
+      connection: [TLSSocket],
+      _header: 'POST /oauth/token HTTP/1.1\r\n' +
+        'Accept: application/json, text/plain, */*\r\n' +
+        'Content-Type: multipart/form-data\r\n' +
+        'User-Agent: axios/0.21.1\r\n' +
+        'Host: api.intra.42.fr\r\n' +
+        'Connection: close\r\n' +
+        'Transfer-Encoding: chunked\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: noopPendingOutput],
+      agent: [Agent],
+      socketPath: undefined,
+      method: 'POST',
+      insecureHTTPParser: undefined,
+      path: '/oauth/token',
+      _ended: true,
+      res: [IncomingMessage],
+      aborted: false,
+      timeoutCb: null,
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'api.intra.42.fr',
+      protocol: 'https:',
+      _redirectable: [Writable],
+      [Symbol(kCapture)]: false,
+      [Symbol(kNeedDrain)]: false,
+      [Symbol(corked)]: 0,
+      [Symbol(kOutHeaders)]: [Object: null prototype]
+    },
+    data: {
+      error: 'invalid_request',
+      error_description: 'The request is missing a required parameter, includes an unsupported parameter value, or is otherwise malformed.'
+    }
+  },
+  isAxiosError: true,
+  toJSON: [Function: toJSON],
+  headers: ''
+}

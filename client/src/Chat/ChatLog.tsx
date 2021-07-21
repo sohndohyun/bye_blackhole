@@ -1,56 +1,69 @@
 import React, { useEffect, useState } from "react";
-import "./styles/ChatLog.css";
+import "./styles/ChatLog.scss";
+import {findImg} from '../Images/Images'
+import axios from "axios";
 
+const ChatLog = ({socket}: any) => {
+	const [msgList, setMsgList] = useState<any[]>([])
+	const [MyID, setMyID] = useState('')
+	const [roomName, setRoomName] = useState('')
 
-const ChatLog = ({ userName, socket }: any) => {
-  const [msgList, setMsgList] = useState<any[]>([]);
+	useEffect(() => {
+		const id = sessionStorage.getItem('nickname')
+		const room = sessionStorage.getItem('roomName')
+		if (id) setMyID(id)
+		if (room) setRoomName(room)
+	})
 
-  useEffect(() => {
-	// messsgeItem : {msg: String, name: String, timeStamp: String}
-    socket.on("onReceive", (messageItem: {userName:string, msg:string, timeStamp:string}) => {
-		userName = userName ? userName : sessionStorage.getItem("userName")
-	  if (userName === messageItem.userName)
-		setMsgList((msgList) => [...msgList, {myMsg: messageItem.msg, timeStamp: messageItem.timeStamp} as never]);
-	  else
-		setMsgList((msgList) => [...msgList, messageItem]);
-      console.log(messageItem);
-	  console.log(userName)
-    });
-    socket.on("onConnect", (systemMessage: string) => {
-      setMsgList((msgList) => [...msgList, { sysMsg: systemMessage } as never]);
-    });
-    socket.on("onDisconnect", (systemMessage: any) => {
-      setMsgList((msgList) => [...msgList, { sysMsg: systemMessage } as never]);
-    });
-    return () => {
-      socket.disconnect();
-    };
-  }, [socket]);
+	useEffect(() => {
+		if (MyID && roomName)
+		{
+		socket.on("onReceive", async(messageItem: {nickname:string, msg:string, date:string, icon:string}) => {
+			if (MyID === messageItem.nickname)
+				setMsgList((msgList) => [...msgList, {myMsg: messageItem.msg, date: messageItem.date} as never]);
+			else
+				setMsgList((msgList) => [...msgList, messageItem]);
+		});
 
-  return (
-    <div>
-      {msgList.map((msg, idx) => (
-        <div key={idx}>
-		  	{msg.userName &&
-          		<div className="msg-userName">{msg.userName}</div>
-			}
+		/*
+		socket.on("onConnect", async (systemMessage: string) => {
+			setMsgList((msgList) => [...msgList, { sysMsg: systemMessage } as never]);
+		});
+		socket.on("onDisconnect", async(systemMessage: any) => {
+			setMsgList((msgList) => [...msgList, { sysMsg: systemMessage } as never]);
+		});
+		*/
+		return () => {
+			socket.disconnect();
+		};
+	}
+	}, [socket]);
+
+	return (
+	<div>
+		{msgList.map((msg, idx) => (
+		<div key={idx}>
 			{msg.msg &&
 				<div className="msgLeft">
-          			<span className="msg-msg">{msg.msg}</span>
-					<span className="msg-timeStamp">({msg.timeStamp})</span>
+					<span><img src={findImg(msg.icon)}  width="30" height="30" className="msg-icon"/></span>
+					<span>
+						{msg.nickname && <div className="msg-userName">{msg.nickname}</div>}
+						<div className="msg-left">{msg.msg}</div>
+					</span>
+					<span className="msg-timeStamp">({msg.date})</span>
 				</div>
 			}
 			{msg.myMsg &&
 				<div className="msgRight">
-					<span className="msg-timeStamp">({msg.timeStamp})</span>
-          			<span className="msg-msg">{msg.myMsg}</span>
+					<span className="msg-right">{msg.myMsg}</span>
+					<span className="msg-timeStamp">({msg.date})</span>
 				</div>
 			}
-		  <div className="sysMsg" >{msg.sysMsg}</div>
-        </div>
-      ))}
-    </div>
-  );
+			<div className="sysMsg" >{msg.sysMsg}</div>
+		</div>
+		))}
+	</div>
+	);
 };
 
 export default ChatLog;

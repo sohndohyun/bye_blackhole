@@ -1,0 +1,43 @@
+
+.Admin-container {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	.nickname-error{
+		color: red;
+	}
+
+	.icon-box{
+		margin: 1rem;
+		text-align: center;
+		display: flex;
+		flex-direction: row;
+		border-radius: 8px 8px 8px 8px;
+		background-color: lightgray;
+
+		.icon{
+			margin: 0.5rem;
+			display: flex;
+			flex-direction: column;
+			background-color: lightgray;
+
+			.icon-input{
+				flex: 2 8;
+				width: 100%;
+				margin-bottom: 0.5rem;
+			}
+			
+			.icon-img{
+				flex: 8 2;
+			}
+		}
+	}
+	
+
+	.Join-button {
+		margin-top: 1rem;
+	}
+}

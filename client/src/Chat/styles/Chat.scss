@@ -1,0 +1,64 @@
+#chat-container{
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+
+	.chat-top{
+		flex: 0 1;
+		font-size: 2rem;
+		height: 3rem;
+		background-color: rgb(17, 79, 150);
+		border-right: 1px solid skyblue;
+		border-bottom: 1px solid skyblue;
+		color: white;
+		text-align: left;
+	
+		.RoomInfo-num{
+			border: 2px solid white;
+			margin-left:0.5rem;
+			margin-right: 0.5rem;
+			font-size: 1.5rem;
+			font-weight: 800;
+			padding-bottom: 2px;
+			padding-top: 7px;
+			padding-left: 10px;
+			padding-right:10px;
+			border-radius: 20%;
+		}
+	
+		.setting-btn{
+			background-color: #ffffff00;
+			border: none;
+		}
+	}
+
+	.chat-bottom{
+		flex: 1 0;
+		display: flex;
+		overflow:hidden;
+	
+		.left-chatLog{
+			flex: 1 0;
+			display: flex;
+			flex-direction: column;
+			
+			.chatLog-top{
+				overflow-y: auto;
+				flex: 1;
+			}
+	
+			.chatLog-bottom{
+				flex: 0;
+				width: 100%;
+			}
+		}
+		
+		.right-chatUser{
+			flex: 1 0;
+			max-width: 12rem;
+			background-color: rgb(36, 38, 63);
+			overflow-y: auto;
+			border-right: solid 1px skyblue;
+		}
+	}
+}
