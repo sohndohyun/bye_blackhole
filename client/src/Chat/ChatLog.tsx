@@ -2,11 +2,20 @@ import React, { useEffect, useState } from "react";
 import "./styles/ChatLog.scss";
 import {findImg} from '../Images/Images'
 import axios from "axios";
+import useSwr from 'swr';
 
 const ChatLog = ({socket}: any) => {
-	const [msgList, setMsgList] = useState<any[]>([])
 	const [MyID, setMyID] = useState('')
 	const [roomName, setRoomName] = useState('')
+
+	const fetcher = async (url:string) => {
+		if (roomName)
+		{
+			const res = await axios.get(url)
+			return res.data;
+		}
+	}
+	const {data, error, mutate} = useSwr<{id:string, date:Date, content:string, icon:string, sysMsg:boolean}[]>('/chat/chatLog?title=' + roomName, fetcher)
 
 	useEffect(() => {
 		const id = sessionStorage.getItem('nickname')
@@ -16,50 +25,34 @@ const ChatLog = ({socket}: any) => {
 	})
 
 	useEffect(() => {
-		if (MyID && roomName)
-		{
 		socket.on("onReceive", async(messageItem: {nickname:string, msg:string, date:string, icon:string}) => {
-			if (MyID === messageItem.nickname)
-				setMsgList((msgList) => [...msgList, {myMsg: messageItem.msg, date: messageItem.date} as never]);
-			else
-				setMsgList((msgList) => [...msgList, messageItem]);
+			mutate()
 		});
-
-		/*
-		socket.on("onConnect", async (systemMessage: string) => {
-			setMsgList((msgList) => [...msgList, { sysMsg: systemMessage } as never]);
-		});
-		socket.on("onDisconnect", async(systemMessage: any) => {
-			setMsgList((msgList) => [...msgList, { sysMsg: systemMessage } as never]);
-		});
-		*/
 		return () => {
 			socket.disconnect();
 		};
-	}
 	}, [socket]);
 
 	return (
 	<div>
-		{msgList.map((msg, idx) => (
+		{data?.map((msg, idx) => (
 		<div key={idx}>
-			{msg.msg &&
-				<div className="msgLeft">
-					<span><img src={findImg(msg.icon)}  width="30" height="30" className="msg-icon"/></span>
-					<span>
-						{msg.nickname && <div className="msg-userName">{msg.nickname}</div>}
-						<div className="msg-left">{msg.msg}</div>
-					</span>
-					<span className="msg-timeStamp">({msg.date})</span>
-				</div>
+			{msg.sysMsg ? <div className="sysMsg" >{msg.id}{msg.content}</div>
+				: msg.id === MyID ?
+					<div className="msgRight">
+						<span className="msg-right">{msg.content}</span>
+						<span className="msg-timeStamp">({msg.date})</span>
+					</div>
+					: 
+					<div className="msgLeft">
+						<span><img src={findImg(msg.icon)}  width="30" height="30" className="msg-icon"/></span>
+						<span>
+							{msg.id && <div className="msg-userName">{msg.id}</div>}
+							<div className="msg-left">{msg.content}</div>
+						</span>
+						<span className="msg-timeStamp">({msg.date})</span>
+					</div>
 			}
-			{msg.myMsg &&
-				<div className="msgRight">
-					<span className="msg-right">{msg.myMsg}</span>
-					<span className="msg-timeStamp">({msg.date})</span>
-				</div>
-			}
-			<div className="sysMsg" >{msg.sysMsg}</div>
 		</div>
 		))}
 	</div>

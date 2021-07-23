@@ -11,7 +11,7 @@ export class chat_room {
 	password: string;
 
 	@Column({type:'jsonb', array: false, default: [], nullable:true})
-	messages: Array<{nickname:string, msg:string, date:Date}>;
+	messages: Array<{nickname:string, msg:string, date:Date, sysMsg:boolean}>;
 
 	@Column({type:'jsonb', array: false, default: [], nullable:true})
 	chat_member: Array<{nickname:string, permission:string}>;

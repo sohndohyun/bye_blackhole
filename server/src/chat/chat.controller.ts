@@ -47,7 +47,12 @@ export class ChatController {
 	}
 
 	@Post('chatLog')
-	async saveChatLog(@Body() {title, id, date, content}){
-		return await this.chatService.saveChatLog(title, id, date, content)
+	async saveChatLog(@Body() {title, id, date, content, sysMsg}){
+		return await this.chatService.saveChatLog(title, id, date, content, sysMsg)
+	}
+
+	@Get('chatLog')
+	async getChatLog(@Query('title') title:string){
+		return await this.chatService.getChatLog(title)
 	}
 }
