@@ -26,7 +26,11 @@ export class LogInOutService {
     return { url: `http://localhost:8080/2-factor-auth?intra_id=${username}` };
   }
 
-  async mailAuth(intra_id: string, auth_value: string) {}
+  async mailAuth(intra_id: string, auth_value: string) {
+    const user = await this.usersService.findByIntraId(intra_id);
+    const auth_result = user.auth_token === auth_value;
+    return { id: user.nickname, auth_result };
+  }
 
   // helper functions
 
