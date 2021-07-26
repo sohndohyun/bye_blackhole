@@ -33,7 +33,7 @@ export class LogInOutController {
   async mailAuth(@Body() body) {
     const { intra_id, auth_value } = body;
     console.log(auth_value);
-    await this.logInOutService.mailAuth(intra_id, auth_value);
+    return await this.logInOutService.mailAuth(intra_id, auth_value);
   }
 
   // below apis are for test
