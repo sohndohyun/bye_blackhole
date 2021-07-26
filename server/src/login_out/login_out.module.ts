@@ -4,10 +4,32 @@ import { LogInOutController } from './login_out.controller';
 import { LogInOutService } from './login_out.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersRepository } from '../users/users.repository';
+import { FtStrategy } from 'src/passport/ft-stratege';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
+// import { JwtStrategy } from '../passport/jwt.strategy';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UsersRepository])],
+  imports: [
+    PassportModule,
+    ConfigModule,
+    TypeOrmModule.forFeature([UsersRepository]),
+    /*     JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get('jwt.secret'),
+        signOptions: { expiresIn: '7d' },
+      }),
+    }), */
+  ],
   controllers: [LogInOutController],
-  providers: [UsersService, LogInOutService],
+  providers: [
+    UsersService,
+    LogInOutService,
+    FtStrategy,
+    // , JwtStrategy
+  ],
 })
 export class LogInOutModule {}
