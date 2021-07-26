@@ -8,13 +8,14 @@ import { FtStrategy } from 'src/passport/ft-stratege';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
+import { AuthRepository } from './auth.repository';
 // import { JwtStrategy } from '../passport/jwt.strategy';
 
 @Module({
   imports: [
     PassportModule,
     ConfigModule,
-    TypeOrmModule.forFeature([UsersRepository]),
+    TypeOrmModule.forFeature([UsersRepository, AuthRepository]),
     /*     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
