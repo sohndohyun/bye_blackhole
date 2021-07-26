@@ -1,35 +1,35 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreateUsersDto } from 'src/users/dto/create-users.dto';
 import { UsersService } from 'src/users/users.service';
+import { AuthRepository } from './auth.repository';
 const nodemailer = require('nodemailer');
 // import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class LogInOutService {
   constructor(
+    private readonly authRepository: AuthRepository,
     private readonly usersService: UsersService, // private readonly jwtService: JwtService,
   ) {}
 
   async auth(profile) {
     const { token, username, email } = profile;
-    const updateDto = { intra_id: username, auth_token: token };
-    const createDto = {
-      ...updateDto,
-      nickname: `${username}_nickname`,
-      icon: 'default_icon',
-    };
-    const user = await this.usersService.findOne(username);
+    const auth = { intra_id: username, auth_token: token };
+    const isExist = await this.authRepository.findOne(username);
 
-    if (user) await this.usersService.updateAuth(updateDto);
-    else await this.usersService.create(createDto);
+    if (isExist) await this.authRepository.update(username, auth);
+    else await this.authRepository.save(auth);
     this.sendMail(email, token);
     return { url: `http://localhost:8080/2-factor-auth?intra_id=${username}` };
   }
 
   async mailAuth(intra_id: string, auth_value: string) {
-    const user = await this.usersService.findByIntraId(intra_id);
-    const auth_result = user.auth_token === auth_value;
-    return { id: user.nickname, auth_result };
+    let user = await this.usersService.findOne(intra_id);
+    const auth = await this.authRepository.findOne(intra_id);
+    const auth_result = auth ? auth.auth_token === auth_value : false;
+    const nickname = user ? user.nickname : '';
+
+    if (auth_result) await this.authRepository.delete(intra_id);
+    return { id: nickname, auth_result };
   }
 
   // helper functions

@@ -14,6 +14,7 @@ import { chat_room } from '../Entity/ChatRoom.entity';
 import { game_room } from '../Entity/GameRoom.entity';
 import { ChatModule } from 'src/chat/chat.module';
 import { LobbyModule } from '../lobby/lobby.module';
+import { AuthEntity } from 'src/login_out/entities/auth.entity';
 
 @Module({
   imports: [
@@ -24,14 +25,14 @@ import { LobbyModule } from '../lobby/lobby.module';
       username: 'postgres',
       password: 'password',
       database: 'transcendence',
-      entities: [UsersEntity, MatchHistory, chat_room, game_room],
+      entities: [AuthEntity, UsersEntity, MatchHistory, chat_room, game_room],
       synchronize: true,
     }),
     LobbyModule,
     AdminModule,
     ProfileModule,
     MatchHistoryModule,
-	ChatModule,
+    ChatModule,
     LogInOutModule,
   ],
   controllers: [AppController],
