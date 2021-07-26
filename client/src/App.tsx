@@ -4,28 +4,40 @@ import './App.scss';
 import Chat from "./Chat/Chat";
 import Admin from "./Admin/Admin";
 import Lobby from "./Lobby/Lobby"
-import Login from './Login/Login'
 import "./Chat/styles/global.css";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import Auth from './Auth/Auth'
+//import Login from './Login/Login'
 
 function App() {
+
+	const redirect_auth = () => {
+		window.location.href = '/log/auth'
+		return null
+	}
+
 	return (
 	<div className="App">
 		<Router>
 		  <Switch>
-			{
-			<Route exact path="/" render={() => 
-				<Login />
+			<Route exact path="/" render={() =>
+				sessionStorage.getItem('intraID') ? 
+				<Lobby/> : redirect_auth()
 			}/>
-			}
+			<Route exact path="/2-factor-auth" render={() =>
+				<Auth/>
+			}/>
 			<Route path="/Admin" exact render={() =>
-				<Admin/>
+				sessionStorage.getItem('intraID') ? 
+					<Admin/> : redirect_auth()
 			}/>
 			<Route path="/Lobby" exact render={() =>
-				<Lobby/>
+				sessionStorage.getItem('intraID') ? 
+				<Lobby/> : redirect_auth()
 			}/>
 			<Route path="/Chat" exact render={() =>
-				<Chat/>
+				sessionStorage.getItem('intraID') ? 
+				<Chat/> : redirect_auth()
 			}/>
 			<Route
 				render={({location}) => (

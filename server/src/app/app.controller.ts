@@ -17,4 +17,8 @@ export class AppController {
 	public async Lobby(@Req() req: Request, @Res() res: Response) {
 		await res.sendFile(join(__dirname + "/../../../client/build/index.html"));
 	}
+	@Get('2-factor-auth')
+	public async Auth(@Req() req: Request, @Res() res: Response) {
+		await res.sendFile(join(__dirname + "/../../../client/build/index.html"));
+	}
 }

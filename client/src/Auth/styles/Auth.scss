@@ -1,0 +1,23 @@
+.auth-box{
+	margin-top: 400px;
+	text-align: center;
+
+	.auth-comment{
+		font-size: 20px;
+		margin: 10px;
+		color: rgb(51, 50, 50)
+	}
+
+	.auth-btn{
+		background-color: rgb(164, 199, 240);
+		color: white;
+		border: none;
+		border-radius: 10%;
+		margin-left: 5px;
+		height: 30px;
+	}
+
+	.wrong-code{
+		color: red;
+	}
+}
