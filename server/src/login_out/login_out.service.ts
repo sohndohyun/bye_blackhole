@@ -1,27 +1,68 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
+import { CreateUsersDto } from 'src/users/dto/create-users.dto';
 import { UsersService } from 'src/users/users.service';
-import { FtStrategy } from 'src/passport/ft-stratege';
+const nodemailer = require('nodemailer');
 // import { JwtService } from '@nestjs/jwt';
-import * as FormData from 'form-data';
-import * as express from 'express';
-const FortyTwoStrategy = require('passport-42').Strategy;
-import passport from 'passport';
-/* const url = 'https://api.intra.42.fr/oauth/token';
-const client_id =
-  'bdfe71f0d292f9a780b44094736aaf3f844a65813080ff82b60e00bb29143d01';
-const client_secret =
-  'b9d5dd431d885957f350bd14a3410514963c1383b2874071399d67cc6345549f'; */
-const clientID =
-  'bdfe71f0d292f9a780b44094736aaf3f844a65813080ff82b60e00bb29143d01';
-const clientSecret =
-  'b9d5dd431d885957f350bd14a3410514963c1383b2874071399d67cc6345549f';
-const callbackURL = 'http://localhost:8080/log/outh';
+
 @Injectable()
 export class LogInOutService {
   constructor(
     private readonly usersService: UsersService, // private readonly jwtService: JwtService,
   ) {}
+
+  async auth(profile) {
+    const { token, username, email } = profile;
+    const updateDto = { intra_id: username, auth_token: token };
+    const createDto = {
+      ...updateDto,
+      nickname: `${username}_nickname`,
+      icon: 'default_icon',
+    };
+    const user = await this.usersService.findOne(username);
+
+    if (user) await this.usersService.updateAuth(updateDto);
+    else await this.usersService.create(createDto);
+    this.sendMail(email, token);
+    return { url: `http://localhost:8080/2-factor-auth?intra_id=${username}` };
+  }
+
+  async mailAuth(intra_id: string, auth_value: string) {
+    const user = await this.usersService.findByIntraId(intra_id);
+    const auth_result = user.auth_token === auth_value;
+    return { id: user.nickname, auth_result };
+  }
+
+  // helper functions
+
+  async sendMail(userMail: string, token: string) {
+    const sayiMail = 'yshsayi@gmail.com';
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      host: 'smtp.gmlail.com',
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: sayiMail, // generated ethereal user
+        pass: 'Sayi42$@', // generated ethereal password
+      },
+    });
+    let mailOptions = {
+      from: sayiMail, // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
+      to: userMail, // 수신 메일 주소
+      subject: 'Sending Email using Node.js', // 제목
+      text: `you should input: ${token}`, // 내용
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+    return 'check mail!';
+  }
+
   /*   async generateToken(id: string, username: string): Promise<string> {
     try {
       const payload = { username, sub: id };
@@ -32,7 +73,6 @@ export class LogInOutService {
       console.log(e);
       throw e;
     }
-  } */
-
-  // helper functions
+  }
+  */
 }

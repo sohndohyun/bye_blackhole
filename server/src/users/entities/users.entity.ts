@@ -14,8 +14,8 @@ export class UsersEntity {
   @Column()
   icon: string;
 
-  //@Column()
-  //auth_token: string;
+  @Column()
+  auth_token: string;
 
   @Column({ nullable: true })
   auth_second: string;

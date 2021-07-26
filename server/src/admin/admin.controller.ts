@@ -24,7 +24,7 @@ export class AdminController {
   @Patch()
   update(@Body() updateUserDto) {
     // console.log('update');
-    return this.usersService.update(updateUserDto);
+    return this.usersService.updateAdmin(updateUserDto);
   }
 
   // below apis are for test
