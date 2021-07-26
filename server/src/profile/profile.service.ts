@@ -42,6 +42,11 @@ export class ProfileService {
     return await this.matchHistoryService.clear();
   }
 
+  async findMyProfile(intra_id:string) {
+	const user = await this.usersService.findOne(intra_id)
+	return {id:user.nickname, icon:user.icon}
+  }
+
   // helper functions
 
   nullCheckInclude(list: string[], intra_id: string): boolean {

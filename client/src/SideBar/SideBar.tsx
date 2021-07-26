@@ -9,14 +9,27 @@ import GetChatList from './GetChatList'
 const SideBar = () => {
 	const [MyID, setMyID] = useState('')
 	const [MyIcon, setMyIcon] = useState('')
+	const [IntraID, setIntraID] = useState('')
 	
 	useEffect(() => {
-		const id = sessionStorage.getItem('nickname')
-		const icon = sessionStorage.getItem('icon')
-		if (id) setMyID(id)
-		if (icon) setMyIcon(icon)
+		const intra_id = sessionStorage.getItem('intraID')
+		if (intra_id) setIntraID(intra_id)
 	})
-	
+
+	const GetMyProfile = async (url:string) => {
+		if (IntraID)
+		{
+			const res = await axios.get(url)
+			sessionStorage.setItem('nickname', res.data.id)
+			sessionStorage.setItem('icon', res.data.icon)
+			setMyID(res.data.id)
+			setMyIcon(res.data.icon)
+			return (res.data)
+		}
+	}
+	useSwr<{id:string, icon:string}>('/profile/my?intra_id=' + IntraID, GetMyProfile)
+
+
 	const fetcher = async (url:string) => {
 		if (MyID)
 		{

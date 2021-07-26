@@ -23,6 +23,12 @@ export class ProfileController {
     return this.profileService.addBlock(myID, otherID, isBlock);
   }
 
+  @Get('my')
+  findMyProfile(@Query() para) {
+    const { intra_id } = para;
+    return this.profileService.findMyProfile(intra_id)
+  }
+
   // behind functions are for develop
   @Get('all')
   findAll() {
