@@ -49,7 +49,7 @@ export class AppGateway
 	@SubscribeMessage("onSend")
 	async messageReceive(@MessageBody() data, @ConnectedSocket() client) {
 		const {title, nickname, msg, date} = data
-		const user_icon = await axios.post('http://localhost:8080/chat/chatLog', {title:title, id:nickname, content:msg, date:date})
+		const user_icon = await axios.post('http://localhost:8080/chat/chatLog', {title:title, id:nickname, content:msg, date:date, sysMsg:false})
 		
 		this.server.to(title).emit("onReceive", {nickname:nickname, msg:msg, date:date, icon:user_icon.data});
 	}

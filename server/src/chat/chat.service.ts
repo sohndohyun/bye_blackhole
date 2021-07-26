@@ -88,19 +88,50 @@ export class ChatService {
 		return await this.ChatRoomRepository.save(chat_info)
 	}
 
-	async saveChatLog(title, id, date, content){
+	async saveChatLog(title, id, date, content, sysMsg){
 		var chat_info = await this.ChatRoomRepository.findOne({title:title})
 		if (chat_info)
 		{
 			chat_info.messages.push({
-			nickname: id,
-			msg: content,
-			date: date
+				nickname: id,
+				msg: content,
+				date: date,
+				sysMsg: sysMsg
 			})
 			await this.ChatRoomRepository.save(chat_info)
 	
 			const user_info = await this.UserRepository.findOne({nickname:id})
 			return user_info.icon
 		}
+	}
+
+	async getChatLog(title){
+		let chat_info = await this.ChatRoomRepository.findOne({title:title})
+		let res : {}[] = []
+		for(let i = 0; i < chat_info.messages.length; i++)
+		{
+			const user = await this.UserRepository.findOne({nickname: chat_info.messages[i].nickname})
+			if (chat_info.messages[i].sysMsg)
+			{
+				res.push({
+					id: chat_info.messages[i].nickname, 
+					date: '',
+					content: chat_info.messages[i].msg, 
+					icon: '',
+					sysMsg: true
+				})
+			}
+			else
+			{
+				res.push({
+					id: chat_info.messages[i].nickname, 
+					date: chat_info.messages[i].date, 
+					content: chat_info.messages[i].msg, 
+					icon: user.icon,
+					sysMsg: false
+				})
+			}
+		}
+		return res;
 	}
 }
