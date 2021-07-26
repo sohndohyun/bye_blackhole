@@ -6,7 +6,7 @@ const clientID =
   'bdfe71f0d292f9a780b44094736aaf3f844a65813080ff82b60e00bb29143d01';
 const clientSecret =
   'b9d5dd431d885957f350bd14a3410514963c1383b2874071399d67cc6345549f';
-const callbackURL = 'http://localhost:8080/log/in';
+const callbackURL = 'http://localhost:8080/log/auth';
 
 @Injectable()
 export class FtStrategy extends PassportStrategy(Strategy) {
@@ -21,9 +21,6 @@ export class FtStrategy extends PassportStrategy(Strategy) {
     console.log('🎶');
     try {
       const { id, username, emails } = profile;
-      console.log(`${id}, ${username}`);
-      console.log(emails[0].value);
-      console.log(token);
       if (profile._json.cursus_users.length < 2)
         throw new NotAcceptableException();
       const user = {

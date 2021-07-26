@@ -15,13 +15,13 @@ export class UsersService {
 
   async create(createUsersDto: CreateUsersDto) {
     let newUser = new UsersEntity();
-    //const { intra_id, nickname, auth_token, icon } = createUsersDto;
-	const { intra_id, nickname, icon } = createUsersDto;
+    const { intra_id, nickname, auth_token, icon } = createUsersDto;
+    // const { intra_id, nickname, icon } = createUsersDto;
     newUser.intra_id = intra_id;
     newUser.nickname = nickname;
-    //newUser.auth_token = auth_token;
+    newUser.auth_token = auth_token;
     newUser.icon = icon;
-	newUser.state = 'on';
+    newUser.state = 'on';
     await this.duplicateCheck('intra_id', { intra_id }, intra_id);
     await this.duplicateCheck('nickname', { nickname }, nickname);
     const usersEntity = await this.usersRepository.save(newUser).then((v) => v);
@@ -32,6 +32,9 @@ export class UsersService {
     return await this.usersRepository.find();
   }
 
+  async findOne(intra_id: string) {
+    return await this.usersRepository.findOne({ intra_id });
+  }
   async findByIntraId(intra_id: string) {
     return await this.existCheck('intra_id', { intra_id }, intra_id);
   }
@@ -40,12 +43,17 @@ export class UsersService {
     return await this.existCheck('nickname', { nickname }, nickname);
   }
 
-  async update(updateUserDto: UpdateUsersDto) {
+  async updateAdmin(updateUserDto: UpdateUsersDto) {
     const { intra_id, nickname } = updateUserDto;
     await this.existCheck('intra_id', { intra_id }, intra_id);
     await this.duplicateCheck('nickname', { nickname }, nickname);
-    const updateResult = this.usersRepository.update(intra_id, updateUserDto);
-    return updateResult;
+    return await this.usersRepository.update(intra_id, updateUserDto);
+  }
+
+  async updateAuth(updateUserDto: UpdateUsersDto) {
+    const { intra_id } = updateUserDto;
+    await this.existCheck('intra_id', { intra_id }, intra_id);
+    return await this.usersRepository.update(intra_id, updateUserDto);
   }
 
   async addFriend(myID: string, otherID: string, isFriend: boolean) {
