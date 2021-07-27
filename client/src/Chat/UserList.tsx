@@ -40,17 +40,19 @@ const UserList = ({ users, MyPermission, getRoomInfoMutate, roomName } : IUserLi
 		<div className="userList-container">
 			{users?.map(user=>
 			<div className="userList-box">
-				<button className="userList-btn" onClick={() => MyPermission !== 'user' && user.permission === 'user' ? openUserListModal(user.id): null}>
+				<button className="userList-btn" onClick={() => 
+					(MyPermission === 'owner' || MyPermission === 'admin') && 
+					(user.permission === 'user' || user.permission === 'muted') ? openUserListModal(user.id): null}>
 					<span className="iconBox">
 						<span><img src={findImg(user.icon)} width="30" height="30" className="icon"/></span>
-						<span>{user.permission !== 'user' ?
+						<span>{(user.permission === 'owner' || user.permission === 'admin') ?
 							<img src={crown} width="20" height="20" className={user.permission === 'owner' ? 'crown owner' : 'crown admin'}/>
 							: null
 						}</span>
 					</span>
 					<span className='id'>{user.id}</span>
 				</button>
-				<span>{MyPermission === 'owner' && user.permission === 'user' ?
+				<span>{MyPermission === 'owner' && (user.permission === 'user' || user.permission === 'muted') ?
 					<button className="owner-plusBtn" onClick={() => plusBtn(user.id)}>+</button>
 					: null
 				}</span>

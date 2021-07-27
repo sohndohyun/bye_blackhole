@@ -41,6 +41,12 @@ const UserInfoModal = ( props: any) => {
 		sessionStorage.setItem('roomName', chatRoomName)
 	}
 
+	async function Logout(){
+		const intra_id = sessionStorage.getItem('intraID')
+		await axios.patch('log/out' , {intra_id : intra_id})
+		document.location.href = '/log/in'
+	}
+
 	return (
 		<div className={ open ? 'openModal Modal' : 'Modal' }>
 			{ open ? (
@@ -66,7 +72,13 @@ const UserInfoModal = ( props: any) => {
 					</div>
 					<div className="bottom">
 					{myID === targetID ? 
-						<a className="btn button" onClick={()=> document.location.href = '/Admin/'}><b>Admin</b></a>
+						<>
+							<a className="btn button" onClick={()=> 
+								document.location.href = '/Admin/'
+							}><b>Admin</b></a>
+							&nbsp;
+							<a className="btn button" onClick={Logout}><b>Logout</b></a>
+						</>
 						:
 						<div>
 						<span className="onoffbtn">
