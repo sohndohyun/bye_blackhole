@@ -3,6 +3,7 @@ import { UsersService } from 'src/users/users.service';
 import { AuthRepository } from './auth.repository';
 const nodemailer = require('nodemailer');
 // import { JwtService } from '@nestjs/jwt';
+import * as process from 'process'
 
 @Injectable()
 export class LogInOutService {
@@ -59,12 +60,12 @@ export class LogInOutService {
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: sayiMail, // generated ethereal user
-        pass: 'Sayi42$@', // generated ethereal password
+        user: process.env.EMAILID, // generated ethereal user
+        pass: process.env.EMAILPWD, // generated ethereal password
       },
     });
     let mailOptions = {
-      from: sayiMail, // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
+      from: process.env.EMAILID, // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
       to: userMail, // 수신 메일 주소
       subject: 'Sending Email using Node.js', // 제목
       text: `you should input: ${token}`, // 내용
