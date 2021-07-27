@@ -9,6 +9,7 @@ export class MatchHistoryService {
   constructor(
     private readonly matchHistoryRepository: MatchHistoryRepository,
   ) {}
+
   async create(createMatchHistoryDto: CreateMatchHistoryDto) {
     const newMatchHistory = this.createMatchHistory(createMatchHistoryDto);
     const result = await this.matchHistoryRepository.save(newMatchHistory);
@@ -20,16 +21,9 @@ export class MatchHistoryService {
     const p2_list = await this.matchHistoryRepository.find({ p2_id: intra_id });
     return p1_list.concat(p2_list);
   }
+
   async findAll() {
     return await this.matchHistoryRepository.find();
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} matchHistory`;
-  }
-
-  update(id: number, updateMatchHistoryDto: UpdateMatchHistoryDto) {
-    return `This action updates a #${id} matchHistory`;
   }
 
   async clear() {
