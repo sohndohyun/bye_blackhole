@@ -97,7 +97,7 @@ const Chat = () => {
 			<div className="chat-top">
 				<span className="RoomInfo-num">{data?.num}</span>
 				<span>{roomName}</span>
-				{MyPermission !== 'user' ? 
+				{(MyPermission === 'owner' || MyPermission === 'admin')? 
 					<button className="setting-btn" onClick={openChatSettingModal}>
 						<img src={setting} width="30" height="30"></img>
 					</button>
@@ -111,7 +111,7 @@ const Chat = () => {
 						<ChatLog socket={currentSocket} MyID={MyID} roomName={roomName}/>
 					</div>
 					<div className="chatLog-bottom">
-						<ChatInput socket={currentSocket}/>
+						<ChatInput socket={currentSocket} MyPermission={MyPermission}/>
 					</div>
 				</span>
 				<span className="right-chatUser">

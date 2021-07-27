@@ -3,7 +3,7 @@ import "./styles/ChatInput.css";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import {Button} from "react-bootstrap";
 
-const ChatInput = ({socket}: any) => {
+const ChatInput = ({socket, MyPermission}: any) => {
 	const [chatMessage, setChatMessage] = useState("");
 	const [MyID, setMyID] = useState('')
 	const [roomName, setRoomName] = useState('')
@@ -32,13 +32,15 @@ const ChatInput = ({socket}: any) => {
 
   return (
     <div>
-      <form className="ChatInput-form" onSubmit={handleSubmit}>
+      <form className="ChatInput-form" onSubmit={() => MyPermission == 'muted' ? null : handleSubmit}>
         <input type="text" className="form-control"
           placeholder="Enter message"
           value={chatMessage}
           onChange={onChatMessageChange}
         ></input>
-        <Button type="button" className="btn btn-sm" onClick={handleSubmit}>send</Button>
+		{MyPermission == 'muted' ? null
+        	: <Button type="button" className="btn btn-sm" onClick={handleSubmit}>send</Button>
+  		}
       </form>
     </div>
   );

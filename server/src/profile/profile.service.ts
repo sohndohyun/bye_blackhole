@@ -44,7 +44,7 @@ export class ProfileService {
 
   async findMyProfile(intra_id:string) {
 	const user = await this.usersService.findOne(intra_id)
-	return {id:user.nickname, icon:user.icon}
+	return {id:user.nickname, icon:user.icon, state:user.state}
   }
 
   // helper functions

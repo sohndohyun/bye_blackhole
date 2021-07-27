@@ -7,7 +7,6 @@ import Lobby from "./Lobby/Lobby"
 import "./Chat/styles/global.css";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import Auth from './Auth/Auth'
-//import Login from './Login/Login'
 
 function App() {
 
@@ -22,22 +21,26 @@ function App() {
 		  <Switch>
 			<Route exact path="/" render={() =>
 				sessionStorage.getItem('intraID') ? 
-				<Lobby/> : redirect_auth()
+					<Lobby/>
+				: redirect_auth()
 			}/>
 			<Route exact path="/2-factor-auth" render={() =>
 				<Auth/>
 			}/>
 			<Route path="/Admin" exact render={() =>
 				sessionStorage.getItem('intraID') ? 
-					<Admin/> : redirect_auth()
+					<Admin/> 
+				: redirect_auth()
 			}/>
 			<Route path="/Lobby" exact render={() =>
 				sessionStorage.getItem('intraID') ? 
-				<Lobby/> : redirect_auth()
+					<Lobby/> 
+				: redirect_auth()
 			}/>
 			<Route path="/Chat" exact render={() =>
 				sessionStorage.getItem('intraID') ? 
-				<Chat/> : redirect_auth()
+					<Chat/> 
+				: redirect_auth()
 			}/>
 			<Route
 				render={({location}) => (
