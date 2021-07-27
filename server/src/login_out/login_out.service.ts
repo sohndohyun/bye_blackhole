@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { AuthRepository } from './auth.repository';
 const nodemailer = require('nodemailer');
@@ -30,6 +30,13 @@ export class LogInOutService {
 
     if (auth_result) await this.authRepository.delete(intra_id);
     return { id: nickname, auth_result };
+  }
+
+  async logout(intra_id: string) {
+    return await this.usersService.updateAuth({
+      intra_id,
+      state: 'off',
+    });
   }
 
   // helper functions

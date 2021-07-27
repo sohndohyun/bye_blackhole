@@ -20,11 +20,11 @@ export class FtStrategy extends PassportStrategy(Strategy) {
   async validate(token: string, rt: string, profile: any) {
     console.log('🎶');
     try {
-      const { id, username, emails } = profile;
+      const { username, emails } = profile;
       if (profile._json.cursus_users.length < 2)
         throw new NotAcceptableException();
       const user = {
-        token: token.substring(0, 4),
+        token: this.createToken(),
         username,
         email: emails[0].value,
       };
@@ -34,5 +34,9 @@ export class FtStrategy extends PassportStrategy(Strategy) {
       console.log(e);
       throw e;
     }
+  }
+
+  createToken() {
+    return Math.random().toString(36).substring(2, 6);
   }
 }

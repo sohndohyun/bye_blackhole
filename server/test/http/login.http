@@ -1,1 +1,6 @@
-GET https://api.intra.42.fr/oauth/authorize?client_id=bdfe71f0d292f9a780b44094736aaf3f844a65813080ff82b60e00bb29143d01&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Flog%2Fin&response_type=code HTTP/1.1
+PATCH http://localhost:8080/log/out HTTP/1.1
+Content-Type: application/json
+
+{
+	"intra_id":"sayi"
+}
