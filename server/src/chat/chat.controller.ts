@@ -55,4 +55,14 @@ export class ChatController {
 	async getChatLog(@Query('title') title:string){
 		return await this.chatService.getChatLog(title)
 	}
+
+	@Get('mute')
+	async getMute(@Query('title') title:string, @Query('id') id:string){
+		return await this.chatService.getMute(title, id)
+	}
+
+	@Put('mute')
+	async putMute(@Body() {title, id, isMuted}){
+		return await this.chatService.putMute(title, id, isMuted)
+	}
 }

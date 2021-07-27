@@ -28,11 +28,21 @@ export class LogInOutService {
     const auth_result = auth ? auth.auth_token === auth_value : false;
     const nickname = user ? user.nickname : '';
 
+	//login
+	if (nickname)
+	{
+		await this.usersService.updateAuth({
+			intra_id,
+			state: 'on',
+		});
+	}
+
     if (auth_result) await this.authRepository.delete(intra_id);
     return { id: nickname, auth_result };
   }
 
   async logout(intra_id: string) {
+	  console.log('logout!!!!')
     return await this.usersService.updateAuth({
       intra_id,
       state: 'off',

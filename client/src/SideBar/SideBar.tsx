@@ -24,10 +24,12 @@ const SideBar = () => {
 			sessionStorage.setItem('icon', res.data.icon)
 			setMyID(res.data.id)
 			setMyIcon(res.data.icon)
+			if (res.data.state === 'off')
+				document.location.href = '/log/in'
 			return (res.data)
 		}
 	}
-	useSwr<{id:string, icon:string}>('/profile/my?intra_id=' + IntraID, GetMyProfile)
+	useSwr<{id:string, icon:string, state:string}>('/profile/my?intra_id=' + IntraID, GetMyProfile)
 
 
 	const fetcher = async (url:string) => {

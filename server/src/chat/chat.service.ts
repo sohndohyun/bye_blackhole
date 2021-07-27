@@ -134,4 +134,45 @@ export class ChatService {
 		}
 		return res;
 	}
+
+	async getMute(title, id){
+		const chat_info = await this.ChatRoomRepository.findOne({title:title})
+		const user = chat_info.chat_member.find(mem => mem.nickname === id)
+		if (user.permission === 'muted')
+			return ({isMuted: true})
+		else
+			return ({isMuted: false})
+	}
+
+	async putMute(title, id, isMuted){
+		const chat_info = await this.ChatRoomRepository.findOne({title:title})
+		for (let i = 0; i < chat_info.chat_member.length; i++)
+		{
+			if (chat_info.chat_member[i].nickname === id)
+			{
+				if (isMuted && chat_info.chat_member[i].permission === 'user')
+				{
+					chat_info.chat_member[i].permission = 'muted'
+					chat_info.messages.push({
+						nickname: id,
+						msg: '님의 채팅이 금지되었습니다.',
+						date: null,
+						sysMsg: true
+					})
+				}
+				else if (!isMuted && chat_info.chat_member[i].permission === 'muted')
+				{
+					chat_info.chat_member[i].permission = 'user'
+					chat_info.messages.push({
+						nickname: id,
+						msg: '님의 채팅금지가 해제되었습니다.',
+						date: null,
+						sysMsg: true
+					})
+				}
+				break ;
+			}
+		}
+		return await this.ChatRoomRepository.save(chat_info)
+	}
 }
