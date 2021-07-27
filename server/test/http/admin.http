@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
 	"intra_id": "sayi",
-	"nickname": "jinkimnick",
+	"nickname": "sayinick",
 	"auth_token" : "sayi@@mail",
 	"icon" : "sayi is sayi",
 	"friend_list": ["taekkim", "jinkim"]

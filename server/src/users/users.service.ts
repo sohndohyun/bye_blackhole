@@ -15,11 +15,9 @@ export class UsersService {
 
   async create(createUsersDto: CreateUsersDto) {
     let newUser = new UsersEntity();
-    //const { intra_id, nickname, auth_token, icon } = createUsersDto;
     const { intra_id, nickname, icon } = createUsersDto;
     newUser.intra_id = intra_id;
     newUser.nickname = nickname;
-    //newUser.auth_token = auth_token;
     newUser.icon = icon;
     newUser.state = 'on';
     await this.duplicateCheck('intra_id', { intra_id }, intra_id);

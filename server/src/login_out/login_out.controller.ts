@@ -6,6 +6,7 @@ import {
   Post,
   Body,
   Request,
+  Patch,
 } from '@nestjs/common';
 import { FtAuthGuard } from 'src/passport/ft-auth.guard';
 import { LogInOutService } from './login_out.service';
@@ -36,5 +37,9 @@ export class LogInOutController {
     return await this.logInOutService.mailAuth(intra_id, auth_value);
   }
 
+  @Patch(`out`)
+  async logout(@Body(`intra_id`) intra_id: string) {
+    return await this.logInOutService.logout(intra_id);
+  }
   // below apis are for test
 }

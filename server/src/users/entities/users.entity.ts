@@ -11,14 +11,8 @@ export class UsersEntity {
   @Column({ nullable: true })
   state: string;
 
-  @Column()
+  @Column({ default: 'gamer_keyboard' })
   icon: string;
-
-  //@Column()
-  //auth_token: string;
-
-  @Column({ nullable: true })
-  auth_second: string;
 
   @Column({ default: 1000 })
   ladder_level: number;
