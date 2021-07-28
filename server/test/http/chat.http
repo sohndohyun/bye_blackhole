@@ -1,0 +1,4 @@
+
+GET  http://localhost:8080/chat/all HTTP/1.1
+
+# DELETE http://localhost:8080/chat HTTP/1.1

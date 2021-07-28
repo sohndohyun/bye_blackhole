@@ -3,7 +3,7 @@ import { UsersService } from 'src/users/users.service';
 import { AuthRepository } from './auth.repository';
 const nodemailer = require('nodemailer');
 // import { JwtService } from '@nestjs/jwt';
-import * as process from 'process'
+import * as process from 'process';
 
 @Injectable()
 export class LogInOutService {
@@ -13,13 +13,13 @@ export class LogInOutService {
   ) {}
 
   async auth(profile) {
-    const { token, username, email } = profile;
-    const auth = { intra_id: username, auth_token: token };
+    const { username, email } = profile;
+    const auth = { intra_id: username, auth_token: `1111` };
     const isExist = await this.authRepository.findOne(username);
 
     if (isExist) await this.authRepository.update(username, auth);
     else await this.authRepository.save(auth);
-    this.sendMail(email, token);
+    this.sendMail(email, `1111`);
     return { url: `http://localhost:8080/2-factor-auth?intra_id=${username}` };
   }
 
@@ -29,21 +29,19 @@ export class LogInOutService {
     const auth_result = auth ? auth.auth_token === auth_value : false;
     const nickname = user ? user.nickname : '';
 
-	//login
-	if (nickname)
-	{
-		await this.usersService.updateAuth({
-			intra_id,
-			state: 'on',
-		});
-	}
+    //login
+    if (nickname) {
+      await this.usersService.updateAuth({
+        intra_id,
+        state: 'on',
+      });
+    }
 
     if (auth_result) await this.authRepository.delete(intra_id);
     return { id: nickname, auth_result };
   }
 
   async logout(intra_id: string) {
-	  console.log('logout!!!!')
     return await this.usersService.updateAuth({
       intra_id,
       state: 'off',
