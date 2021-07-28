@@ -5,14 +5,14 @@ let user = {
   intra_id: 'sayi',
   nickname: 'intra_dup',
   auth_token: 'sayi token',
-  icon: 'sayi is sayi',
+  icon: 'gamer_keyboard',
 };
 
 let user2 = {
   intra_id: 'taekim',
   nickname: 'taekimnick',
   auth_token: 'taekim token',
-  icon: 'taekim is taekim',
+  icon: 'gamer_boy',
 };
 
 const testCreateUser = async (
