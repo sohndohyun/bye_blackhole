@@ -4,7 +4,6 @@ import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ProfileService {
-
   constructor(
     private readonly matchHistoryService: MatchHistoryService,
     private readonly usersService: UsersService,
@@ -42,9 +41,9 @@ export class ProfileService {
     return await this.matchHistoryService.clear();
   }
 
-  async findMyProfile(intra_id:string) {
-	const user = await this.usersService.findOne(intra_id)
-	return {id:user.nickname, icon:user.icon, state:user.state}
+  async findMyProfile(intra_id: string) {
+    const user = await this.usersService.findOne(intra_id);
+    return { id: user.nickname, icon: user.icon, state: user.state };
   }
 
   // helper functions
@@ -58,7 +57,6 @@ export class ProfileService {
     let profile = { history: [], win: 0, lose: 0 };
     const total_history = await this.matchHistoryService.findById(intra_id);
 
-    console.log(total_history);
     if (total_history) {
       let count = 5;
       for (let index = total_history.length - 1; index >= 0; index--) {
