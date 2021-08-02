@@ -180,38 +180,37 @@ export class LobbyService {
   }
 
   async enterChatRoom(title: string, id: string, password: string) {
-    const chat_info = await this.ChatRoomRepository.findOne({ title: title });
-    if (
-      (chat_info.security === 'protected' && chat_info.password === password) ||
-      chat_info.security === 'public'
-    ) {
-      //ban된 멤버인지 확인
-      const banned_idx = chat_info.chat_banned.findIndex(
-        (chat) => chat.nickname === id,
-      );
-      if (banned_idx > -1) return false;
+    var chat_info = await this.ChatRoomRepository.findOne({title:title})
+	if ((chat_info.security === 'protected' && chat_info.password === password) || 
+		(chat_info.security === 'public'))
+	{
+		//ban된 멤버인지 확인
+		const banned_idx = chat_info.chat_banned.findIndex(chat => chat.nickname === id)
+		if (banned_idx > -1) return false
 
-      const user_info = await this.UserRepository.findOne({ nickname: id });
-      const found_title = user_info.chat_room.find((title) => title === title);
-      if (found_title !== title) {
-        user_info.chat_room.push(title);
-        await this.UserRepository.save(user_info);
-      }
-      const found_user = chat_info.chat_member.find(
-        (user) => user.nickname === id,
-      );
-      if (!found_user) {
-        chat_info.chat_member.push({ nickname: id, permission: 'user' });
-        chat_info.messages.push({
-          nickname: id,
-          msg: '님이 입장했습니다.',
-          date: null,
-          sysMsg: true,
-        });
-        await this.ChatRoomRepository.save(chat_info);
-      }
-      return true;
-    } else return false;
+		const user_info = await this.UserRepository.findOne({nickname:id})
+		const found_title = user_info.chat_room.find(v => v === title)
+		if (found_title !== title)
+		{
+			user_info.chat_room.push(title)
+			await this.UserRepository.save(user_info)
+		}
+		const found_user = chat_info.chat_member.find(user => user.nickname === id)
+		if (!found_user)
+		{
+			chat_info.chat_member.push({nickname:id, permission:'user'})
+			chat_info.messages.push({
+				nickname: id,
+				msg: '님이 입장했습니다.',
+				date: null,
+				sysMsg: true
+			})
+			await this.ChatRoomRepository.save(chat_info)
+		}
+		return true
+	}
+	else 
+		return false;
   }
 
   async deleteMyChat(title: string, id: string) {
