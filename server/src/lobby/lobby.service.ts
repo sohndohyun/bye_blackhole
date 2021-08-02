@@ -185,7 +185,7 @@ export class LobbyService {
 		if (banned_idx > -1) return false
 
 		const user_info = await this.UserRepository.findOne({nickname:id})
-		const found_title = user_info.chat_room.find(title => title === title)
+		const found_title = user_info.chat_room.find(v => v === title)
 		if (found_title !== title)
 		{
 			user_info.chat_room.push(title)
