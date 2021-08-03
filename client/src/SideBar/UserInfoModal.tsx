@@ -30,15 +30,22 @@ const UserInfoModal = ( props: any) => {
 		setIsBlock(!IsBlock);
 	},[IsBlock]);
 
+	//block modal
+	const [BlockModal, setBlockModal] = useState(false);
 
-	async function makeDM(){
+	function makeDM(){
 		if (myID.localeCompare(targetID) < 0)
 			var chatRoomName = 'DM_' + myID + '_' + targetID
 		else
 			var chatRoomName = 'DM_' + targetID + '_' + myID
-		await axios.post('/Lobby/chatCreate', {title: chatRoomName, password:'', owner_id:myID, security:'private'})
-		document.location.href = '/chat'
-		sessionStorage.setItem('roomName', chatRoomName)
+		axios.post('/Lobby/chatCreate', {title: chatRoomName, password:'', owner_id:myID, security:'private'})
+		.then((res) => {
+			document.location.href = '/chat'
+			sessionStorage.setItem('roomName', chatRoomName)
+		})
+		.catch((err) => {
+			setBlockModal(true)
+		})
 	}
 
 	async function Logout(){
@@ -49,7 +56,24 @@ const UserInfoModal = ( props: any) => {
 
 	return (
 		<div className={ open ? 'openModal Modal' : 'Modal' }>
-			{ open ? (
+			{ open ? ( 
+			  BlockModal ? 
+				<section>
+					<div className="head">
+						<button className="close" onClick={() => {
+							close()
+							setBlockModal(false)
+						}}> &times; </button>
+					</div>
+					<div className="content">
+						<div className="header">
+							<hr/>
+							<div className="name lose-color">DM 채팅방을 생성할 수 없습니다.</div>
+							<hr/>
+						</div>
+					</div>
+				</section>
+				:
 				<section>
 					<div className="head">
 						<button className="close" onClick={close}> &times; </button>
@@ -105,7 +129,7 @@ const UserInfoModal = ( props: any) => {
 					}
 					</div>
 				</section>
-			) : null }
+			): null }
 		</div>
 	)
 }

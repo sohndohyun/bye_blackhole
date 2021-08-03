@@ -17,13 +17,16 @@ const ChatInput = ({socket, MyPermission}: any) => {
 
 	const handleSubmit = (e:any) => {
 		e.preventDefault();
-		socket.emit("onSend", {
-			title: roomName,
-			nickname: MyID,
-			msg: chatMessage,
-			date: new Date().toLocaleTimeString(),
-		});
-		setChatMessage("");
+		if (MyPermission !== 'muted')
+		{
+			socket.emit("onSend", {
+				title: roomName,
+				nickname: MyID,
+				msg: chatMessage,
+				date: new Date().toLocaleTimeString(),
+			});
+			setChatMessage("");
+		}
 	};
 
   const onChatMessageChange = (e:any) => {
@@ -32,13 +35,13 @@ const ChatInput = ({socket, MyPermission}: any) => {
 
   return (
     <div>
-      <form className="ChatInput-form" onSubmit={() => MyPermission == 'muted' ? null : handleSubmit}>
+      <form className="ChatInput-form" onSubmit={handleSubmit}>
         <input type="text" className="form-control"
           placeholder="Enter message"
           value={chatMessage}
           onChange={onChatMessageChange}
         ></input>
-		{MyPermission == 'muted' ? null
+		{MyPermission === 'muted' ? null
         	: <Button type="button" className="btn btn-sm" onClick={handleSubmit}>send</Button>
   		}
       </form>

@@ -82,10 +82,11 @@ export class LobbyService {
         });
 
         //block됐는지 확인
+        const owner_info = await this.UserRepository.findOne({nickname:owner_id})
+
         const isblock = other_info.block_list.find(
-          (block) => block === owner_id,
+          (block) => block === owner_info.intra_id,
         );
-        console.log(isblock);
         if (isblock) return null;
         else other_info.chat_room.push(title);
 
