@@ -4,7 +4,7 @@ import { Repository } from 'typeorm/index';
 import { chat_room } from '../Entity/ChatRoom.entity';
 import { game_room } from '../Entity/GameRoom.entity';
 import { UsersService } from 'src/users/users.service';
-import { UsersEntity } from '../users/entities/users.entity'
+import { UsersEntity } from '../users/entities/users.entity';
 
 @Injectable()
 export class LobbyService {
@@ -21,8 +21,9 @@ export class LobbyService {
   async getChatList(): Promise<
     { title: string; num: number; security: string }[]
   > {
-    var data = await this.ChatRoomRepository.find();
-    var chatList: Array<{ title: string; num: number; security: string }> = [];
+    const data = await this.ChatRoomRepository.find();
+    const chatList: Array<{ title: string; num: number; security: string }> =
+      [];
 
     data?.map((chatRoom) => {
       if (chatRoom.security !== 'private')
@@ -39,8 +40,8 @@ export class LobbyService {
   async getGameList(): Promise<
     { p1: string; p2: string; speed: boolean; ladder: boolean }[]
   > {
-    var data = await this.GameRoomRepository.find();
-    var chatList: Array<{
+    const data = await this.GameRoomRepository.find();
+    const chatList: Array<{
       p1: string;
       p2: string;
       speed: boolean;
@@ -65,47 +66,46 @@ export class LobbyService {
     security,
     owner_id,
   ): Promise<chat_room> {
-    const chat_info = await this.ChatRoomRepository.findOne({title:title})
-	if (!chat_info){
-		const info = await this.UserRepository.findOne({nickname:owner_id})
-		info.chat_room.push(title)
-		
-		var chat_mem = [{nickname: owner_id, permission: 'owner'}]
-		
-		if (security === 'private')
-		{
-			const userID = title.split('_')
-			if (userID[1] === owner_id)
-			var otherID = userID[2]
-			else
-			var otherID = userID[1]
-			var other_info = await this.UserRepository.findOne({nickname:otherID})
-			
-			//block됐는지 확인
-			const owner_info = await this.UserRepository.findOne({nickname:owner_id})
-			const isblock = other_info.block_list.find(block => block === owner_info.intra_id)
-			if (isblock)
-				return null
-			else
-				other_info.chat_room.push(title)
-			
-			chat_mem = [
-				{nickname: owner_id, permission: 'user'}, 
-				{nickname: otherID, permission: 'user'}
-			]
-			
-			await this.UserRepository.save(other_info)
-		}
-		
-		await this.UserRepository.save(info)
-		return await this.ChatRoomRepository.save({
-			title: title, 
-			password: password,
-			security: security,
-			chat_member: chat_mem
-		})
-	}
-	else return null;
+    const chat_info = await this.ChatRoomRepository.findOne({ title: title });
+    if (!chat_info) {
+      const info = await this.UserRepository.findOne({ nickname: owner_id });
+      info.chat_room.push(title);
+
+      let chat_mem = [{ nickname: owner_id, permission: 'owner' }];
+
+      if (security === 'private') {
+        const userID = title.split('_');
+        if (userID[1] === owner_id) var otherID = userID[2];
+        else var otherID = userID[1];
+        const other_info = await this.UserRepository.findOne({
+          nickname: otherID,
+        });
+
+        //block됐는지 확인
+        const owner_info = await this.UserRepository.findOne({nickname:owner_id})
+
+        const isblock = other_info.block_list.find(
+          (block) => block === owner_info.intra_id,
+        );
+        if (isblock) return null;
+        else other_info.chat_room.push(title);
+
+        chat_mem = [
+          { nickname: owner_id, permission: 'user' },
+          { nickname: otherID, permission: 'user' },
+        ];
+
+        await this.UserRepository.save(other_info);
+      }
+
+      await this.UserRepository.save(info);
+      return await this.ChatRoomRepository.save({
+        title: title,
+        password: password,
+        security: security,
+        chat_member: chat_mem,
+      });
+    } else return null;
   }
 
   async createGameRoom(nickname, speed, ladder): Promise<game_room> {
@@ -125,11 +125,16 @@ export class LobbyService {
   ): Promise<{ id: string; icon: string; state: string; isFriend: boolean }[]> {
     const { friend_list } = await this.usersService.findByNickname(id);
     const allUser = await this.usersService.findAll();
-    let userList = [];
+    const userList = [];
     allUser.forEach((v) => {
       const isFriend = friend_list ? friend_list.includes(v.intra_id) : false;
-	  if (v.nickname !== id)
-      	userList.push({ id: v.nickname, icon: v.icon, state: v.state, isFriend });
+      if (v.nickname !== id)
+        userList.push({
+          id: v.nickname,
+          icon: v.icon,
+          state: v.state,
+          isFriend,
+        });
     });
     return userList;
     /* const info = await this.UserRepository.findOne({ nickname: id });
@@ -167,9 +172,9 @@ export class LobbyService {
     };
 
     const data = await this.ChatRoomRepository.find();
-    var chat: { title: string; num: number }[] = [];
+    const chat: { title: string; num: number }[] = [];
     data.map((d) => {
-      var is_my_chat = isMyChat(d.title);
+      const is_my_chat = isMyChat(d.title);
       if (is_my_chat) chat.push({ title: d.title, num: d.chat_member.length });
     });
     return chat;
@@ -210,46 +215,43 @@ export class LobbyService {
   }
 
   async deleteMyChat(title: string, id: string) {
-    var userInfo = await this.UserRepository.findOne({nickname:id})
-	let idx = userInfo.chat_room.indexOf(title)
-	if (idx > -1) userInfo.chat_room.splice(idx, 1)
-	await this.UserRepository.save(userInfo)
+    const userInfo = await this.UserRepository.findOne({ nickname: id });
+    let idx = userInfo.chat_room.indexOf(title);
+    if (idx > -1) userInfo.chat_room.splice(idx, 1);
+    await this.UserRepository.save(userInfo);
 
-	var chat_info = await this.ChatRoomRepository.findOne({title:title})
-	const found_user = chat_info.chat_member.find((user) => user.nickname === id)
-	idx = chat_info.chat_member.indexOf(found_user)
+    const chat_info = await this.ChatRoomRepository.findOne({ title: title });
+    const found_user = chat_info.chat_member.find(
+      (user) => user.nickname === id,
+    );
+    idx = chat_info.chat_member.indexOf(found_user);
 
-	if (chat_info.chat_member.length <= 1)
-		return await this.ChatRoomRepository.delete({title:title})
+    if (chat_info.chat_member.length <= 1)
+      return await this.ChatRoomRepository.delete({ title: title });
 
-	chat_info.messages.push({
-		nickname: id,
-		msg: '님이 퇴장하셨습니다.',
-		date: null,
-		sysMsg: true
-	})
+    chat_info.messages.push({
+      nickname: id,
+      msg: '님이 퇴장하셨습니다.',
+      date: null,
+      sysMsg: true,
+    });
 
-	//permission owner인 경우, 다른 사람에게 onwer 넘겨주기(admin중 한명?)
-	if (chat_info.chat_member[idx].permission == 'owner')
-	{
-		for(let i = 0; i < chat_info.chat_member.length; i++)
-		{
-			if (chat_info.chat_member[i].permission === 'admin')
-			{
-				var new_owner_idx = i
-				break;
-			}
-			else if (chat_info.chat_member[i].permission !== 'owner')
-			{
-				var new_owner_idx = i
-				break;
-			}
-		}
-		chat_info.chat_member[new_owner_idx].permission = "owner"
-	}
+    //permission owner인 경우, 다른 사람에게 onwer 넘겨주기(admin중 한명?)
+    if (chat_info.chat_member[idx].permission == 'owner') {
+      for (let i = 0; i < chat_info.chat_member.length; i++) {
+        if (chat_info.chat_member[i].permission === 'admin') {
+          var new_owner_idx = i;
+          break;
+        } else if (chat_info.chat_member[i].permission !== 'owner') {
+          var new_owner_idx = i;
+          break;
+        }
+      }
+      chat_info.chat_member[new_owner_idx].permission = 'owner';
+    }
 
-	if (idx > -1) chat_info.chat_member.splice(idx, 1)
-	
-	return await this.ChatRoomRepository.save(chat_info)
+    if (idx > -1) chat_info.chat_member.splice(idx, 1);
+
+    return await this.ChatRoomRepository.save(chat_info);
   }
 }

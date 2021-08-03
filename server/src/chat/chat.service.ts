@@ -49,8 +49,12 @@ export class ChatService {
 
   async addBan(title: string, id: string) {
     var chat_info = await this.ChatRoomRepository.findOne({ title: title });
-    const date = new Date();
-    chat_info.chat_banned.push({ nickname: id, date });
+    const ban_time_ms: number = 1000 * 60 * 60 * 24 * 3;
+    const date: Date = new Date();
+    chat_info.chat_banned.push({ nickname: id, date: date });
+    setTimeout(() => {
+      this.unBan(title, id);
+    }, ban_time_ms);
     this.kick(title, id);
     return await this.ChatRoomRepository.save(chat_info);
   }
@@ -68,9 +72,11 @@ export class ChatService {
 
   async banList(title: string, id: string) {
     const chat_info = await this.ChatRoomRepository.findOne({ title: title });
-    var banned: string[] = [];
-    for (let i = 0; i < chat_info.chat_banned.length; i++)
+    const banned: string[] = [];
+
+    for (let i = 0; i < chat_info.chat_banned.length; i++) {
       banned.push(chat_info.chat_banned[i].nickname);
+    }
     return banned;
   }
 
@@ -140,16 +146,22 @@ export class ChatService {
   async getMute(title, id) {
     const chat_info = await this.ChatRoomRepository.findOne({ title: title });
     const user = chat_info.chat_member.find((mem) => mem.nickname === id);
-    if (user.permission === 'muted') return { isMuted: true };
+    if (user.permission === 'muted') {
+      return { isMuted: true };
+    }
     else return { isMuted: false };
   }
 
   async putMute(title, id, isMuted) {
     const chat_info = await this.ChatRoomRepository.findOne({ title: title });
+    const mute_time_ms = 1000 * 60 * 60 * 24 * 3;
     for (let i = 0; i < chat_info.chat_member.length; i++) {
       if (chat_info.chat_member[i].nickname === id) {
         if (isMuted && chat_info.chat_member[i].permission === 'user') {
           chat_info.chat_member[i].permission = 'muted';
+          setTimeout(() => {
+            this.putMute(title, id, 0);
+          }, mute_time_ms);
           chat_info.messages.push({
             nickname: id,
             msg: '님의 채팅이 금지되었습니다.',
