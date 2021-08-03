@@ -82,8 +82,8 @@ export class LobbyService {
 			var other_info = await this.UserRepository.findOne({nickname:otherID})
 			
 			//block됐는지 확인
-			const isblock = other_info.block_list.find(block => block ===owner_id)
-			console.log(isblock)
+			const owner_info = await this.UserRepository.findOne({nickname:owner_id})
+			const isblock = other_info.block_list.find(block => block === owner_info.intra_id)
 			if (isblock)
 				return null
 			else

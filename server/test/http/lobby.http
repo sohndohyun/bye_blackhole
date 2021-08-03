@@ -1,12 +1,24 @@
-POST http://localhost:8080/lobby HTTP/1.1
+#POST http://localhost:8080/lobby HTTP/1.1
+#Content-Type: application/json
+#
+#{
+#	"intra_id": "notjinkim",
+#	"nickname": "jinkimnick",
+#	"auth_token" : "sayi@@mail",
+#	"icon" : "sayi is sayi",
+#	"friend_list": ["taekkim", "jinkim"]
+#}
+
+# DELETE http://localhost:8080/lobby?title=DM_jin_tak&id=tak HTTP/1.1
+
+POST http://localhost:8080/lobby/chatcreate HTTP/1.1
 Content-Type: application/json
 
 {
-	"intra_id": "notjinkim",
-	"nickname": "jinkimnick",
-	"auth_token" : "sayi@@mail",
-	"icon" : "sayi is sayi",
-	"friend_list": ["taekkim", "jinkim"]
+	"title": "DM_jin_tak",
+	"password": "",
+	"security": "private",
+	"owner_id": "tak"
 }
 
 # PATCH http://localhost:8080/lobby HTTP/1.1
