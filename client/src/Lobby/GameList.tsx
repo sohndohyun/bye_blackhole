@@ -1,35 +1,50 @@
-import {useEffect, useState, useCallback} from "react";
-import axios from "axios";
+import { useEffect, useState, useCallback } from 'react';
+import axios from 'axios';
 import useSwr from 'swr';
-import speed from '../Images/speed.png'
-import "./styles/GameList.scss"
+import speed from '../Images/speed.png';
+import './styles/GameList.scss';
+import { GameNode } from './IGameNode';
+import socket from '../Pong/PongSocket';
 
-const GameList = () => {
-	const fetcher = async (url:string) => {
-		const res = await axios.get(url)
-		return res.data;
-	}
+const GameList = (prop: { gameList: GameNode[] }) => {
+  const { gameList } = prop;
+  console.log(gameList);
+  const observe = (id: number) => {
+    socket.emit('Observe', id);
+  };
 
-	const {data, error} = useSwr<{p1:string, p2:string, speed:boolean, ladder:boolean}[]>('Lobby/gameList', fetcher)
+  return (
+    <>
+      {gameList?.map((gameRoom) => (
+        <button
+          type="button"
+          className="GameList"
+          onClick={() => {
+            observe(gameRoom.id);
+          }}
+        >
+          <span className="GameList-left">
+            <div
+              className={
+                gameRoom.ladder ? 'GameList-icon ladder' : 'GameList-icon'
+              }
+            >
+              {gameRoom.speed ? (
+                <img src={speed} width="30" height="30" />
+              ) : (
+                'N'
+              )}
+            </div>
+          </span>
+          <span className="GameList-right">
+            <div className="player">{gameRoom.a}</div>
+            <div>vs</div>
+            <div className="player">{gameRoom.b}</div>
+          </span>
+        </button>
+      ))}
+    </>
+  );
+};
 
-	return (
-	<>
-	{data?.map(gameRoom=>
-		<button type="button" className="GameList">
-			<span className="GameList-left">
-				<div className={gameRoom.ladder ? "GameList-icon ladder" : "GameList-icon"}>
-					{gameRoom.speed ? <img src={speed} width="30" height="30"/> : 'N'}
-				</div>
-			</span>
-			<span className="GameList-right">
-				<div className="player">{gameRoom.p1}</div>
-				<div>vs</div>
-				<div className="player">{gameRoom.p2}</div>
-			</span>
-		</button>
-	)}
-	</>
-	)
-}
-
-export default GameList
+export default GameList;

@@ -27,24 +27,27 @@ function App() {
           <Route
             exact
             path="/"
-            render={() =>
-              sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
-            }
+            render={() => (
+              // sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
+              <Lobby />
+            )}
           />
           <Route exact path="/2-factor-auth" render={() => <Auth />} />
           <Route
             path="/Admin"
             exact
-            render={() =>
-              sessionStorage.getItem('intraID') ? <Admin /> : redirect_auth()
-            }
+            render={() => (
+              // sessionStorage.getItem('intraID') ? <Admin /> : redirect_auth()
+              <Admin />
+            )}
           />
           <Route
             path="/Lobby"
             exact
-            render={() =>
-              sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
-            }
+            render={() => (
+              // sessionStorage.getItem('intraID') ? <Lobby />
+              <Lobby />
+            )}
           />
           <Route
             path="/Chat"

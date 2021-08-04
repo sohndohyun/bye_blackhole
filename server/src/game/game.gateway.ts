@@ -1,5 +1,13 @@
 import { Logger } from '@nestjs/common';
-import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 
 class clInfo {
@@ -30,11 +38,16 @@ class Game {
     let angle = Math.random() * 240;
     angle = angle > 60 ? angle + 60 : angle;
     angle = angle > 250 ? angle + 60 : angle;
-    angle *= (Math.PI / 180);
+    angle *= Math.PI / 180;
     let dx = Math.cos(angle);
     let dy = Math.sin(angle);
 
-    this.emitAll('Scored', { scoreL: this.a.score, scoreR: this.b.score, dirX: dx, dirY: dy });
+    this.emitAll('Scored', {
+      scoreL: this.a.score,
+      scoreR: this.b.score,
+      dirX: dx,
+      dirY: dy,
+    });
     console.log(`dx : ${dx}, dy : ${dy}`);
   }
 
@@ -45,15 +58,13 @@ class Game {
   emitAll(ev: string, payload: any) {
     this.a.sock.emit(ev, payload);
     this.b.sock.emit(ev, payload);
-    for (let entry of this.observer)
-      entry.emit(ev, payload);
+    for (let entry of this.observer) entry.emit(ev, payload);
   }
 
   onAction(socket: Socket, ev: string, pos: number) {
     if (socket.id === this.a.sock.id) {
       this.emitAll(ev, { who: 0, y: pos });
-    }
-    else if (socket.id === this.b.sock.id) {
+    } else if (socket.id === this.b.sock.id) {
       this.emitAll(ev, { who: 1, y: pos });
     }
   }
@@ -69,16 +80,16 @@ class Game {
         this.emitAll('finish', 0);
         return true;
       }
-    }
-    else if (payload === 1) {
+    } else if (payload === 1) {
       ++this.b.score;
       if (this.b.score >= 11) {
         this.emitAll('finish', 1);
         return true;
       }
-    }
-    else
+    } else {
+      console.log(`🤢`);
       return false;
+    }
 
     this.startGame();
     return false;
@@ -86,28 +97,26 @@ class Game {
 
   disconnected(socket: Socket): boolean {
     if (this.a.sock.id === socket.id) {
-      this.b.sock.emit("finish", 0);
-      for (let entry of this.observer)
-        entry.emit("finish", 0);
+      this.b.sock.emit('finish', 0);
+      for (let entry of this.observer) entry.emit('finish', 0);
 
       return true;
-    }
-    else if (this.b.sock.id === socket.id) {
-      this.a.sock.emit("finish", 1);
-      for (let entry of this.observer)
-        entry.emit("finish", 1);
+    } else if (this.b.sock.id === socket.id) {
+      this.a.sock.emit('finish', 1);
+      for (let entry of this.observer) entry.emit('finish', 1);
 
       return true;
-    }
-    else {
+    } else {
       this.observer.splice(this.observer.indexOf(socket), 1);
       return false;
     }
   }
 }
 
-@WebSocketGateway({ namespace: "game" })
-export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+@WebSocketGateway({ namespace: 'game' })
+export class GameGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   constructor() {
     this.gameCount = 0;
   }
@@ -120,8 +129,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   pushCl(sock: Socket, name: string): boolean {
     for (let entry of this.clis) {
-      if (entry.name == name)
-        return false;
+      if (entry.name == name) return false;
     }
     this.clis.push(new clInfo(sock, name));
     return true;
@@ -129,19 +137,15 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   findGame(sock: Socket): Game {
     for (let game of this.games) {
-      if (game.a.sock.id == sock.id || game.b.sock.id == sock.id)
-        return game;
-      for (let ob of game.observer)
-        if (ob.id == sock.id)
-          return game;
+      if (game.a.sock.id == sock.id || game.b.sock.id == sock.id) return game;
+      for (let ob of game.observer) if (ob.id == sock.id) return game;
     }
     return null;
   }
 
   findGameWithID(id: number): Game {
     for (let game of this.games) {
-      if (game.id == id)
-        return game;
+      if (game.id == id) return game;
     }
     return null;
   }
@@ -152,8 +156,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       client.emit('match_failed');
       this.logger.log(`Client joined failed: ${data}:${client.id}`);
       return;
-    }
-    else {
+    } else {
       this.logger.log(`Client joined : ${data}:${client.id}`);
     }
     if (this.clis.length >= 2) {
@@ -177,7 +180,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client.emit('matched', { a: game.a.name, b: game.b.name, dr: 2 });
     this.logger.log(`${client.id} observe game ${game.id}`);
   }
-
 
   @SubscribeMessage('Up')
   onUp(client: any, data: number) {
@@ -203,8 +205,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('Scored')
   onScored(client: any, data: number) {
     let game = this.findGame(client);
-    if (game.onScored(data))
+    if (game.onScored(data)) {
       this.games.splice(this.games.indexOf(game), 1);
+      console.log(`🐱‍🚀`);
+    }
     this.logger.log(`${client.id} scored!`);
   }
 
@@ -219,27 +223,29 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   onGameList(client: Socket) {
     let gs = [];
     for (let entry of this.games) {
-      gs.push({ id: entry.id, name: `${entry.a.name} vs ${entry.b.name}` });
+      gs.push({ id: entry.id, a: entry.a.name, b: entry.b.name });
     }
     client.emit('gameList', gs);
     this.logger.log(`${client.id} gameList`);
   }
 
-  afterInit(server: Server) { // 서버 시작
+  afterInit(server: Server) {
+    // 서버 시작
     this.logger.log('Init');
   }
 
-  handleConnection(client: Socket, ...args: any[]) { // on connect
+  handleConnection(client: Socket, ...args: any[]) {
+    // on connect
     this.logger.log(`Client Connected : ${client.id}`);
   }
 
-  handleDisconnect(client: Socket) { // on disconnect
+  handleDisconnect(client: Socket) {
+    // on disconnect
     let game = this.findGame(client);
     if (game !== null) {
       if (game.disconnected(client))
         this.games.splice(this.games.indexOf(game), 1);
-    }
-    else {
+    } else {
       for (let temp of this.clis) {
         if (temp.sock.id === client.id) {
           this.clis.splice(this.clis.indexOf(temp), 1);
@@ -248,5 +254,4 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
     this.logger.log(`Client Disconnected : ${client.id}`);
   }
-
 }
