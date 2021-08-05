@@ -40,12 +40,17 @@ const Lobby = () => {
   useEffect(() => {
     socket.on('connect', () => {
       console.log('connect');
+      socket.emit('Con', MyID);
       setConnected(true);
     });
 
     socket.on('disconnect', () => {
       setConnected(false);
       alert('disconnected!');
+    });
+
+    socket.on('match_failed', () => {
+      alert('match failed!');
     });
 
     socket.on('matched', (e: MatchData) => {

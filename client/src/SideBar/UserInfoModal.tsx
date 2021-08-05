@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import axios from "axios";
 import useSwr from 'swr';
 import "./styles/UserInfoModal.scss";
+import socket from '../Pong/PongSocket';
 
 const UserInfoModal = ( props: any) => {
 	const { open, close, myID, targetID} = props;
@@ -124,7 +125,8 @@ const UserInfoModal = ( props: any) => {
 						<div>
 							<a className="btn button" onClick={() => {
 								//direct 게임신청 수정하기
-								
+								console.log("whywhy");
+								 socket.emit('MatchWith', {name: targetID, speed: true});
 							}}><b>Game</b></a>
 							<a className="btn button dm-button" onClick={makeDM}><b>DM</b></a>
 						</div>
