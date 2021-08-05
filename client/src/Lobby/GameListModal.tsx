@@ -14,10 +14,15 @@ const GameListModal = (props: any) => {
 
   function makeNewGame() {
     if (connected) {
-      socket.emit(`Join`, MyID);
+      socket.emit(`Join`, {name:MyID, speed:IsSpeed, ladder: true});
       setMatching(true);
     }
   }
+
+  socket.on("cancel", () => {
+	setMatching(false);
+  });
+
   return (
     <div className={open ? 'openModal Modal' : 'Modal'}>
       {open ? (

@@ -8,7 +8,7 @@ import socket from '../Pong/PongSocket';
 
 const GameList = (prop: { gameList: GameNode[] }) => {
   const { gameList } = prop;
-  console.log(gameList);
+  
   const observe = (id: number) => {
     socket.emit('Observe', id);
   };
