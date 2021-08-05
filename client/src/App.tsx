@@ -28,8 +28,7 @@ function App() {
             exact
             path="/"
             render={() => (
-              // sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
-              <Lobby />
+              sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
             )}
           />
           <Route exact path="/2-factor-auth" render={() => <Auth />} />
@@ -37,16 +36,14 @@ function App() {
             path="/Admin"
             exact
             render={() => (
-              // sessionStorage.getItem('intraID') ? <Admin /> : redirect_auth()
-              <Admin />
+              sessionStorage.getItem('intraID') ? <Admin /> : redirect_auth()
             )}
           />
           <Route
             path="/Lobby"
             exact
             render={() => (
-              // sessionStorage.getItem('intraID') ? <Lobby />
-              <Lobby />
+              sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
             )}
           />
           <Route

@@ -12,14 +12,18 @@ import { GameNode } from './IGameNode';
 import Game from '../Pong/Game';
 
 interface MatchData {
-  a: string;
-  b: string;
-  dr: number;
+    a: string,
+    b: string,
+    dr: number,
+    ladder: boolean,
+    speed: boolean
 }
 
 let aname = 'a';
 let bname = 'b';
 let dr = 0;
+let sbool = false;
+let lbool = false;
 let row: JSX.Element[] = [];
 
 const Lobby = () => {
@@ -45,12 +49,13 @@ const Lobby = () => {
     });
 
     socket.on('matched', (e: MatchData) => {
-      //여기부터
       aname = e.a;
       bname = e.b;
       dr = e.dr;
+	  sbool = e.speed;
+      lbool = e.ladder;
       setMatched(true);
-      closeGameListModal();
+      setGameListModalState(false);
     });
 
     socket.on('finish', (e: number) => {
@@ -61,11 +66,18 @@ const Lobby = () => {
     });
 
     socket.on('gameList', (e: GameNode[]) => {
-      setGameList(e);
-      if (loada) setloada(false);
-      else setloada(true);
+		setGameList(e);
+		if (loada) setloada(false);
+		else setloada(true);
     });
+	
   }, [loada]);
+
+  const onMathCancel = () => {
+	if (!matched){
+		socket.emit("Cancel");
+	}
+  }
 
   //game list modal
   const [GameListModalState, setGameListModalState] = useState(false);
@@ -73,6 +85,7 @@ const Lobby = () => {
     setGameListModalState(true);
   };
   const closeGameListModal = () => {
+	onMathCancel()
     setGameListModalState(false);
   };
 
@@ -86,8 +99,13 @@ const Lobby = () => {
   };
 
   return matched ? (
-    <div>
-      <Game a={aname} b={bname} dr={dr} />
+    <div id="App-Container">
+	  <span className="App-Left">
+      	<Game a={aname} b={bname} dr={dr} speed={sbool} ladder={lbool} />
+	  </span>
+	  <span className="App-Right">
+		<SideBar />
+  	  </span>
     </div>
   ) : (
     <div id="App-Container">

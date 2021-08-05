@@ -14,6 +14,10 @@ class Player extends Wall{
         super.update(dt);
 
         this.y += this.dirY * this.speed * dt;
+        if (this.y < 20 )
+            this.y = 20
+        else if (this.y > this.game.height - this.height - 20)
+            this.y = this.game.height - this.height - 20;
     }
 }
 

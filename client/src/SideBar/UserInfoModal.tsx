@@ -122,7 +122,10 @@ const UserInfoModal = ( props: any) => {
 							</label>
 						</span>
 						<div>
-							<a className="btn button" href="Game"><b>Game</b></a>
+							<a className="btn button" onClick={() => {
+								//direct 게임신청 수정하기
+								
+							}}><b>Game</b></a>
 							<a className="btn button dm-button" onClick={makeDM}><b>DM</b></a>
 						</div>
 						</div>

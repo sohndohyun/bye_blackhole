@@ -17,8 +17,7 @@ export interface Update {
     x: number,
     y: number,
     dirX: number,
-    dirY: number,
-    speed: number
+    dirY: number
 }
 
 export interface Moved {
@@ -38,6 +37,7 @@ class Game extends React.Component<any, any> {
     playerL: Player;
     playerR: Player;
     ballSpeed: number;
+    isLadder : boolean;
     pos: number;
 
     constructor(props: {}) {
@@ -48,15 +48,17 @@ class Game extends React.Component<any, any> {
         this.ball = new Ball(this, 20, 20, this.width / 2, this.height / 2);
         this.playerL = new Player(this, 20, this.height / 4, 0, this.height / 5 * 2);
         this.playerR = new Player(this, 20, this.height / 4, this.width - 20, this.height / 5 * 2);
-        this.ballSpeed = 600;
 
         this.state = {
             SL: 0,
             SR: 0
         };
+
         this.pos = this.props.dr;
         this.aname = this.props.a;
         this.bname = this.props.b;
+        this.isLadder = this.props.ladder;
+        this.ballSpeed = this.props.speed ? 700 : 500;
 
         this.objs.push(this.playerL);
         this.objs.push(this.playerR);
@@ -137,11 +139,6 @@ class Game extends React.Component<any, any> {
         this.setState(() => { return { SL: e.scoreL, SR: e.scoreR }; });
 
         this.ball.start(this.ballSpeed, e.dirX, e.dirY);
-
-        this.playerL.x = 0;
-        this.playerL.y = this.height / 5 * 2;
-        this.playerR.x = this.width - 20;
-        this.playerR.y = this.height / 5 * 2;
     }
 
     onUpdate(e: Update) {
@@ -163,7 +160,7 @@ class Game extends React.Component<any, any> {
     render() {
         const { SL, SR } = this.state;
 
-        let str = `${this.aname} ${SL} : ${SR} ${this.bname}`;
+        let str = `${this.isLadder ? "LADDER" : "NORMAL"} ${this.aname} ${SL} : ${SR} ${this.bname}`;
 
         return (
             <div>
