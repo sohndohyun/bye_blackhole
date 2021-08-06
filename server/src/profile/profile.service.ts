@@ -11,7 +11,9 @@ export class ProfileService {
 
   async findProfileById(myID: string, otherID: string) {
     let profile = {};
-    const { intra_id } = await this.usersService.findByNickname(otherID);
+    const { intra_id, ladder_level } = await this.usersService.findByNickname(
+      otherID,
+    );
     if (myID !== otherID) {
       const { friend_list, block_list } =
         await this.usersService.findByNickname(myID);
@@ -20,7 +22,7 @@ export class ProfileService {
       profile = { friend, block };
     }
     const { history, win, lose } = await this.checkWin(intra_id);
-    return { ...profile, history, win, lose };
+    return { ...profile, history, win, lose, ladder: ladder_level };
   }
 
   async addFriend(myID: string, otherID: string, isFriend: boolean) {
