@@ -7,8 +7,8 @@ export class MatchHistoryController {
   constructor(private readonly matchHistoryService: MatchHistoryService) {}
 
   @Post()
-  async create(@Body() createMatchHistoryDto: CreateMatchHistoryDto) {
-    return await this.matchHistoryService.create(createMatchHistoryDto);
+  async create(@Body() body) {
+    return await this.matchHistoryService.create(body);
   }
 
   // behind method no matter on real service
