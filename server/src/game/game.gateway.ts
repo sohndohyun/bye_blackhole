@@ -140,6 +140,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   private clisLadder: Array<clInfo> = new Array<clInfo>();
   private clisSL: Array<clInfo> = new Array<clInfo>();
   private socks: Array<clInfo> = new Array<clInfo>();
+  private checks: Array<clInfo> = new Array<clInfo>();
 
   private games: Array<Game> = new Array<Game>();
   private gameCount: number;
@@ -222,6 +223,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('Con')
   onFirstConnect(client : Socket, data : string){
     this.socks.push(new clInfo(client, data));
+    this.checks.push(new clInfo(client, data));
   }
 
   @SubscribeMessage('Join')
@@ -324,6 +326,21 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @SubscribeMessage('Check')
+  onCheck(client : Socket, payload : string){
+    
+    for (let temp of this.checks){
+      if (temp.name === payload){
+        client.emit('check', true);
+        this.logger.log(`${payload} check true`);
+        return;
+      }
+    }
+
+    client.emit('check', false);
+    this.logger.log(`${payload} check false`);
+  }
+
   @SubscribeMessage('MatchWith')
   onMatchWith(client: Socket, e: MatchWithData){
     let a : clInfo = null;
@@ -386,6 +403,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       }
     }
     this.logger.log(`Client Disconnected : ${client.id}`);
+    for (let temp of this.checks){
+      if (temp.sock.id === client.id){
+        this.checks.splice(this.checks.indexOf(temp), 1);
+        break;
+      }
+    }
   }
+
+  
 
 }
