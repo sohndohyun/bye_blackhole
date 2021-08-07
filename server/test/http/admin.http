@@ -2,8 +2,8 @@ POST http://localhost:8080/admin HTTP/1.1
 Content-Type: application/json
 
 {
-	"intra_id": "testddda",
-	"nickname": "hello",
+	"intra_id": "jinkim",
+	"nickname": "jinkimNick",
 	"icon" : "gamer_boy",
 	"friend_list": ["taekkim", "jinkim"]
 }

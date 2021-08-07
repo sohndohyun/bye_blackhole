@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { UsersService } from 'src/users/users.service';
 import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
 import { UpdateMatchHistoryDto } from './dto/update-match-history.dto';
 import { MatchHistory } from './entities/match-history.entity';
@@ -8,12 +9,14 @@ import { MatchHistoryRepository } from './match_history.repository';
 export class MatchHistoryService {
   constructor(
     private readonly matchHistoryRepository: MatchHistoryRepository,
+    private readonly usersService: UsersService,
   ) {}
 
-  async create(createMatchHistoryDto: CreateMatchHistoryDto) {
-    const newMatchHistory = this.createMatchHistory(createMatchHistoryDto);
+  async create(body) {
+    const newMatchHistory = this.createMatchHistory(body);
     const result = await this.matchHistoryRepository.save(newMatchHistory);
-    return result;
+    const updateResult = await this.usersService.updateUserByMatch(body);
+    return { id: result.id, updateResult };
   }
 
   async findById(intra_id: string) {
@@ -30,8 +33,8 @@ export class MatchHistoryService {
     return await this.matchHistoryRepository.clear();
   }
 
-  createMatchHistory(createMatchHistoryDto: CreateMatchHistoryDto) {
-    const { p1_id, p2_id, winner } = createMatchHistoryDto;
+  createMatchHistory(body) {
+    const { p1_id, p2_id, winner } = body;
     let newMatchHistory = new MatchHistory();
     newMatchHistory.p1_id = p1_id;
     newMatchHistory.p2_id = p2_id;

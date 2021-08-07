@@ -57,7 +57,7 @@ const Lobby = () => {
       aname = e.a;
       bname = e.b;
       dr = e.dr;
-	  sbool = e.speed;
+	  sbool = e.speed;  
       lbool = e.ladder;
       setMatched(true);
       setGameListModalState(false);
