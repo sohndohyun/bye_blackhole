@@ -40,6 +40,7 @@ const Lobby = () => {
   useEffect(() => {
     socket.on('connect', () => {
       console.log('connect');
+      socket.emit('Con', MyID);
       setConnected(true);
     });
 
@@ -48,11 +49,15 @@ const Lobby = () => {
       alert('disconnected!');
     });
 
+    socket.on('match_failed', () => {
+      alert('match failed!');
+    });
+
     socket.on('matched', (e: MatchData) => {
       aname = e.a;
       bname = e.b;
       dr = e.dr;
-	  sbool = e.speed;
+	  sbool = e.speed;  
       lbool = e.ladder;
       setMatched(true);
       setGameListModalState(false);

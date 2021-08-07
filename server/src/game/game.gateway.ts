@@ -1,11 +1,17 @@
 import { Logger } from '@nestjs/common';
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
+import axios from 'axios';
 
 interface JoinData{
   name: string,
   speed: boolean,
   ladder: boolean
+}
+
+interface MatchWithData{
+  name: string,
+  speed: boolean
 }
 
 class clInfo {
@@ -78,6 +84,7 @@ class Game {
       ++this.a.score;
       if (this.a.score >= 11) {
         this.emitAll('finish', 0);
+        axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.a.name, ladder: this.ladder});
         return true;
       }
     }
@@ -85,6 +92,7 @@ class Game {
       ++this.b.score;
       if (this.b.score >= 11) {
         this.emitAll('finish', 1);
+        axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.b.name, ladder: this.ladder});
         return true;
       }
     }
@@ -101,6 +109,7 @@ class Game {
       for (let entry of this.observer)
         entry.emit("finish", 1);
 
+      axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.b.name, ladder: this.ladder});
       return true;
     }
     else if (this.b.sock.id === socket.id) {
@@ -108,6 +117,7 @@ class Game {
       for (let entry of this.observer)
         entry.emit("finish", 0);
 
+      axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.a.name, ladder: this.ladder});
       return true;
     }
     else {
@@ -124,11 +134,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @WebSocketServer() server: Server;
-  private logger: Logger = new Logger('AppGateway');
+  private logger: Logger = new Logger('PongGateway');
   private clisNorm: Array<clInfo> = new Array<clInfo>();
   private clisSpeed: Array<clInfo> = new Array<clInfo>();
   private clisLadder: Array<clInfo> = new Array<clInfo>();
   private clisSL: Array<clInfo> = new Array<clInfo>();
+  private socks: Array<clInfo> = new Array<clInfo>();
 
   private games: Array<Game> = new Array<Game>();
   private gameCount: number;
@@ -179,6 +190,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       if (entry.name == name)
         return false;
     }
+    for (let entry of this.socks) {
+      if (entry.name == name) {
+        this.socks.splice(this.socks.indexOf(entry), 1);
+        break;
+      }
+    }
     clis.push(new clInfo(sock, name));
     return true;
   }
@@ -202,6 +219,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     return null;
   }
 
+  @SubscribeMessage('Con')
+  onFirstConnect(client : Socket, data : string){
+    this.socks.push(new clInfo(client, data));
+  }
+
   @SubscribeMessage('Join')
   onClientJoin(client: any, data: JoinData) {
     if (!this.pushCl(client, data.name, data.speed, data.ladder)) {
@@ -223,6 +245,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.logger.log(`${a.sock.id} matched`);
       b.sock.emit('matched', { a: a.name, b: b.name, dr: 1, ladder: data.ladder, speed: data.speed });
       this.logger.log(`${b.sock.id} matched`);
+
+      for (let temp of this.socks)
+        this.onGameList(temp.sock);
 
       game.startGame();
     }
@@ -299,29 +324,63 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
-  afterInit(server: Server) { // 서버 시작
+  @SubscribeMessage('MatchWith')
+  onMatchWith(client: Socket, e: MatchWithData){
+    let a : clInfo = null;
+    let b : clInfo = null;
+    for (let temp of this.socks){
+      if (temp.name === e.name)
+        b = temp;
+      if (temp.sock.id === client.id)
+        a = temp;
+    }
+    if (a && b){
+      this.socks.splice(this.socks.indexOf(a), 1);
+      this.socks.splice(this.socks.indexOf(b), 1);
+      let game = new Game(this.gameCount++, a, b, e.speed, false);
+      this.games.push(game);
+      a.sock.emit('matched', { a: a.name, b: b.name, dr: 0, ladder: false, speed: e.speed });
+      this.logger.log(`${a.sock.id} matched`);
+      b.sock.emit('matched', { a: a.name, b: b.name, dr: 1, ladder: false, speed: e.speed });
+      this.logger.log(`${b.sock.id} matched`);
+
+      for (let temp of this.socks)
+        this.onGameList(temp.sock);
+    }
+    else {
+      client.emit("match_failed");
+    }
+    this.logger.log(`${client.id} matchwith`);
+  }
+
+  afterInit(server: Server) {
     this.logger.log('Init');
   }
 
-  handleConnection(client: Socket, ...args: any[]) { // on connect
+  handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`Client Connected : ${client.id}`);
   }
 
-  handleDisconnect(client: Socket) { // on disconnect
-
+  handleDisconnect(client: Socket) {
     let game = this.findGame(client);
+    let clis;
     if (game !== null) {
       if (game.disconnected(client))
         this.games.splice(this.games.indexOf(game), 1);
     }
-    else {
-      let clis = this.getClSocket(client);
-      if (clis === null)
-        return;
-
+    else if (clis = this.getClSocket(client)){
       for (let temp of clis) {
         if (temp.sock.id === client.id) {
           clis.splice(clis.indexOf(temp), 1);
+          break;
+        }
+      }
+    }
+    else
+    {
+      for (let temp of this.socks){
+        if (temp.sock.id === client.id){
+          this.socks.splice(this.socks.indexOf(temp), 1);
           break;
         }
       }
