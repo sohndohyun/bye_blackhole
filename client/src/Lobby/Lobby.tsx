@@ -37,16 +37,22 @@ const Lobby = () => {
     const id = sessionStorage.getItem('nickname');
     if (id) setMyID(id);
   });
+
   useEffect(() => {
-    socket.on('connect', () => {
-      console.log('connect');
-      socket.emit('Con', MyID);
-      setConnected(true);
-    });
+    if (connected && MyID)
+	{
+    	socket.emit('Con', MyID);
+	}
+	socket.emit('GameList')
+  }, [connected, MyID]);
+
+  useEffect(() => {
+	socket.on('connect', () => {
+		setConnected(true);
+	});
 
     socket.on('disconnect', () => {
       setConnected(false);
-      alert('disconnected!');
     });
 
     socket.on('match_failed', () => {

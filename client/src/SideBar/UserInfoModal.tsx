@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import axios from "axios";
 import useSwr from 'swr';
 import "./styles/UserInfoModal.scss";
-import socket from '../Pong/PongSocket';
+import DirectGameModal from './DirectGameModal';
 
 const UserInfoModal = ( props: any) => {
 	const { open, close, myID, targetID} = props;
@@ -19,7 +19,7 @@ const UserInfoModal = ( props: any) => {
 		}
 	}
 
-	const {data, error} = useSwr<{history:{win:boolean, id:string}[] ,friend:boolean, block:boolean, win:number, lose:number} | {history:{win:boolean, id:string}[], win:number, lose:number}>('profile?myID=' + myID + '&otherID=' + targetID, fetcher)
+	const {data, error} = useSwr<{history:{win:boolean, id:string}[] ,friend:boolean, block:boolean, win:number, lose:number, ladder:number} | {history:{win:boolean, id:string}[], win:number, lose:number, ladder:number}>('profile?myID=' + myID + '&otherID=' + targetID, fetcher)
 
 	const FriendHandler = useCallback( async() => {
 		await axios.put('profile/friend', {myID:myID, otherID:targetID, isFriend:!IsFriend})
@@ -48,6 +48,15 @@ const UserInfoModal = ( props: any) => {
 			setBlockModal(true)
 		})
 	}
+
+	//direct game modal
+	const [DirectGameModalState, setDirectGameModalState] = useState(false);
+	const openDirectGameModal = () => {
+		setDirectGameModalState(true);
+	};
+	const closeDirectGameModal = () => {
+		setDirectGameModalState(false);
+	};
 
 	async function Logout(){
 		const intra_id = sessionStorage.getItem('intraID')
@@ -84,6 +93,7 @@ const UserInfoModal = ( props: any) => {
 							<div className="name">{targetID}</div>
 							<span className="num win-color">W {data?.win}</span>
 							<span className="num lose-color"> &nbsp;&nbsp; L {data?.lose}</span>
+							<div className="num">ladder {data?.ladder}</div>
 						</div>
 						<hr/>
 						<div className="main">
@@ -123,16 +133,13 @@ const UserInfoModal = ( props: any) => {
 							</label>
 						</span>
 						<div>
-							<a className="btn button" onClick={() => {
-								//direct 게임신청 수정하기
-								console.log("whywhy");
-								 socket.emit('MatchWith', {name: targetID, speed: true});
-							}}><b>Game</b></a>
+							<a className="btn button" onClick={openDirectGameModal}><b>Game</b></a>
 							<a className="btn button dm-button" onClick={makeDM}><b>DM</b></a>
 						</div>
 						</div>
 					}
 					</div>
+					<DirectGameModal open={DirectGameModalState} close={closeDirectGameModal} targetID={targetID} closeUserInfoModal={close}/>
 				</section>
 			): null }
 		</div>

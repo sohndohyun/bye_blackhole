@@ -361,6 +361,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       b.sock.emit('matched', { a: a.name, b: b.name, dr: 1, ladder: false, speed: e.speed });
       this.logger.log(`${b.sock.id} matched`);
 
+	  game.startGame()
+
       for (let temp of this.socks)
         this.onGameList(temp.sock);
     }
