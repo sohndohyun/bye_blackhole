@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/index';
 import { chat_room } from '../Entity/ChatRoom.entity';
 import { UsersEntity } from '../users/entities/users.entity';
-
+import * as md5 from 'md5'
 @Injectable()
 export class ChatService {
   constructor(
@@ -95,7 +95,7 @@ export class ChatService {
 
   async pwdChange(title, password) {
     var chat_info = await this.ChatRoomRepository.findOne({ title: title });
-    chat_info.password = password;
+    chat_info.password = md5(password);
     return await this.ChatRoomRepository.save(chat_info);
   }
 
