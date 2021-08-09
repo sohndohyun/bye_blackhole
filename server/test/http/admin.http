@@ -2,10 +2,10 @@ POST http://localhost:8080/admin HTTP/1.1
 Content-Type: application/json
 
 {
-	"intra_id": "sayi",
-	"nickname": "sayiNick",
+	"intra_id": "jachoi",
+	"nickname": "jachoiNick",
 	"icon" : "gamer_boy",
-	"friend_list": ["taekkim", "sayi"]
+	"friend_list": ["taekkim", "jinkim"]
 }
 
 # PATCH http://localhost:8080/admin HTTP/1.1
