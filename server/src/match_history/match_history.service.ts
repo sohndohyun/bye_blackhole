@@ -13,9 +13,16 @@ export class MatchHistoryService {
   ) {}
 
   async create(body) {
-    const newMatchHistory = this.createMatchHistory(body);
+    const { winner, looser } = await this.getWinnerLooser(body);
+    const newMatchHistory = this.createMatchHistory(
+      winner.intra_id,
+      looser.intra_id,
+    );
     const result = await this.matchHistoryRepository.save(newMatchHistory);
-    const updateResult = await this.usersService.updateUserByMatch(body);
+    let updateResult = body.ladder
+      ? await this.usersService.updateLadderLevelByMatch(winner, looser)
+      : `not ladder game`;
+
     return { id: result.id, updateResult };
   }
 
@@ -33,12 +40,22 @@ export class MatchHistoryService {
     return await this.matchHistoryRepository.clear();
   }
 
-  createMatchHistory(body) {
-    const { p1_id, p2_id, winner } = body;
+  createMatchHistory(winner_nick: string, looser_nick: string) {
     let newMatchHistory = new MatchHistory();
-    newMatchHistory.p1_id = p1_id;
-    newMatchHistory.p2_id = p2_id;
-    newMatchHistory.winner = winner;
+
+    newMatchHistory.p1_id = winner_nick;
+    newMatchHistory.p2_id = looser_nick;
+    newMatchHistory.winner = winner_nick;
     return newMatchHistory;
+  }
+
+  async getWinnerLooser(body) {
+    const { p1_id, p2_id } = body;
+    const winner_nick = body.winner;
+    const looser_nick = p1_id === winner_nick ? p2_id : p1_id;
+    let winner = await this.usersService.findByNickname(winner_nick);
+    let looser = await this.usersService.findByNickname(looser_nick);
+
+    return { winner, looser };
   }
 }

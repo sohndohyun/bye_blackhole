@@ -54,21 +54,12 @@ export class UsersService {
     return await this.usersRepository.update(intra_id, updateUserDto);
   }
 
-  async updateUserByMatch(body) {
-    const { p1_id, p2_id, winner, ladder } = body;
-    let p1 = await this.existCheck('nickname', { nickname: p1_id }, p1_id);
-    let p2 = await this.existCheck('nickname', { nickname: p2_id }, p2_id);
-
-    this.reneweMatchHistory(p1, p2.intra_id);
-    this.reneweMatchHistory(p2, p1.intra_id);
-    if (ladder) {
-      const winPlayer = winner === p1_id ? p1 : p2;
-      const looser = winner === p1_id ? p2 : p1;
-      this.renewLadderLevel(winPlayer, looser);
-    }
-    const returnP1 = await this.usersRepository.update({ nickname: p1_id }, p1);
-    const returnP2 = await this.usersRepository.update({ nickname: p2_id }, p2);
-    return { p1: returnP1.affected, p2: returnP2.affected };
+  async updateLadderLevelByMatch(winner: UsersEntity, looser: UsersEntity) {
+    winner.ladder_level++;
+    looser.ladder_level--;
+    const winner_affected = await this.updateUser(winner);
+    const looser_affected = await this.updateUser(looser);
+    return { winner_affected, looser_affected };
   }
 
   async addFriend(myID: string, otherID: string, isFriend: boolean) {
@@ -144,13 +135,8 @@ export class UsersService {
     return result;
   }
 
-  reneweMatchHistory(user: UsersEntity, opponent: string) {
-    if (user.match_history.length >= 5) user.match_history.splice(0, 1);
-    user.match_history.push(opponent);
-  }
-
-  renewLadderLevel(winner: UsersEntity, looser: UsersEntity) {
-    winner.ladder_level++;
-    looser.ladder_level--;
+  async updateUser(user: UsersEntity) {
+    const { affected } = await this.usersRepository.update(user.intra_id, user);
+    return affected;
   }
 }

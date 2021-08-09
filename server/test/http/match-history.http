@@ -4,11 +4,11 @@ Content-Type: application/json
 {
 	"p1_id": "jinkimNick",
 	"p2_id": "taekkimNick",
-	"winner" : "taekkimNick",
-	"ladder" :false
+	"winner" : "jinkimNick",
+	"ladder" :true
 }
 
 # DELETE http://localhost:8080/match-history/clear HTTP/1.1
 
-# GET http://localhost:8080/match-history/findMatchHistrory HTTP/1.1
+# GET http://localhost:8080/match-history HTTP/1.1
 
