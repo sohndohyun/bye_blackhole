@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import e from 'express';
 import { UsersService } from 'src/users/users.service';
 import { CreateMatchHistoryDto } from './dto/create-match-history.dto';
 import { UpdateMatchHistoryDto } from './dto/update-match-history.dto';
@@ -29,7 +30,10 @@ export class MatchHistoryService {
   async findById(intra_id: string) {
     const p1_list = await this.matchHistoryRepository.find({ p1_id: intra_id });
     const p2_list = await this.matchHistoryRepository.find({ p2_id: intra_id });
-    return p1_list.concat(p2_list);
+    const concated_list = p1_list.concat(p2_list);
+
+    concated_list.sort((a, b) => a.id - b.id);
+    return concated_list;
   }
 
   async findAll() {
