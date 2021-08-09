@@ -80,10 +80,12 @@ const Admin = () => {
 
 		<div className="icon-box">
 		{allImages.map(({value, src}) =>
+		<>
+			<input type="radio" name="icon" value={value} onChange={handleIconChange} className="icon-input"/>
 			<span className="icon">
-				<input type="radio" name="icon" value={value} onChange={handleIconChange} className="icon-input"/>
 				<img src={src} width="50" height="50" className="icon-img"></img>
 			</span>
+		</>
 		)}
 		</div>
 
