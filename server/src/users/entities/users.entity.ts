@@ -21,9 +21,6 @@ export class UsersEntity {
   friend_list: string[];
 
   @Column('simple-array', { nullable: true, default: '' })
-  match_history: string[];
-
-  @Column('simple-array', { nullable: true, default: '' })
   block_list: string[];
 
   @Column('simple-array', { nullable: true, default: '' })
