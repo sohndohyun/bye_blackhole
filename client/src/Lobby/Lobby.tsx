@@ -10,6 +10,7 @@ import GameList from './GameList';
 import socket from '../Pong/PongSocket';
 import { GameNode } from './IGameNode';
 import Game from '../Pong/Game';
+import DirectGameModal from '../SideBar/DirectGameModal'
 
 interface MatchData {
     a: string,
@@ -32,10 +33,18 @@ const Lobby = () => {
   const [matched, setMatched] = useState(false);
   const [loada, setloada] = useState(false);
   const [gameList, setGameList] = useState<GameNode[]>([]);
+  const [DirectGameTarget, setDirectGameTarget] = useState('')
 
   useEffect(() => {
     const id = sessionStorage.getItem('nickname');
     if (id) setMyID(id);
+
+	const gameTarget = sessionStorage.getItem('directGame');
+    if (gameTarget) {
+		setDirectGameTarget(gameTarget)
+		openDirectGameModal()
+		sessionStorage.removeItem('directGame')
+	}
   });
 
   useEffect(() => {
@@ -109,6 +118,15 @@ const Lobby = () => {
     setChatListModalState(false);
   };
 
+  //direct game modal
+	const [DirectGameModalState, setDirectGameModalState] = useState(false);
+	const openDirectGameModal = () => {
+		setDirectGameModalState(true);
+	};
+	const closeDirectGameModal = () => {
+		setDirectGameModalState(false);
+	};
+
   return matched ? (
     <div id="App-Container">
 	  <span className="App-Left">
@@ -165,6 +183,7 @@ const Lobby = () => {
       <span className="App-Right">
         <SideBar />
       </span>
+	  <DirectGameModal open={DirectGameModalState} close={closeDirectGameModal} targetID={DirectGameTarget} closeUserInfoModal={null}/>
     </div>
   );
 };

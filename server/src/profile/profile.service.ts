@@ -77,7 +77,7 @@ export class ProfileService {
           profile.win++;
           win = true;
         }
-        if (count-- > 0) profile.history.push({ nickname, win });
+        if (count-- > 0) profile.history.push({ id:nickname, win });
       }
       profile.lose = total_history.length - profile.win;
     }
