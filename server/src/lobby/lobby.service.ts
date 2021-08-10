@@ -182,7 +182,7 @@ export class LobbyService {
 
   async enterChatRoom(title: string, id: string, password: string) {
     var chat_info = await this.ChatRoomRepository.findOne({title:title})
-	if ((chat_info.security === 'protected' && md5(chat_info.password) === md5(password)) || 
+	if ((chat_info.security === 'protected' && chat_info.password === md5(password)) || 
 		(chat_info.security === 'public'))
 	{
 		//ban된 멤버인지 확인
