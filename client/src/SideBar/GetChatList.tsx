@@ -11,7 +11,7 @@ const GetChatList = (props: any) => {
 			const res = await axios.get(url)
 
 			//kick or ban
-			if (window.location.pathname === '/chat')
+			if (window.location.pathname === '/chat' || window.location.pathname === '/Chat')
 			{
 				const currentRoom = sessionStorage.getItem('roomName')
 				var leave = true
@@ -36,7 +36,7 @@ const GetChatList = (props: any) => {
 
 	const DelChat = async(title:string) => {
 		await axios.delete('Lobby?title=' + title + '&id=' + myID)
-		if (window.location.pathname === '/chat' && sessionStorage.getItem('roomName') === title)
+		if ((window.location.pathname === '/chat' || window.location.pathname === '/Chat') && sessionStorage.getItem('roomName') === title)
 		{
 			window.location.href = '/lobby'
 			sessionStorage.removeItem('roomName')
