@@ -67,7 +67,7 @@ export class LobbyService {
     owner_id,
   ): Promise<chat_room> {
     const chat_info = await this.ChatRoomRepository.findOne({ title: title });
-    if (!chat_info && !title.includes('_')) {
+    if (!chat_info && !(title.includes('_') && security !== 'private')) {
       const info = await this.UserRepository.findOne({ nickname: owner_id });
       info.chat_room.push(title);
 
