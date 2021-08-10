@@ -34,8 +34,8 @@ const ChatList = (props: any) => {
 		setBanModalState(false);
 	}
 
-	function enterPublicRoom(title:string) {
-		axios.post('/Lobby/enter', {title:title, id:MyID, password:''})
+	async function enterPublicRoom(title:string) {
+		await axios.post('/Lobby/enter', {title:title, id:MyID, password:''})
 		.then((res) => {
 			document.location.href = '/Chat';
 			sessionStorage.setItem('roomName', title)

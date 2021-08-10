@@ -34,12 +34,12 @@ const UserInfoModal = ( props: any) => {
 	//block modal
 	const [BlockModal, setBlockModal] = useState(false);
 
-	function makeDM(){
+	async function makeDM(){
 		if (myID.localeCompare(targetID) < 0)
 			var chatRoomName = 'DM_' + myID + '_' + targetID
 		else
 			var chatRoomName = 'DM_' + targetID + '_' + myID
-		axios.post('/Lobby/chatCreate', {title: chatRoomName, password:'', owner_id:myID, security:'private'})
+		await axios.post('/Lobby/chatCreate', {title: chatRoomName, password:'', owner_id:myID, security:'private'})
 		.then((res) => {
 			document.location.href = '/chat'
 			sessionStorage.setItem('roomName', chatRoomName)

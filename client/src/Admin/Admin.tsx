@@ -42,7 +42,7 @@ const Admin = () => {
 		}
 		if (!SignUp)
 		{
-			axios.patch('/admin', body)
+			await axios.patch('/admin', body)
 			.then((Response) => {
 				if (Nickname) sessionStorage.setItem("nickname", Nickname);
 				if (Icon) sessionStorage.setItem("icon", Icon);
@@ -54,7 +54,7 @@ const Admin = () => {
 		}
 		else
 		{
-			axios.post('/admin', body)
+			await axios.post('/admin', body)
 			.then((Response) => {
 				if (Nickname) sessionStorage.setItem("nickname", Nickname);
 				if (Icon) sessionStorage.setItem("icon", Icon);

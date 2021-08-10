@@ -43,6 +43,11 @@ class Game {
     this.observer = new Array<Socket>();
   }
 
+  startAxios = async(a:string, b:string) => {
+	axios.patch('http://localhost:8080/profile/userState', {id: a, state: 'gaming'});
+    axios.patch('http://localhost:8080/profile/userState', {id: b, state: 'gaming'});
+  }
+
   startGame() {
     let angle = Math.random() * 240;
     angle = angle > 60 ? angle + 60 : angle;
@@ -52,8 +57,7 @@ class Game {
     let dy = Math.sin(angle);
 
     this.emitAll('Scored', { scoreL: this.a.score, scoreR: this.b.score, dirX: dx, dirY: dy });
-    axios.patch('http://localhost:8080/profile/userState', {id: this.a.name, state: 'gaming'});
-    axios.patch('http://localhost:8080/profile/userState', {id: this.b.name, state: 'gaming'});
+    this.startAxios(this.a.name, this.b.name)
     console.log(`dx : ${dx}, dy : ${dy}`);
   }
 
@@ -81,14 +85,19 @@ class Game {
     this.emitAll('Update', payload);
   }
 
+  finishAxios = async(p1:string, p2:string, winner:string, ladder:boolean) => {
+	await axios.post('http://localhost:8080/match-history', {p1_id: p1, p2_id: p2, winner: winner, ladder: ladder});
+	await axios.patch('http://localhost:8080/profile/userState', {id: p1, state: 'on'});
+	await axios.patch('http://localhost:8080/profile/userState', {id: p2, state: 'on'});
+  }
+
   onScored(payload: number): boolean {
     if (payload === 0) {
       ++this.a.score;
       if (this.a.score >= 11) {
         this.emitAll('finish', 0);
-        axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.a.name, ladder: this.ladder});
-        axios.patch('http://localhost:8080/profile/userState', {id: this.a.name, state: 'on'});
-        axios.patch('http://localhost:8080/profile/userState', {id: this.b.name, state: 'on'});
+
+		this.finishAxios(this.a.name, this.b.name, this.a.name, this.ladder)
         return true;
       }
     }
@@ -96,9 +105,8 @@ class Game {
       ++this.b.score;
       if (this.b.score >= 11) {
         this.emitAll('finish', 1);
-        axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.b.name, ladder: this.ladder});
-        axios.patch('http://localhost:8080/profile/userState', {id: this.a.name, state: 'on'});
-        axios.patch('http://localhost:8080/profile/userState', {id: this.b.name, state: 'on'});
+
+		this.finishAxios(this.a.name, this.b.name, this.b.name, this.ladder)
         return true;
       }
     }
@@ -115,9 +123,7 @@ class Game {
       for (let entry of this.observer)
         entry.emit("finish", 1);
 
-      axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.b.name, ladder: this.ladder});
-      axios.patch('http://localhost:8080/profile/userState', {id: this.a.name, state: 'on'});
-      axios.patch('http://localhost:8080/profile/userState', {id: this.b.name, state: 'on'});
+	  this.finishAxios(this.a.name, this.b.name, this.b.name, this.ladder)
       return true;
     }
     else if (this.b.sock.id === socket.id) {
@@ -125,9 +131,7 @@ class Game {
       for (let entry of this.observer)
         entry.emit("finish", 0);
 
-      axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.a.name, ladder: this.ladder});
-      axios.patch('http://localhost:8080/profile/userState', {id: this.a.name, state: 'on'});
-      axios.patch('http://localhost:8080/profile/userState', {id: this.b.name, state: 'on'});
+	  this.finishAxios(this.a.name, this.b.name, this.a.name, this.ladder)
       return true;
     }
     else {
