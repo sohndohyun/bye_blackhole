@@ -5,7 +5,7 @@ import { chat_room } from '../Entity/ChatRoom.entity';
 import { game_room } from '../Entity/GameRoom.entity';
 import { UsersService } from 'src/users/users.service';
 import { UsersEntity } from '../users/entities/users.entity';
-import * as md5 from 'md5'
+import * as md5 from 'md5';
 @Injectable()
 export class LobbyService {
   constructor(
@@ -67,7 +67,7 @@ export class LobbyService {
     owner_id,
   ): Promise<chat_room> {
     const chat_info = await this.ChatRoomRepository.findOne({ title: title });
-    if (!(chat_info && title.includes('_'))) {
+    if (!chat_info && !title.includes('_')) {
       const info = await this.UserRepository.findOne({ nickname: owner_id });
       info.chat_room.push(title);
 
