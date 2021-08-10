@@ -24,12 +24,12 @@ const ChatListModal = ( props: any ) => {
 	},[IsProtectedRoom]);
 
 
-	function makeNewChat(){
+	async function makeNewChat(){
 		if (RoomPWD === '')
 			var security = 'public'
 		else
 			var security = 'protected'
-		axios.post('/Lobby/chatCreate', {title:NewRoomName, password:RoomPWD, owner_id:MyID, security:security})
+		await axios.post('/Lobby/chatCreate', {title:NewRoomName, password:RoomPWD, owner_id:MyID, security:security})
 		.then((res) => {
 			document.location.href = '/chat'
 			sessionStorage.setItem('roomName', NewRoomName)
