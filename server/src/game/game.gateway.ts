@@ -52,6 +52,8 @@ class Game {
     let dy = Math.sin(angle);
 
     this.emitAll('Scored', { scoreL: this.a.score, scoreR: this.b.score, dirX: dx, dirY: dy });
+    axios.patch('http://localhost:8080/profile/userState', {id: this.a.name, state: 'gaming'});
+    axios.patch('http://localhost:8080/profile/userState', {id: this.b.name, state: 'gaming'});
     console.log(`dx : ${dx}, dy : ${dy}`);
   }
 
@@ -85,6 +87,8 @@ class Game {
       if (this.a.score >= 11) {
         this.emitAll('finish', 0);
         axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.a.name, ladder: this.ladder});
+        axios.patch('http://localhost:8080/profile/userState', {id: this.a.name, state: 'on'});
+        axios.patch('http://localhost:8080/profile/userState', {id: this.b.name, state: 'on'});
         return true;
       }
     }
@@ -93,6 +97,8 @@ class Game {
       if (this.b.score >= 11) {
         this.emitAll('finish', 1);
         axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.b.name, ladder: this.ladder});
+        axios.patch('http://localhost:8080/profile/userState', {id: this.a.name, state: 'on'});
+        axios.patch('http://localhost:8080/profile/userState', {id: this.b.name, state: 'on'});
         return true;
       }
     }
@@ -110,6 +116,8 @@ class Game {
         entry.emit("finish", 1);
 
       axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.b.name, ladder: this.ladder});
+      axios.patch('http://localhost:8080/profile/userState', {id: this.a.name, state: 'on'});
+      axios.patch('http://localhost:8080/profile/userState', {id: this.b.name, state: 'on'});
       return true;
     }
     else if (this.b.sock.id === socket.id) {
@@ -118,6 +126,8 @@ class Game {
         entry.emit("finish", 0);
 
       axios.post('http://localhost:8080/match-history', {p1_id: this.a.name, p2_id: this.b.name, winner: this.a.name, ladder: this.ladder});
+      axios.patch('http://localhost:8080/profile/userState', {id: this.a.name, state: 'on'});
+      axios.patch('http://localhost:8080/profile/userState', {id: this.b.name, state: 'on'});
       return true;
     }
     else {
@@ -361,7 +371,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       b.sock.emit('matched', { a: a.name, b: b.name, dr: 1, ladder: false, speed: e.speed });
       this.logger.log(`${b.sock.id} matched`);
 
-	  game.startGame()
+	    game.startGame()
 
       for (let temp of this.socks)
         this.onGameList(temp.sock);
