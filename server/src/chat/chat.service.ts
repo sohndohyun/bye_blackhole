@@ -95,6 +95,10 @@ export class ChatService {
 
   async pwdChange(title, password) {
     var chat_info = await this.ChatRoomRepository.findOne({ title: title });
+	if (password !== '')
+		chat_info.security = 'protected'
+	else
+		chat_info.security = 'public'
     chat_info.password = md5(password);
     return await this.ChatRoomRepository.save(chat_info);
   }
