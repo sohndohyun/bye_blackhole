@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Query, Put } from '@nestjs/common';
+import { Controller, Get, Body, Query, Put, Patch } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 
 @Controller('profile')
@@ -26,7 +26,13 @@ export class ProfileController {
   @Get('my')
   findMyProfile(@Query() para) {
     const { intra_id } = para;
-    return this.profileService.findMyProfile(intra_id)
+    return this.profileService.findMyProfile(intra_id);
+  }
+
+  @Patch('userState')
+  setUserState(@Body() body) {
+    const { id, state } = body;
+    return this.profileService.setUserState(id, state);
   }
 
   // behind functions are for develop

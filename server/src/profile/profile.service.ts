@@ -48,6 +48,12 @@ export class ProfileService {
     return { id: user.nickname, icon: user.icon, state: user.state };
   }
 
+  async setUserState(nickname: string, state: string) {
+    const user = await this.usersService.findByNickname(nickname);
+
+    user.state = state;
+    return await this.usersService.updateUser(user);
+  }
   // helper functions
 
   nullCheckInclude(list: string[], intra_id: string): boolean {
