@@ -5,7 +5,7 @@ import { chat_room } from '../Entity/ChatRoom.entity';
 import { game_room } from '../Entity/GameRoom.entity';
 import { UsersService } from 'src/users/users.service';
 import { UsersEntity } from '../users/entities/users.entity';
-
+import * as md5 from 'md5'
 @Injectable()
 export class LobbyService {
   constructor(
@@ -101,7 +101,7 @@ export class LobbyService {
       await this.UserRepository.save(info);
       return await this.ChatRoomRepository.save({
         title: title,
-        password: password,
+        password: md5(password),
         security: security,
         chat_member: chat_mem,
       });
@@ -182,7 +182,7 @@ export class LobbyService {
 
   async enterChatRoom(title: string, id: string, password: string) {
     var chat_info = await this.ChatRoomRepository.findOne({title:title})
-	if ((chat_info.security === 'protected' && chat_info.password === password) || 
+	if ((chat_info.security === 'protected' && md5(chat_info.password) === md5(password)) || 
 		(chat_info.security === 'public'))
 	{
 		//ban된 멤버인지 확인
