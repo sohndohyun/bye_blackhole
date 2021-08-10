@@ -10,14 +10,15 @@ import GameList from './GameList';
 import socket from '../Pong/PongSocket';
 import { GameNode } from './IGameNode';
 import Game from '../Pong/Game';
-import DirectGameModal from '../SideBar/DirectGameModal'
+import GameResult from './GameResult';
+import DirectGameModal from '../SideBar/DirectGameModal';
 
 interface MatchData {
-    a: string,
-    b: string,
-    dr: number,
-    ladder: boolean,
-    speed: boolean
+  a: string;
+  b: string;
+  dr: number;
+  ladder: boolean;
+  speed: boolean;
 }
 
 let aname = 'a';
@@ -25,40 +26,41 @@ let bname = 'b';
 let dr = 0;
 let sbool = false;
 let lbool = false;
+let name: string;
 let row: JSX.Element[] = [];
-
+let isAlerted = false;
 const Lobby = () => {
   const [MyID, setMyID] = useState('');
   const [connected, setConnected] = useState(false);
   const [matched, setMatched] = useState(false);
   const [loada, setloada] = useState(false);
   const [gameList, setGameList] = useState<GameNode[]>([]);
-  const [DirectGameTarget, setDirectGameTarget] = useState('')
+  const [gameResult, setGameResult] = useState(false);
+  const [DirectGameTarget, setDirectGameTarget] = useState('');
 
   useEffect(() => {
     const id = sessionStorage.getItem('nickname');
     if (id) setMyID(id);
 
-	const gameTarget = sessionStorage.getItem('directGame');
+    const gameTarget = sessionStorage.getItem('directGame');
     if (gameTarget) {
-		setDirectGameTarget(gameTarget)
-		openDirectGameModal()
-		sessionStorage.removeItem('directGame')
-	}
+      setDirectGameTarget(gameTarget);
+      openDirectGameModal();
+      sessionStorage.removeItem('directGame');
+    }
   });
 
   useEffect(() => {
-    if (connected && MyID)
-	{
-    	socket.emit('Con', MyID);
-	}
-	socket.emit('GameList')
+    if (connected && MyID) {
+      socket.emit('Con', MyID);
+    }
+    socket.emit('GameList');
   }, [connected, MyID]);
 
   useEffect(() => {
-	socket.on('connect', () => {
-		setConnected(true);
-	});
+    socket.on('connect', () => {
+      setConnected(true);
+    });
 
     socket.on('disconnect', () => {
       setConnected(false);
@@ -72,32 +74,30 @@ const Lobby = () => {
       aname = e.a;
       bname = e.b;
       dr = e.dr;
-	  sbool = e.speed;  
+      sbool = e.speed;
       lbool = e.ladder;
       setMatched(true);
       setGameListModalState(false);
     });
 
     socket.on('finish', (e: number) => {
-      let name = e === 0 ? aname : bname;
-      row = [];
+      name = e === 0 ? aname : bname;
       setMatched(false);
-      alert(`${name} win!`);
+      setGameResult(true);
     });
 
     socket.on('gameList', (e: GameNode[]) => {
-		setGameList(e);
-		if (loada) setloada(false);
-		else setloada(true);
+      setGameList(e);
+      if (loada) setloada(false);
+      else setloada(true);
     });
-	
   }, [loada]);
 
   const onMathCancel = () => {
-	if (!matched){
-		socket.emit("Cancel");
-	}
-  }
+    if (!matched) {
+      socket.emit('Cancel');
+    }
+  };
 
   //game list modal
   const [GameListModalState, setGameListModalState] = useState(false);
@@ -105,7 +105,7 @@ const Lobby = () => {
     setGameListModalState(true);
   };
   const closeGameListModal = () => {
-	onMathCancel()
+    onMathCancel();
     setGameListModalState(false);
   };
 
@@ -117,24 +117,25 @@ const Lobby = () => {
   const closeChatListModal = () => {
     setChatListModalState(false);
   };
+  const closeGameResult = () => setGameResult(false);
 
   //direct game modal
-	const [DirectGameModalState, setDirectGameModalState] = useState(false);
-	const openDirectGameModal = () => {
-		setDirectGameModalState(true);
-	};
-	const closeDirectGameModal = () => {
-		setDirectGameModalState(false);
-	};
+  const [DirectGameModalState, setDirectGameModalState] = useState(false);
+  const openDirectGameModal = () => {
+    setDirectGameModalState(true);
+  };
+  const closeDirectGameModal = () => {
+    setDirectGameModalState(false);
+  };
 
   return matched ? (
     <div id="App-Container">
-	  <span className="App-Left">
-      	<Game a={aname} b={bname} dr={dr} speed={sbool} ladder={lbool} />
-	  </span>
-	  <span className="App-Right">
-		<SideBar />
-  	  </span>
+      <span className="App-Left">
+        <Game a={aname} b={bname} dr={dr} speed={sbool} ladder={lbool} />
+      </span>
+      <span className="App-Right">
+        <SideBar />
+      </span>
     </div>
   ) : (
     <div id="App-Container">
@@ -171,6 +172,7 @@ const Lobby = () => {
               <img src={plusbtn} width="30" height="30" />
             </button>
           </div>
+          <GameResult name={name} open={gameResult} close={closeGameResult} />
           <ChatListModal
             open={ChatListModalState}
             close={closeChatListModal}
@@ -183,7 +185,12 @@ const Lobby = () => {
       <span className="App-Right">
         <SideBar />
       </span>
-	  <DirectGameModal open={DirectGameModalState} close={closeDirectGameModal} targetID={DirectGameTarget} closeUserInfoModal={null}/>
+      <DirectGameModal
+        open={DirectGameModalState}
+        close={closeDirectGameModal}
+        targetID={DirectGameTarget}
+        closeUserInfoModal={null}
+      />
     </div>
   );
 };
