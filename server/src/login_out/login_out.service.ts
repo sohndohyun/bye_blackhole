@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { AuthRepository } from './auth.repository';
 const nodemailer = require('nodemailer');
-// import { JwtService } from '@nestjs/jwt';
 import * as process from 'process';
 
 @Injectable()
@@ -14,13 +13,13 @@ export class LogInOutService {
 
   async auth(profile) {
     const { username, email } = profile;
-    // const auth_token = Math.random().toString(36).substr(2, 5);
-    const auth = { intra_id: username, auth_token: `1111` };
+    const auth_token = Math.random().toString(36).substr(2, 5);
+    const auth = { intra_id: username, auth_token };
     const isExist = await this.authRepository.findOne(username);
 
     if (isExist) await this.authRepository.update(username, auth);
     else await this.authRepository.save(auth);
-    this.sendMail(email, `1111`);
+    this.sendMail(email, auth_token);
     return { url: `http://localhost:8080/2-factor-auth?intra_id=${username}` };
   }
 
