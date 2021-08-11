@@ -33,6 +33,7 @@ const Auth = () => {
 
 		if (res.data.auth_result)
 		{
+			sessionStorage.setItem('2auth', "true")
 			if (res.data.id)
 			{
 				sessionStorage.setItem("nickname", res.data.id);

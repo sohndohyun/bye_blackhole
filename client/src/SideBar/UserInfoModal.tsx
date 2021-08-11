@@ -67,6 +67,7 @@ const UserInfoModal = ( props: any) => {
 	async function Logout(){
 		const intra_id = sessionStorage.getItem('intraID')
 		await axios.patch('log/out' , {intra_id : intra_id})
+		sessionStorage.removeItem('2auth')
 		document.location.href = '/log/in'
 	}
 
