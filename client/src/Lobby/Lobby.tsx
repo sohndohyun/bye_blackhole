@@ -12,6 +12,7 @@ import { GameNode } from './IGameNode';
 import Game from '../Pong/Game';
 import GameResult from './GameResult';
 import DirectGameModal from '../SideBar/DirectGameModal';
+import MatchFailedModal from './MatchFailedModal'
 
 interface MatchData {
   a: string;
@@ -27,8 +28,7 @@ let dr = 0;
 let sbool = false;
 let lbool = false;
 let name: string;
-let row: JSX.Element[] = [];
-let isAlerted = false;
+
 const Lobby = () => {
   const [MyID, setMyID] = useState('');
   const [connected, setConnected] = useState(false);
@@ -36,6 +36,7 @@ const Lobby = () => {
   const [loada, setloada] = useState(false);
   const [gameList, setGameList] = useState<GameNode[]>([]);
   const [gameResult, setGameResult] = useState(false);
+  const [MatchFailed, setMatchFailed] = useState(false);
   const [DirectGameTarget, setDirectGameTarget] = useState('');
 
   useEffect(() => {
@@ -67,7 +68,7 @@ const Lobby = () => {
     });
 
     socket.on('match_failed', () => {
-      alert('match failed!');
+		setMatchFailed(true)
     });
 
     socket.on('matched', (e: MatchData) => {
@@ -117,6 +118,8 @@ const Lobby = () => {
   const closeChatListModal = () => {
     setChatListModalState(false);
   };
+
+  //gameresult modal
   const closeGameResult = () => setGameResult(false);
 
   //direct game modal
@@ -128,6 +131,13 @@ const Lobby = () => {
     setDirectGameModalState(false);
   };
 
+  //match failed modal
+  const closeMatchFailedModal = () => {
+	  setMatchFailed(false)
+	  if (DirectGameModalState) closeDirectGameModal()
+	  if (GameListModalState) closeGameListModal()
+  }
+
   return matched ? (
     <div id="App-Container">
       <span className="App-Left">
@@ -136,6 +146,7 @@ const Lobby = () => {
       <span className="App-Right">
         <SideBar />
       </span>
+	  <MatchFailedModal open={MatchFailed} close={closeMatchFailedModal} />
     </div>
   ) : (
     <div id="App-Container">
@@ -172,7 +183,6 @@ const Lobby = () => {
               <img src={plusbtn} width="30" height="30" />
             </button>
           </div>
-          <GameResult name={name} open={gameResult} close={closeGameResult} />
           <ChatListModal
             open={ChatListModalState}
             close={closeChatListModal}
@@ -191,6 +201,8 @@ const Lobby = () => {
         targetID={DirectGameTarget}
         closeUserInfoModal={null}
       />
+      <GameResult name={name} open={gameResult} close={closeGameResult} />
+	  <MatchFailedModal open={MatchFailed} close={closeMatchFailedModal} />
     </div>
   );
 };
