@@ -14,12 +14,14 @@ const ChatLog = ({socket}: any) => {
 			let res = await axios.get(url)
 
 			const block = await axios.get('profile/allblock?myID=' + MyID)
+			let chatlog: {id:string, date:Date, content:string, icon:string, sysMsg:boolean}[] = []
 			for(let i = 0; i < res.data.length; i++)
 			{
 				const idx = block.data.blocklist.indexOf(res.data[i].id)
-				if (idx > -1)
-					res.data = res.data.splice(idx, 1)
+				if (idx <= -1)
+					chatlog.push(res.data[i])
 			}
+			res.data = chatlog
 			return res.data;
 		}
 	}
