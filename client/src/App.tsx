@@ -28,7 +28,8 @@ function App() {
             exact
             path="/"
             render={() => (
-              sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
+				sessionStorage.getItem('2auth') === "true" && sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
+
             )}
           />
           <Route exact path="/2-factor-auth" render={() => <Auth />} />
@@ -43,19 +44,15 @@ function App() {
             path="/Lobby"
             exact
             render={() => (
-              sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
+				sessionStorage.getItem('2auth') === "true" && sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
             )}
           />
           <Route
             path="/Chat"
             exact
             render={() =>
-              sessionStorage.getItem('intraID') ? <Chat /> : redirect_auth()
+				sessionStorage.getItem('2auth') === "true" && sessionStorage.getItem('intraID') ? <Chat /> : redirect_auth()
             }
-          />
-          <Route exact path="/Pong" render={() => <Pong />} />
-          <Route
-            render={({ location }) => <div>Not Found {location.pathname}</div>}
           />
         </Switch>
       </Router>
