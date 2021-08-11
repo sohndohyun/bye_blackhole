@@ -29,6 +29,17 @@ export class ProfileService {
     return await this.usersService.addFriend(myID, otherID, isFriend);
   }
 
+  async getBlock(myID: string) {
+    const user = await this.usersService.findByNickname(myID);
+    let blocklist = [];
+    for (let index = 0; index < user.block_list.length; index++) {
+      const intra_id = user.block_list[index];
+      const blockedUser = await this.usersService.findByIntraId(intra_id);
+      blocklist.push(blockedUser.nickname);
+    }
+    return { blocklist };
+  }
+
   async addBlock(myID: string, otherID: string, isBlock: boolean) {
     return await this.usersService.addBlock(myID, otherID, isBlock);
   }
@@ -77,7 +88,7 @@ export class ProfileService {
           profile.win++;
           win = true;
         }
-        if (count-- > 0) profile.history.push({ id:nickname, win });
+        if (count-- > 0) profile.history.push({ id: nickname, win });
       }
       profile.lose = total_history.length - profile.win;
     }

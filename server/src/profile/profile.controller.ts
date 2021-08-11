@@ -11,6 +11,11 @@ export class ProfileController {
     return this.profileService.findProfileById(myID, otherID);
   }
 
+  @Get('allblock')
+  getBlock(@Query() para) {
+    return this.profileService.getBlock(para.myID);
+  }
+
   @Put('friend')
   addFriend(@Body() body) {
     const { myID, otherID, isFriend } = body;
