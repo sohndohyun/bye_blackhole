@@ -11,7 +11,15 @@ const ChatLog = ({socket}: any) => {
 	const fetcher = async (url:string) => {
 		if (roomName)
 		{
-			const res = await axios.get(url)
+			let res = await axios.get(url)
+
+			const block = await axios.get('profile/allblock?myID=' + MyID)
+			for(let i = 0; i < res.data.length; i++)
+			{
+				const idx = block.data.blocklist.indexOf(res.data[i].id)
+				if (idx > -1)
+					res.data = res.data.splice(idx, 1)
+			}
 			return res.data;
 		}
 	}
