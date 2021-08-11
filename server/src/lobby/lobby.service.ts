@@ -67,7 +67,7 @@ export class LobbyService {
     owner_id,
   ): Promise<chat_room> {
     const chat_info = await this.ChatRoomRepository.findOne({ title: title });
-    if (!chat_info && !(title.includes('_') && security !== 'private')) {
+    if (!chat_info && !(this.safeCheck(title) && security !== 'private')) {
       const info = await this.UserRepository.findOne({ nickname: owner_id });
       info.chat_room.push(title);
 
@@ -82,7 +82,9 @@ export class LobbyService {
         });
 
         //block됐는지 확인
-        const owner_info = await this.UserRepository.findOne({nickname:owner_id})
+        const owner_info = await this.UserRepository.findOne({
+          nickname: owner_id,
+        });
 
         const isblock = other_info.block_list.find(
           (block) => block === owner_info.intra_id,
@@ -137,29 +139,6 @@ export class LobbyService {
         });
     });
     return userList;
-    /* const info = await this.UserRepository.findOne({ nickname: id });
-    const isfrnd = (targetID) => {
-      for (let i = 0; i < info.friend_list.length; i++) {
-        if (info.friend_list[i] === targetID) return true;
-      }
-      return false;
-    };
-
-    const data = await this.UserRepository.find();
-    var user: { id: string; icon: string; state: string; isFriend: boolean }[] =
-      [];
-    data.map((d) => {
-      var isF = isfrnd(d.nickname);
-      if (d.nickname !== id)
-        user.push({
-          id: d.nickname,
-          icon: d.icon,
-          state: d.state,
-          isFriend: isF,
-        });
-    });
-    return user;
-	*/
   }
 
   async getMyChatList(id: string): Promise<{ title: string; num: number }[]> {
@@ -181,37 +160,39 @@ export class LobbyService {
   }
 
   async enterChatRoom(title: string, id: string, password: string) {
-    var chat_info = await this.ChatRoomRepository.findOne({title:title})
-	if ((chat_info.security === 'protected' && chat_info.password === md5(password)) || 
-		(chat_info.security === 'public'))
-	{
-		//ban된 멤버인지 확인
-		const banned_idx = chat_info.chat_banned.findIndex(chat => chat.nickname === id)
-		if (banned_idx > -1) return false
+    var chat_info = await this.ChatRoomRepository.findOne({ title: title });
+    if (
+      (chat_info.security === 'protected' &&
+        chat_info.password === md5(password)) ||
+      chat_info.security === 'public'
+    ) {
+      //ban된 멤버인지 확인
+      const banned_idx = chat_info.chat_banned.findIndex(
+        (chat) => chat.nickname === id,
+      );
+      if (banned_idx > -1) return false;
 
-		const user_info = await this.UserRepository.findOne({nickname:id})
-		const found_title = user_info.chat_room.find(v => v === title)
-		if (found_title !== title)
-		{
-			user_info.chat_room.push(title)
-			await this.UserRepository.save(user_info)
-		}
-		const found_user = chat_info.chat_member.find(user => user.nickname === id)
-		if (!found_user)
-		{
-			chat_info.chat_member.push({nickname:id, permission:'user'})
-			chat_info.messages.push({
-				nickname: id,
-				msg: '님이 입장했습니다.',
-				date: null,
-				sysMsg: true
-			})
-			await this.ChatRoomRepository.save(chat_info)
-		}
-		return true
-	}
-	else 
-		return false;
+      const user_info = await this.UserRepository.findOne({ nickname: id });
+      const found_title = user_info.chat_room.find((v) => v === title);
+      if (found_title !== title) {
+        user_info.chat_room.push(title);
+        await this.UserRepository.save(user_info);
+      }
+      const found_user = chat_info.chat_member.find(
+        (user) => user.nickname === id,
+      );
+      if (!found_user) {
+        chat_info.chat_member.push({ nickname: id, permission: 'user' });
+        chat_info.messages.push({
+          nickname: id,
+          msg: '님이 입장했습니다.',
+          date: null,
+          sysMsg: true,
+        });
+        await this.ChatRoomRepository.save(chat_info);
+      }
+      return true;
+    } else return false;
   }
 
   async deleteMyChat(title: string, id: string) {
@@ -253,5 +234,16 @@ export class LobbyService {
     if (idx > -1) chat_info.chat_member.splice(idx, 1);
 
     return await this.ChatRoomRepository.save(chat_info);
+  }
+
+  safeCheck(title: string): boolean {
+    return (
+      title.includes('_') ||
+      title.includes('#') ||
+      title.includes('"') ||
+      title.includes(`'`) ||
+      title.includes('--') ||
+      title.includes('/*')
+    );
   }
 }
