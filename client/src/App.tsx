@@ -27,31 +27,50 @@ function App() {
           <Route
             exact
             path="/"
-            render={() => (
-				sessionStorage.getItem('2auth') === "true" && sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
-
-            )}
+            render={() =>
+              sessionStorage.getItem('2auth') === 'true' &&
+              sessionStorage.getItem('intraID') ? (
+                <Lobby />
+              ) : (
+                redirect_auth()
+              )
+            }
           />
           <Route exact path="/2-factor-auth" render={() => <Auth />} />
           <Route
             path="/Admin"
             exact
-            render={() => (
-              sessionStorage.getItem('intraID') ? <Admin /> : redirect_auth()
-            )}
+            render={() =>
+              sessionStorage.getItem('2auth') === 'true' &&
+              sessionStorage.getItem('intraID') ? (
+                <Admin />
+              ) : (
+                redirect_auth()
+              )
+            }
           />
           <Route
             path="/Lobby"
             exact
-            render={() => (
-				sessionStorage.getItem('2auth') === "true" && sessionStorage.getItem('intraID') ? <Lobby /> : redirect_auth()
-            )}
+            render={() =>
+              sessionStorage.getItem('2auth') === 'true' &&
+              sessionStorage.getItem('intraID') ? (
+                <Lobby />
+              ) : (
+                redirect_auth()
+              )
+            }
           />
           <Route
             path="/Chat"
             exact
             render={() =>
-				sessionStorage.getItem('2auth') === "true" && sessionStorage.getItem('intraID') ? <Chat /> : redirect_auth()
+              sessionStorage.getItem('2auth') === 'true' &&
+              sessionStorage.getItem('intraID') ? (
+                <Chat />
+              ) : (
+                redirect_auth()
+              )
             }
           />
         </Switch>
