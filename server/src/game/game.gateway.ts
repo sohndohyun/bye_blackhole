@@ -44,7 +44,7 @@ class Game {
     this.ladder = ladder;
     this.observer = new Array<Socket>();
   }
-  
+
   startGame() {
     let angle = Math.random() * 240;
     angle = angle > 60 ? angle + 60 : angle;
@@ -114,14 +114,14 @@ class Game {
     return false;
   }
 
-  disconnected(socket: Socket): boolean {
+  disconnected(socket: Socket): number {
     if (this.a.sock.id === socket.id) {
       this.b.sock.emit("finish", 1);
       for (let entry of this.observer)
         entry.emit("finish", 1);
 
 	  this.finishAxios(this.a.name, this.b.name, this.b.name, this.ladder)
-      return true;
+      return 0;
     }
     else if (this.b.sock.id === socket.id) {
       this.a.sock.emit("finish", 0);
@@ -129,11 +129,11 @@ class Game {
         entry.emit("finish", 0);
 
 	  this.finishAxios(this.a.name, this.b.name, this.a.name, this.ladder)
-      return true;
+      return 1;
     }
     else {
       this.observer.splice(this.observer.indexOf(socket), 1);
-      return false;
+      return 2;
     }
   }
 }
@@ -410,9 +410,15 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleDisconnect(client: Socket) {
     let game = this.findGame(client);
     let clis;
+    let n : number;
     if (game !== null) {
-      if (game.disconnected(client))
+      if ((n = game.disconnected(client)) !== 2){
+        if (n === 0)
+          this.socks.push(game.b);
+        else if (n === 1)
+          this.socks.push(game.a);
         this.games.splice(this.games.indexOf(game), 1);
+      }
     }
     else if (clis = this.getClSocket(client)){
       for (let temp of clis) {
@@ -422,8 +428,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         }
       }
     }
-    else
-    {
+    else{
       for (let temp of this.socks){
         if (temp.sock.id === client.id){
           this.socks.splice(this.socks.indexOf(temp), 1);
