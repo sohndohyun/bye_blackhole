@@ -24,8 +24,8 @@ export class AdminService {
     const user = await this.usersService.findByIntraId(intra_id);
     const nicknameSet = { oldNickname: user.nickname, newNickname: nickname };
 
-    await this.applyChangedNickname(user, nicknameSet);
-    return await this.usersService.updateAdmin(updateAdmin);
+    await this.usersService.updateAdmin(updateAdmin);
+    return await this.applyChangedNickname(user, nicknameSet);
   }
 
   async findAll() {
