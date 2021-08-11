@@ -29,6 +29,7 @@ import { GameModule } from 'src/game/game.module';
       database: 'transcendence',
       entities: [AuthEntity, UsersEntity, MatchHistory, chat_room, game_room],
       synchronize: true,
+      logging: true,
     }),
     LobbyModule,
     AdminModule,

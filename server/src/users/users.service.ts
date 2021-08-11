@@ -5,7 +5,7 @@ import { UsersEntity } from './entities/users.entity';
 import { UsersRepository } from './users.repository';
 import { AlreadyExistException } from './execptions/already-exist-exception';
 import { NotExistException } from './execptions/not-exist-exception';
-import { UnderBarException } from './execptions/under-bar-exception';
+import { SafeException } from './execptions/safe-exception';
 
 // import { validate } from 'class-validator';
 
@@ -23,7 +23,7 @@ export class UsersService {
     newUser.state = 'on';
     await this.duplicateCheck('intra_id', { intra_id }, intra_id);
     await this.duplicateCheck('nickname', { nickname }, nickname);
-    await this.underbarCheck(nickname);
+    await this.safeCheck(nickname);
     const usersEntity = await this.usersRepository.save(newUser).then((v) => v);
     return usersEntity;
   }
@@ -47,7 +47,7 @@ export class UsersService {
     const { intra_id, nickname } = updateUserDto;
     await this.existCheck('intra_id', { intra_id }, intra_id);
     await this.duplicateCheck('nickname', { nickname }, nickname);
-    await this.underbarCheck(nickname);
+    await this.safeCheck(nickname);
     return await this.usersRepository.update(intra_id, updateUserDto);
   }
 
@@ -138,11 +138,17 @@ export class UsersService {
     return result;
   }
 
-  async underbarCheck(nickname: string) {
-    const isUsed = nickname.includes(`_`);
+  async safeCheck(nickname: string) {
+    const isUsed =
+      nickname.includes(`_`) ||
+      nickname.includes(`#`) ||
+      nickname.includes(`"`) ||
+      nickname.includes(`--`) ||
+      nickname.includes(`/*`) ||
+      nickname.includes(`'`);
     if (isUsed) {
-      const error = `nickname: ${nickname} includes '_'`;
-      throw new UnderBarException(error);
+      const error = `nickname: ${nickname} includes unsafe character`;
+      throw new SafeException(error);
     }
     return isUsed;
   }
