@@ -14,6 +14,7 @@ export class LogInOutService {
 
   async auth(profile) {
     const { username, email } = profile;
+    // const auth_token = Math.random().toString(36).substr(2, 5);
     const auth = { intra_id: username, auth_token: `1111` };
     const isExist = await this.authRepository.findOne(username);
 
@@ -78,17 +79,4 @@ export class LogInOutService {
     });
     return 'check mail!';
   }
-
-  /*   async generateToken(id: string, username: string): Promise<string> {
-    try {
-      const payload = { username, sub: id };
-      const token = this.jwtService.sign(payload);
-      console.log(token);
-      return token;
-    } catch (e) {
-      console.log(e);
-      throw e;
-    }
-  }
-  */
 }
