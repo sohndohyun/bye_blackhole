@@ -37,17 +37,14 @@ class Game {
   constructor(id: number, a: clInfo, b: clInfo, speed: boolean, ladder: boolean) {
     this.a = a;
     this.b = b;
+    this.a.score = 0;
+    this.b.score = 0;
     this.id = id;
     this.speed = speed;
     this.ladder = ladder;
     this.observer = new Array<Socket>();
   }
-
-  startAxios = async(a:string, b:string) => {
-	axios.patch('http://localhost:8080/profile/userState', {id: a, state: 'gaming'});
-    axios.patch('http://localhost:8080/profile/userState', {id: b, state: 'gaming'});
-  }
-
+  
   startGame() {
     let angle = Math.random() * 240;
     angle = angle > 60 ? angle + 60 : angle;
@@ -57,7 +54,7 @@ class Game {
     let dy = Math.sin(angle);
 
     this.emitAll('Scored', { scoreL: this.a.score, scoreR: this.b.score, dirX: dx, dirY: dy });
-    this.startAxios(this.a.name, this.b.name)
+  
     console.log(`dx : ${dx}, dy : ${dy}`);
   }
 
@@ -255,6 +252,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     if (clis.length >= 2) {
       let a = clis.shift();
       let b = clis.shift();
+
+      
+      axios.patch('http://localhost:8080/profile/userState', {id: a.name, state: 'gaming'});
+      axios.patch('http://localhost:8080/profile/userState', {id: b.name, state: 'gaming'});
+
+
       let game = new Game(this.gameCount++, a, b, data.speed, data.ladder);
       this.games.push(game);
       a.sock.emit('matched', { a: a.name, b: b.name, dr: 0, ladder: data.ladder, speed: data.speed });
@@ -302,8 +305,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('Scored')
   onScored(client: any, data: number) {
     let game = this.findGame(client);
-    if (game.onScored(data))
+    if (game.onScored(data)){
+      this.socks.push(game.a);
+      this.socks.push(game.b);
       this.games.splice(this.games.indexOf(game), 1);
+    }
     this.logger.log(`${client.id} scored!`);
   }
 
@@ -333,6 +339,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     for (let temp of clis){
       if (temp.sock.id === client.id){
         clis.splice(clis.indexOf(temp), 1);
+        this.socks.push(temp);
         client.emit('cancel');
         this.logger.log(`${client.id} cancel`);
         break;
@@ -368,6 +375,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     if (a && b){
       this.socks.splice(this.socks.indexOf(a), 1);
       this.socks.splice(this.socks.indexOf(b), 1);
+
+
+      axios.patch('http://localhost:8080/profile/userState', {id: a.name, state: 'gaming'});
+      axios.patch('http://localhost:8080/profile/userState', {id: b.name, state: 'gaming'});
+
+
       let game = new Game(this.gameCount++, a, b, e.speed, false);
       this.games.push(game);
       a.sock.emit('matched', { a: a.name, b: b.name, dr: 0, ladder: false, speed: e.speed });
