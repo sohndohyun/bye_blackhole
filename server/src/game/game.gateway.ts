@@ -83,11 +83,11 @@ class Game {
   }
 
   finishAxios = async(p1:string, p2:string, winner:string, ladder:boolean, who:number) => {
-	await axios.post('http://localhost:8080/match-history', {p1_id: p1, p2_id: p2, winner: winner, ladder: ladder});
 	if (who != 0)
     await axios.patch('http://localhost:8080/profile/userState', {id: p1, state: 'on'});
   if (who != 1)
 	  await axios.patch('http://localhost:8080/profile/userState', {id: p2, state: 'on'});
+  await axios.post('http://localhost:8080/match-history', {p1_id: p1, p2_id: p2, winner: winner, ladder: ladder});
   }
 
   onScored(payload: number): boolean {
