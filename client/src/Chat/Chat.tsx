@@ -9,7 +9,22 @@ import setting from '../Images/setting.png'
 import ChatSettingModal from "./ChatSettingModal";
 import axios from "axios";
 import useSwr from 'swr';
+
+import Game from '../Pong/Game';
+import socket from '../Pong/PongSocket';
+import GameResult from '../Lobby/GameResult';
+import { MatchData } from "../Lobby/Lobby";
+import MatchFailedModal from '../Lobby/MatchFailedModal'
+import DirectGameModal from '../SideBar/DirectGameModal';
+
 const socketIOClient = require('socket.io-client')
+
+let aname = 'a';
+let bname = 'b';
+let dr = 0;
+let sbool = false;
+let lbool = false;
+let name: string;
 
 const Chat = () => {
 	
@@ -64,7 +79,76 @@ const Chat = () => {
 		const room = sessionStorage.getItem('roomName')
 		if (id) setMyID(id)
 		if (room) setRoomName(room)
+
+		const gameTarget = sessionStorage.getItem('directGame');
+    	if (gameTarget) {
+      		setDirectGameTarget(gameTarget);
+      		openDirectGameModal();
+      		sessionStorage.removeItem('directGame');
+    	}
 	});
+
+
+	const [connected, setConnected] = useState(false);
+ 	const [matched, setMatched] = useState(false);
+	const [MatchFailed, setMatchFailed] = useState(false);
+	const [DirectGameTarget, setDirectGameTarget] = useState('');
+	const [gameResult, setGameResult] = useState(false);
+
+	useEffect(() => {
+		if (connected && MyID) {
+		  socket.emit('Con', MyID);
+		}
+		socket.emit('GameList');
+	  }, [connected, MyID]);
+	
+	  useEffect(() => {
+		socket.on('connect', () => {
+		  setConnected(true);
+		});
+	
+		socket.on('disconnect', () => {
+		  setConnected(false);
+		});
+	
+		socket.on('match_failed', () => {
+			setMatchFailed(true)
+		});
+	
+		socket.on('matched', (e: MatchData) => {
+		  aname = e.a;
+		  bname = e.b;
+		  dr = e.dr;
+		  sbool = e.speed;
+		  lbool = e.ladder;
+		  setMatched(true);
+		});
+	
+		socket.on('finish', (e: number) => {
+		  name = e === 0 ? aname : bname;
+		  setMatched(false);
+		  setGameResult(true);
+		});
+	  });
+
+	//gameresult modal
+	const closeGameResult = () => setGameResult(false);
+
+	//direct game modal
+	const [DirectGameModalState, setDirectGameModalState] = useState(false);
+	const openDirectGameModal = () => {
+	  setDirectGameModalState(true);
+	};
+	const closeDirectGameModal = () => {
+	  setDirectGameModalState(false);
+	};
+  
+	//match failed modal
+	const closeMatchFailedModal = () => {
+		setMatchFailed(false)
+		if (DirectGameModalState) closeDirectGameModal();
+	}
+
 	
 	const myInfo = {
 		roomName: roomName,
@@ -88,7 +172,17 @@ const Chat = () => {
 		setChatSettingModalState(false);
 	}
 
-	return (
+	return (matched ? (
+		<div id="App-Container">
+		  <span className="App-Left">
+			<Game a={aname} b={bname} dr={dr} speed={sbool} ladder={lbool} />
+		  </span>
+		  <span className="App-Right">
+			<SideBar />
+		  </span>
+		  <MatchFailedModal open={MatchFailed} close={closeMatchFailedModal} />
+		</div>
+	  ) : (
 	<div id="App-Container">
 		{currentSocket ? (
 		<>
@@ -122,13 +216,21 @@ const Chat = () => {
 		</span>
 		<span className="App-Right">
 				<SideBar />
-		</span>
+		</span> 
+		<GameResult name={name} open={gameResult} close={closeGameResult} />
+      <DirectGameModal
+        open={DirectGameModalState}
+        close={closeDirectGameModal}
+        targetID={DirectGameTarget}
+        closeUserInfoModal={null}
+      />
+	  <MatchFailedModal open={MatchFailed} close={closeMatchFailedModal} />
 		</>
 		) : (
 		  <Loading></Loading>
 		)}
 	</div>
-  );
+  ));
 };
 
 export default Chat;

@@ -52,12 +52,14 @@ const UserInfoModal = ( props: any) => {
 	//direct game modal
 	const [DirectGameModalState, setDirectGameModalState] = useState(false);
 	const openDirectGameModal = () => {
+		/*
 		if (window.location.pathname === '/chat' || window.location.pathname === '/Chat')
 		{
 			window.location.href = '/lobby'
 			sessionStorage.removeItem('roomName')
 			sessionStorage.setItem('directGame', targetID)
 		}
+		*/
 		setDirectGameModalState(true);
 	};
 	const closeDirectGameModal = () => {
