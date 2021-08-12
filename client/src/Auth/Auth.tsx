@@ -14,7 +14,6 @@ const Auth = () => {
       if (intra_id[0] === 'intra_id') {
         setIntraID(intra_id[1]);
         sessionStorage.setItem('intraID', intra_id[1]);
-        console.log(`🐱‍🚀`);
         sessionStorage.setItem('2auth', 'false');
       }
     }
