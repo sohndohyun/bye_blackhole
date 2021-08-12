@@ -240,6 +240,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.checks.push(new clInfo(client, data));
   }
 
+  gamingAxios = async(a : string, b : string) => {
+    await axios.patch('http://localhost:8080/profile/userState', {id: a, state: 'gaming'});
+    await axios.patch('http://localhost:8080/profile/userState', {id: b, state: 'gaming'});
+  }
+
   @SubscribeMessage('Join')
   onClientJoin(client: any, data: JoinData) {
     if (!this.pushCl(client, data.name, data.speed, data.ladder)) {
@@ -256,10 +261,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       let a = clis.shift();
       let b = clis.shift();
 
-      
-      axios.patch('http://localhost:8080/profile/userState', {id: a.name, state: 'gaming'});
-      axios.patch('http://localhost:8080/profile/userState', {id: b.name, state: 'gaming'});
-
+      this.gamingAxios(a.name, b.name);
 
       let game = new Game(this.gameCount++, a, b, data.speed, data.ladder);
       this.games.push(game);
@@ -268,10 +270,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       b.sock.emit('matched', { a: a.name, b: b.name, dr: 1, ladder: data.ladder, speed: data.speed });
       this.logger.log(`${b.sock.id} matched`);
 
+      game.startGame();
+
       for (let temp of this.socks)
         this.onGameList(temp.sock);
 
-      game.startGame();
     }
   }
 
@@ -312,6 +315,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.socks.push(game.a);
       this.socks.push(game.b);
       this.games.splice(this.games.indexOf(game), 1);
+      for (let temp of this.socks)
+        this.onGameList(temp.sock);
     }
     this.logger.log(`${client.id} scored!`);
   }
@@ -379,10 +384,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.socks.splice(this.socks.indexOf(a), 1);
       this.socks.splice(this.socks.indexOf(b), 1);
 
-
-      axios.patch('http://localhost:8080/profile/userState', {id: a.name, state: 'gaming'});
-      axios.patch('http://localhost:8080/profile/userState', {id: b.name, state: 'gaming'});
-
+      this.gamingAxios(a.name, b.name);
 
       let game = new Game(this.gameCount++, a, b, e.speed, false);
       this.games.push(game);
@@ -410,16 +412,32 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log(`Client Connected : ${client.id}`);
   }
 
+  disconnectAxios = async(id : string) => {
+    await axios.patch('http://localhost:8080/profile/userState', {id: id, state: 'off'});
+
+  }
+
   handleDisconnect(client: Socket) {
+    for (let temp of this.checks){
+      if (temp.sock.id === client.id){
+        this.disconnectAxios(temp.name);
+        this.checks.splice(this.checks.indexOf(temp), 1);
+        this.logger.log(`Client Disconnected : ${temp.name}`);
+        break;
+      }
+    }
+
     let game = this.findGame(client);
     let clis;
     let n : number;
     if (game !== null) {
       if ((n = game.disconnected(client)) !== 2){
-        if (n === 0)
+        if (n === 0){
           this.socks.push(game.b);
-        else if (n === 1)
+        }
+        else if (n === 1){
           this.socks.push(game.a);
+        }
         this.games.splice(this.games.indexOf(game), 1);
       }
     }
@@ -439,14 +457,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         }
       }
     }
-    this.logger.log(`Client Disconnected : ${client.id}`);
-    for (let temp of this.checks){
-      if (temp.sock.id === client.id){
-        this.checks.splice(this.checks.indexOf(temp), 1);
-        axios.patch('http://localhost:8080/profile/userState', {id: temp.name, state: 'off'});
-        break;
-      }
-    }
+    for (let temp of this.socks)
+        this.onGameList(temp.sock);
   }
 
   

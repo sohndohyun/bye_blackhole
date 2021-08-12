@@ -63,6 +63,7 @@ export class ProfileService {
     const user = await this.usersService.findByNickname(nickname);
 
     user.state = state;
+    console.log(`${nickname} update!`);
     return await this.usersService.updateUser(user);
   }
   // helper functions
