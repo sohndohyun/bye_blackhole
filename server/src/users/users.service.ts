@@ -155,6 +155,7 @@ export class UsersService {
 
   async updateUser(user: UsersEntity) {
     const { affected } = await this.usersRepository.update(user.intra_id, user);
+    console.log(`${user.nickname}: ${user.state}[${affected}]`);
     return affected;
   }
 }

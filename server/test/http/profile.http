@@ -1,13 +1,13 @@
 # GET http://localhost:8080/profile?myID=jinkimNick&otherID=jinkimNick HTTP/1.1
-GET http://localhost:8080/profile/allblock?myID=safd HTTP/1.1
+#GET http://localhost:8080/profile/allblock?myID=safd HTTP/1.1
 
-# PATCH http://localhost:8080/profile/userState
-# Content-Type: application/json
+PATCH http://localhost:8080/profile/userState
+Content-Type: application/json
 
-# {
-# 	"id": "sayiNick",
-# 	"state": "matching"
-# }
+{
+	"id": "minami",
+	"state": "off"
+}
 
 #PUT http://localhost:8080/profile/friend HTTP/1.1
 #Content-Type: application/json
