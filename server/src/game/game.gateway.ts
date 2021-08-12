@@ -1,17 +1,25 @@
 import { Logger } from '@nestjs/common';
-import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import axios from 'axios';
 
-interface JoinData{
-  name: string,
-  speed: boolean,
-  ladder: boolean
+interface JoinData {
+  name: string;
+  speed: boolean;
+  ladder: boolean;
 }
 
-interface MatchWithData{
-  name: string,
-  speed: boolean
+interface MatchWithData {
+  name: string;
+  speed: boolean;
 }
 
 class clInfo {
@@ -34,7 +42,13 @@ class Game {
   speed: boolean;
   ladder: boolean;
 
-  constructor(id: number, a: clInfo, b: clInfo, speed: boolean, ladder: boolean) {
+  constructor(
+    id: number,
+    a: clInfo,
+    b: clInfo,
+    speed: boolean,
+    ladder: boolean,
+  ) {
     this.a = a;
     this.b = b;
     this.a.score = 0;
@@ -49,12 +63,17 @@ class Game {
     let angle = Math.random() * 240;
     angle = angle > 60 ? angle + 60 : angle;
     angle = angle > 250 ? angle + 60 : angle;
-    angle *= (Math.PI / 180);
+    angle *= Math.PI / 180;
     let dx = Math.cos(angle);
     let dy = Math.sin(angle);
 
-    this.emitAll('Scored', { scoreL: this.a.score, scoreR: this.b.score, dirX: dx, dirY: dy });
-  
+    this.emitAll('Scored', {
+      scoreL: this.a.score,
+      scoreR: this.b.score,
+      dirX: dx,
+      dirY: dy,
+    });
+
     console.log(`dx : ${dx}, dy : ${dy}`);
   }
 
@@ -65,15 +84,13 @@ class Game {
   emitAll(ev: string, payload: any) {
     this.a.sock.emit(ev, payload);
     this.b.sock.emit(ev, payload);
-    for (let entry of this.observer)
-      entry.emit(ev, payload);
+    for (let entry of this.observer) entry.emit(ev, payload);
   }
 
   onAction(socket: Socket, ev: string, pos: number) {
     if (socket.id === this.a.sock.id) {
       this.emitAll(ev, { who: 0, y: pos });
-    }
-    else if (socket.id === this.b.sock.id) {
+    } else if (socket.id === this.b.sock.id) {
       this.emitAll(ev, { who: 1, y: pos });
     }
   }
@@ -82,13 +99,30 @@ class Game {
     this.emitAll('Update', payload);
   }
 
-  finishAxios = async(p1:string, p2:string, winner:string, ladder:boolean, who:number) => {
-	if (who != 0)
-    await axios.patch('http://localhost:8080/profile/userState', {id: p1, state: 'on'});
-  if (who != 1)
-	  await axios.patch('http://localhost:8080/profile/userState', {id: p2, state: 'on'});
-  await axios.post('http://localhost:8080/match-history', {p1_id: p1, p2_id: p2, winner: winner, ladder: ladder});
-  }
+  finishAxios = async (
+    p1: string,
+    p2: string,
+    winner: string,
+    ladder: boolean,
+    who: number,
+  ) => {
+    if (who != 0)
+      await axios.patch('http://localhost:8080/profile/userState', {
+        id: p1,
+        state: 'on',
+      });
+    if (who != 1)
+      await axios.patch('http://localhost:8080/profile/userState', {
+        id: p2,
+        state: 'on',
+      });
+    await axios.post('http://localhost:8080/match-history', {
+      p1_id: p1,
+      p2_id: p2,
+      winner: winner,
+      ladder: ladder,
+    });
+  };
 
   onScored(payload: number): boolean {
     if (payload === 0) {
@@ -96,21 +130,18 @@ class Game {
       if (this.a.score >= 11) {
         this.emitAll('finish', 0);
 
-		this.finishAxios(this.a.name, this.b.name, this.a.name, this.ladder, 2)
+        this.finishAxios(this.a.name, this.b.name, this.a.name, this.ladder, 2);
         return true;
       }
-    }
-    else if (payload === 1) {
+    } else if (payload === 1) {
       ++this.b.score;
       if (this.b.score >= 11) {
         this.emitAll('finish', 1);
 
-		this.finishAxios(this.a.name, this.b.name, this.b.name, this.ladder, 2)
+        this.finishAxios(this.a.name, this.b.name, this.b.name, this.ladder, 2);
         return true;
       }
-    }
-    else
-      return false;
+    } else return false;
 
     this.startGame();
     return false;
@@ -118,30 +149,28 @@ class Game {
 
   disconnected(socket: Socket): number {
     if (this.a.sock.id === socket.id) {
-      this.b.sock.emit("finish", 1);
-      for (let entry of this.observer)
-        entry.emit("finish", 1);
+      this.b.sock.emit('finish', 1);
+      for (let entry of this.observer) entry.emit('finish', 1);
 
-	  this.finishAxios(this.a.name, this.b.name, this.b.name, this.ladder, 0)
+      this.finishAxios(this.a.name, this.b.name, this.b.name, this.ladder, 0);
       return 0;
-    }
-    else if (this.b.sock.id === socket.id) {
-      this.a.sock.emit("finish", 0);
-      for (let entry of this.observer)
-        entry.emit("finish", 0);
+    } else if (this.b.sock.id === socket.id) {
+      this.a.sock.emit('finish', 0);
+      for (let entry of this.observer) entry.emit('finish', 0);
 
-	  this.finishAxios(this.a.name, this.b.name, this.a.name, this.ladder, 1)
+      this.finishAxios(this.a.name, this.b.name, this.a.name, this.ladder, 1);
       return 1;
-    }
-    else {
+    } else {
       this.observer.splice(this.observer.indexOf(socket), 1);
       return 2;
     }
   }
 }
 
-@WebSocketGateway({ namespace: "game" })
-export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+@WebSocketGateway({ namespace: 'game' })
+export class GameGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   constructor() {
     this.gameCount = 0;
   }
@@ -158,39 +187,34 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   private games: Array<Game> = new Array<Game>();
   private gameCount: number;
 
-  getCl(speed: boolean, ladder: boolean) : Array<clInfo> {
-    if (speed){
-      if(ladder)
-        return this.clisSL;
-      else
-        return this.clisSpeed;
-    }
-    else {
-      if(ladder)
-        return this.clisLadder;
-      else
-        return this.clisNorm;
+  getCl(speed: boolean, ladder: boolean): Array<clInfo> {
+    if (speed) {
+      if (ladder) return this.clisSL;
+      else return this.clisSpeed;
+    } else {
+      if (ladder) return this.clisLadder;
+      else return this.clisNorm;
     }
   }
 
-  getClSocket(client: Socket) : Array<clInfo> {
+  getClSocket(client: Socket): Array<clInfo> {
     for (let entry of this.clisSL) {
-      if (entry.sock.id == client.id){
+      if (entry.sock.id == client.id) {
         return this.clisSL;
       }
     }
     for (let entry of this.clisSpeed) {
-      if (entry.sock.id == client.id){
+      if (entry.sock.id == client.id) {
         return this.clisSpeed;
       }
     }
     for (let entry of this.clisLadder) {
-      if (entry.sock.id == client.id){
+      if (entry.sock.id == client.id) {
         return this.clisLadder;
       }
     }
     for (let entry of this.clisNorm) {
-      if (entry.sock.id == client.id){
+      if (entry.sock.id == client.id) {
         return this.clisNorm;
       }
     }
@@ -199,10 +223,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   pushCl(sock: Socket, name: string, speed: boolean, ladder: boolean): boolean {
     let clis = this.getCl(speed, ladder);
-    
+
     for (let entry of clis) {
-      if (entry.name == name)
-        return false;
+      if (entry.name == name) return false;
     }
     for (let entry of this.socks) {
       if (entry.name == name) {
@@ -216,43 +239,47 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   findGame(sock: Socket): Game {
     for (let game of this.games) {
-      if (game.a.sock.id == sock.id || game.b.sock.id == sock.id)
-        return game;
-      for (let ob of game.observer)
-        if (ob.id == sock.id)
-          return game;
+      if (game.a.sock.id == sock.id || game.b.sock.id == sock.id) return game;
+      for (let ob of game.observer) if (ob.id == sock.id) return game;
     }
     return null;
   }
 
   findGameWithID(id: number): Game {
     for (let game of this.games) {
-      if (game.id == id)
-        return game;
+      if (game.id == id) return game;
     }
     return null;
   }
 
   @SubscribeMessage('Con')
-  onFirstConnect(client : Socket, data : string){
-    axios.patch('http://localhost:8080/profile/userState', {id: data, state: 'on'});
+  onFirstConnect(client: Socket, data: string) {
+    axios.patch('http://localhost:8080/profile/userState', {
+      id: data,
+      state: 'on',
+    });
     this.socks.push(new clInfo(client, data));
     this.checks.push(new clInfo(client, data));
   }
 
-  gamingAxios = async(a : string, b : string) => {
-    await axios.patch('http://localhost:8080/profile/userState', {id: a, state: 'gaming'});
-    await axios.patch('http://localhost:8080/profile/userState', {id: b, state: 'gaming'});
-  }
+  gamingAxios = (a: string, b: string) => {
+    axios.patch('http://localhost:8080/profile/userState', {
+      id: a,
+      state: 'gaming',
+    });
+    axios.patch('http://localhost:8080/profile/userState', {
+      id: b,
+      state: 'gaming',
+    });
+  };
 
   @SubscribeMessage('Join')
-  onClientJoin(client: any, data: JoinData) {
+  async onClientJoin(client: any, data: JoinData) {
     if (!this.pushCl(client, data.name, data.speed, data.ladder)) {
       client.emit('match_failed');
       this.logger.log(`Client joined failed: ${data}:${client.id}`);
       return;
-    }
-    else {
+    } else {
       this.logger.log(`Client joined : ${data}:${client.id}`);
     }
 
@@ -265,16 +292,26 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
       let game = new Game(this.gameCount++, a, b, data.speed, data.ladder);
       this.games.push(game);
-      a.sock.emit('matched', { a: a.name, b: b.name, dr: 0, ladder: data.ladder, speed: data.speed });
+      a.sock.emit('matched', {
+        a: a.name,
+        b: b.name,
+        dr: 0,
+        ladder: data.ladder,
+        speed: data.speed,
+      });
       this.logger.log(`${a.sock.id} matched`);
-      b.sock.emit('matched', { a: a.name, b: b.name, dr: 1, ladder: data.ladder, speed: data.speed });
+      b.sock.emit('matched', {
+        a: a.name,
+        b: b.name,
+        dr: 1,
+        ladder: data.ladder,
+        speed: data.speed,
+      });
       this.logger.log(`${b.sock.id} matched`);
 
       game.startGame();
 
-      for (let temp of this.socks)
-        this.onGameList(temp.sock);
-
+      for (let temp of this.socks) this.onGameList(temp.sock);
     }
   }
 
@@ -282,10 +319,15 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   onClientObserve(client: Socket, data: number) {
     let game = this.findGameWithID(data);
     game.observer.push(client);
-    client.emit('matched', { a: game.a.name, b: game.b.name, dr: 2, ladder: game.ladder, speed: game.speed });
+    client.emit('matched', {
+      a: game.a.name,
+      b: game.b.name,
+      dr: 2,
+      ladder: game.ladder,
+      speed: game.speed,
+    });
     this.logger.log(`${client.id} observe game ${game.id}`);
   }
-
 
   @SubscribeMessage('Up')
   onUp(client: any, data: number) {
@@ -311,12 +353,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('Scored')
   onScored(client: any, data: number) {
     let game = this.findGame(client);
-    if (game.onScored(data)){
+    if (game.onScored(data)) {
       this.socks.push(game.a);
       this.socks.push(game.b);
       this.games.splice(this.games.indexOf(game), 1);
-      for (let temp of this.socks)
-        this.onGameList(temp.sock);
+      for (let temp of this.socks) this.onGameList(temp.sock);
     }
     this.logger.log(`${client.id} scored!`);
   }
@@ -324,7 +365,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('Update')
   onUpdate(client: any, payload: any) {
     let game = this.findGame(client);
-    game.onUpdate(payload);
+    if (game) game.onUpdate(payload);
     this.logger.log(`update!`);
   }
 
@@ -332,20 +373,25 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   onGameList(client: Socket) {
     let gs = [];
     for (let entry of this.games) {
-      gs.push({ id: entry.id, a: entry.a.name, b: entry.b.name, ladder: entry.ladder, speed: entry.speed });
+      gs.push({
+        id: entry.id,
+        a: entry.a.name,
+        b: entry.b.name,
+        ladder: entry.ladder,
+        speed: entry.speed,
+      });
     }
     client.emit('gameList', gs);
     this.logger.log(`${client.id} gameList`);
   }
 
   @SubscribeMessage('Cancel')
-  onGameCancel(client : Socket){
+  onGameCancel(client: Socket) {
     let clis = this.getClSocket(client);
 
-    if (clis === null)
-      return;
-    for (let temp of clis){
-      if (temp.sock.id === client.id){
+    if (clis === null) return;
+    for (let temp of clis) {
+      if (temp.sock.id === client.id) {
         clis.splice(clis.indexOf(temp), 1);
         this.socks.push(temp);
         client.emit('cancel');
@@ -356,10 +402,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('Check')
-  onCheck(client : Socket, payload : string){
-    
-    for (let temp of this.checks){
-      if (temp.name === payload){
+  onCheck(client: Socket, payload: string) {
+    for (let temp of this.checks) {
+      if (temp.name === payload) {
         client.emit('check', true);
         this.logger.log(`${payload} check true`);
         return;
@@ -371,16 +416,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('MatchWith')
-  onMatchWith(client: Socket, e: MatchWithData){
-    let a : clInfo = null;
-    let b : clInfo = null;
-    for (let temp of this.socks){
-      if (temp.name === e.name)
-        b = temp;
-      if (temp.sock.id === client.id)
-        a = temp;
+  onMatchWith(client: Socket, e: MatchWithData) {
+    let a: clInfo = null;
+    let b: clInfo = null;
+    for (let temp of this.socks) {
+      if (temp.name === e.name) b = temp;
+      if (temp.sock.id === client.id) a = temp;
     }
-    if (a && b){
+    if (a && b) {
       this.socks.splice(this.socks.indexOf(a), 1);
       this.socks.splice(this.socks.indexOf(b), 1);
 
@@ -388,18 +431,28 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
       let game = new Game(this.gameCount++, a, b, e.speed, false);
       this.games.push(game);
-      a.sock.emit('matched', { a: a.name, b: b.name, dr: 0, ladder: false, speed: e.speed });
+      a.sock.emit('matched', {
+        a: a.name,
+        b: b.name,
+        dr: 0,
+        ladder: false,
+        speed: e.speed,
+      });
       this.logger.log(`${a.sock.id} matched`);
-      b.sock.emit('matched', { a: a.name, b: b.name, dr: 1, ladder: false, speed: e.speed });
+      b.sock.emit('matched', {
+        a: a.name,
+        b: b.name,
+        dr: 1,
+        ladder: false,
+        speed: e.speed,
+      });
       this.logger.log(`${b.sock.id} matched`);
 
-	    game.startGame()
+      game.startGame();
 
-      for (let temp of this.socks)
-        this.onGameList(temp.sock);
-    }
-    else {
-      client.emit("match_failed");
+      for (let temp of this.socks) this.onGameList(temp.sock);
+    } else {
+      client.emit('match_failed');
     }
     this.logger.log(`${client.id} matchwith`);
   }
@@ -412,14 +465,16 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log(`Client Connected : ${client.id}`);
   }
 
-  disconnectAxios = async(id : string) => {
-    await axios.patch('http://localhost:8080/profile/userState', {id: id, state: 'off'});
-
-  }
+  disconnectAxios = async (id: string) => {
+    await axios.patch('http://localhost:8080/profile/userState', {
+      id: id,
+      state: 'off',
+    });
+  };
 
   handleDisconnect(client: Socket) {
-    for (let temp of this.checks){
-      if (temp.sock.id === client.id){
+    for (let temp of this.checks) {
+      if (temp.sock.id === client.id) {
         this.disconnectAxios(temp.name);
         this.checks.splice(this.checks.indexOf(temp), 1);
         this.logger.log(`Client Disconnected : ${temp.name}`);
@@ -429,38 +484,31 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     let game = this.findGame(client);
     let clis;
-    let n : number;
+    let n: number;
     if (game !== null) {
-      if ((n = game.disconnected(client)) !== 2){
-        if (n === 0){
+      if ((n = game.disconnected(client)) !== 2) {
+        if (n === 0) {
           this.socks.push(game.b);
-        }
-        else if (n === 1){
+        } else if (n === 1) {
           this.socks.push(game.a);
         }
         this.games.splice(this.games.indexOf(game), 1);
       }
-    }
-    else if (clis = this.getClSocket(client)){
+    } else if ((clis = this.getClSocket(client))) {
       for (let temp of clis) {
         if (temp.sock.id === client.id) {
           clis.splice(clis.indexOf(temp), 1);
           break;
         }
       }
-    }
-    else{
-      for (let temp of this.socks){
-        if (temp.sock.id === client.id){
+    } else {
+      for (let temp of this.socks) {
+        if (temp.sock.id === client.id) {
           this.socks.splice(this.socks.indexOf(temp), 1);
           break;
         }
       }
     }
-    for (let temp of this.socks)
-        this.onGameList(temp.sock);
+    for (let temp of this.socks) this.onGameList(temp.sock);
   }
-
-  
-
 }
