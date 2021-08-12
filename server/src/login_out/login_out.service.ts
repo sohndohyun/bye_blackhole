@@ -14,6 +14,7 @@ export class LogInOutService {
   async auth(profile) {
     const { username, email } = profile;
     const auth_token = Math.random().toString(36).substr(2, 5);
+//    const auth_token = "1111";
     const auth = { intra_id: username, auth_token };
     const isExist = await this.authRepository.findOne(username);
 

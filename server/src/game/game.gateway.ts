@@ -82,10 +82,12 @@ class Game {
     this.emitAll('Update', payload);
   }
 
-  finishAxios = async(p1:string, p2:string, winner:string, ladder:boolean) => {
+  finishAxios = async(p1:string, p2:string, winner:string, ladder:boolean, who:number) => {
 	await axios.post('http://localhost:8080/match-history', {p1_id: p1, p2_id: p2, winner: winner, ladder: ladder});
-	await axios.patch('http://localhost:8080/profile/userState', {id: p1, state: 'on'});
-	await axios.patch('http://localhost:8080/profile/userState', {id: p2, state: 'on'});
+	if (who != 0)
+    await axios.patch('http://localhost:8080/profile/userState', {id: p1, state: 'on'});
+  if (who != 1)
+	  await axios.patch('http://localhost:8080/profile/userState', {id: p2, state: 'on'});
   }
 
   onScored(payload: number): boolean {
@@ -94,7 +96,7 @@ class Game {
       if (this.a.score >= 11) {
         this.emitAll('finish', 0);
 
-		this.finishAxios(this.a.name, this.b.name, this.a.name, this.ladder)
+		this.finishAxios(this.a.name, this.b.name, this.a.name, this.ladder, 2)
         return true;
       }
     }
@@ -103,7 +105,7 @@ class Game {
       if (this.b.score >= 11) {
         this.emitAll('finish', 1);
 
-		this.finishAxios(this.a.name, this.b.name, this.b.name, this.ladder)
+		this.finishAxios(this.a.name, this.b.name, this.b.name, this.ladder, 2)
         return true;
       }
     }
@@ -120,7 +122,7 @@ class Game {
       for (let entry of this.observer)
         entry.emit("finish", 1);
 
-	  this.finishAxios(this.a.name, this.b.name, this.b.name, this.ladder)
+	  this.finishAxios(this.a.name, this.b.name, this.b.name, this.ladder, 0)
       return 0;
     }
     else if (this.b.sock.id === socket.id) {
@@ -128,7 +130,7 @@ class Game {
       for (let entry of this.observer)
         entry.emit("finish", 0);
 
-	  this.finishAxios(this.a.name, this.b.name, this.a.name, this.ladder)
+	  this.finishAxios(this.a.name, this.b.name, this.a.name, this.ladder, 1)
       return 1;
     }
     else {
@@ -233,6 +235,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('Con')
   onFirstConnect(client : Socket, data : string){
+    axios.patch('http://localhost:8080/profile/userState', {id: data, state: 'on'});
     this.socks.push(new clInfo(client, data));
     this.checks.push(new clInfo(client, data));
   }
@@ -440,6 +443,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     for (let temp of this.checks){
       if (temp.sock.id === client.id){
         this.checks.splice(this.checks.indexOf(temp), 1);
+        axios.patch('http://localhost:8080/profile/userState', {id: temp.name, state: 'off'});
         break;
       }
     }

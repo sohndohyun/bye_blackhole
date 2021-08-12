@@ -24,8 +24,8 @@ const SideBar = () => {
 			sessionStorage.setItem('icon', res.data.icon)
 			setMyID(res.data.id)
 			setMyIcon(res.data.icon)
-			if (res.data.state === 'off')
-				document.location.href = '/log/in'
+//			if (res.data.state === 'off')
+//				document.location.href = '/log/in'
 			return (res.data)
 		}
 	}
