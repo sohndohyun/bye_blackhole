@@ -12,7 +12,7 @@ import { GameNode } from './IGameNode';
 import Game from '../Pong/Game';
 import GameResult from './GameResult';
 import MatchFailedModal from './MatchFailedModal';
-
+import DirectGameModal from '../SideBar/DirectGameModal';
 export interface MatchData {
   a: string;
   b: string;
@@ -36,20 +36,20 @@ const Lobby = () => {
   const [gameList, setGameList] = useState<GameNode[]>([]);
   const [gameResult, setGameResult] = useState(false);
   const [MatchFailed, setMatchFailed] = useState(false);
-  //  const [DirectGameTarget, setDirectGameTarget] = useState('');
+  const [DirectGameTarget, setDirectGameTarget] = useState('');
 
   useEffect(() => {
     const id = sessionStorage.getItem('nickname');
     if (id) setMyID(id);
 
-    /*
+
     const gameTarget = sessionStorage.getItem('directGame');
     if (gameTarget) {
       setDirectGameTarget(gameTarget);
       openDirectGameModal();
       sessionStorage.removeItem('directGame');
     }
-    */
+
   });
 
   useEffect(() => {
@@ -122,7 +122,14 @@ const Lobby = () => {
 
   //gameresult modal
   const closeGameResult = () => setGameResult(false);
-
+  //direct game modal
+  const [DirectGameModalState, setDirectGameModalState] = useState(false);
+  const openDirectGameModal = () => {
+    setDirectGameModalState(true);
+  };
+  const closeDirectGameModal = () => {
+    setDirectGameModalState(false);
+  };
   //match failed modal
   const closeMatchFailedModal = () => {
     setMatchFailed(false);
@@ -187,6 +194,12 @@ const Lobby = () => {
         <SideBar />
       </span>
       <GameResult name={name} open={gameResult} close={closeGameResult} />
+      <DirectGameModal
+        open={DirectGameModalState}
+        close={closeDirectGameModal}
+        targetID={DirectGameTarget}
+        closeUserInfoModal={null}
+      />
       <MatchFailedModal open={MatchFailed} close={closeMatchFailedModal} />
     </div>
   );
