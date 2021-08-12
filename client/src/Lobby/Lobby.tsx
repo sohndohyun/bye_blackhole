@@ -11,7 +11,7 @@ import socket from '../Pong/PongSocket';
 import { GameNode } from './IGameNode';
 import Game from '../Pong/Game';
 import GameResult from './GameResult';
-import MatchFailedModal from './MatchFailedModal'
+import MatchFailedModal from './MatchFailedModal';
 
 export interface MatchData {
   a: string;
@@ -36,7 +36,7 @@ const Lobby = () => {
   const [gameList, setGameList] = useState<GameNode[]>([]);
   const [gameResult, setGameResult] = useState(false);
   const [MatchFailed, setMatchFailed] = useState(false);
-//  const [DirectGameTarget, setDirectGameTarget] = useState('');
+  //  const [DirectGameTarget, setDirectGameTarget] = useState('');
 
   useEffect(() => {
     const id = sessionStorage.getItem('nickname');
@@ -66,10 +66,11 @@ const Lobby = () => {
 
     socket.on('disconnect', () => {
       setConnected(false);
+      sessionStorage.setItem('2auth', `false`);
     });
 
     socket.on('match_failed', () => {
-		setMatchFailed(true)
+      setMatchFailed(true);
     });
 
     socket.on('matched', (e: MatchData) => {
@@ -125,9 +126,9 @@ const Lobby = () => {
 
   //match failed modal
   const closeMatchFailedModal = () => {
-	  setMatchFailed(false)
-	  if (GameListModalState) closeGameListModal()
-  }
+    setMatchFailed(false);
+    if (GameListModalState) closeGameListModal();
+  };
 
   return matched ? (
     <div id="App-Container">
@@ -137,7 +138,7 @@ const Lobby = () => {
       <span className="App-Right">
         <SideBar />
       </span>
-	  <MatchFailedModal open={MatchFailed} close={closeMatchFailedModal} />
+      <MatchFailedModal open={MatchFailed} close={closeMatchFailedModal} />
     </div>
   ) : (
     <div id="App-Container">
@@ -187,7 +188,7 @@ const Lobby = () => {
         <SideBar />
       </span>
       <GameResult name={name} open={gameResult} close={closeGameResult} />
-	  <MatchFailedModal open={MatchFailed} close={closeMatchFailedModal} />
+      <MatchFailedModal open={MatchFailed} close={closeMatchFailedModal} />
     </div>
   );
 };
