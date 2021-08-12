@@ -66,7 +66,6 @@ const Lobby = () => {
 
     socket.on('disconnect', () => {
       setConnected(false);
-      sessionStorage.setItem('2auth', `false`);
     });
 
     socket.on('match_failed', () => {
