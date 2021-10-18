@@ -14,7 +14,6 @@ export class LogInOutService {
   async auth(profile) {
     const { username, email } = profile;
     const auth_token = Math.random().toString(36).substr(2, 5);
-  //  const auth_token = "1111";
     const auth = { intra_id: username, auth_token };
     const isExist = await this.authRepository.findOne(username);
 
@@ -52,19 +51,19 @@ export class LogInOutService {
   // helper functions
 
   async sendMail(userMail: string, token: string) {
-    const sayiMail = 'yshsayi@gmail.com';
+    const sayiMail = 'dohyunsohn@gmail.com';
     let transporter = nodemailer.createTransport({
       service: 'gmail',
       host: 'smtp.gmlail.com',
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: process.env.EMAILID, // generated ethereal user
-        pass: process.env.EMAILPWD, // generated ethereal password
+        user: 'dohyunsohn@gmail.com', // generated ethereal user
+        pass: 'FT_Transcendence!', // generated ethereal password
       },
     });
     let mailOptions = {
-      from: process.env.EMAILID, // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
+      from: 'dohyunsohn@gmail.com', // 발송 메일 주소 (위에서 작성한 gmail 계정 아이디)
       to: userMail, // 수신 메일 주소
       subject: 'Sending Email using Node.js', // 제목
       text: `you should input: ${token}`, // 내용
