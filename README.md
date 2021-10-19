@@ -27,3 +27,7 @@
 2. backend - nestjs
 3. db - postgreSQL
 4. docker compose
+
+## 참고 이미지
+![playpong](./play.png)
+![chat](./chat.png)
